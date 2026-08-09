@@ -1,0 +1,1704 @@
+{
+  "curriculum": {
+    "months": [
+      ["family", "greetings", "numbers"],
+      ["colors", "drinks", "food"],
+      ["veg", "cafe", "talkfamily"],
+      ["aboutme", "days", "outabout"],
+      ["weather", "emotions", "house"],
+      ["clothes", "body", "shopping"],
+      ["directions", "beach", "time"],
+      ["hobbies", "travel", "verbs1"],
+      ["adjectives", "questionwords", "plans"],
+      ["smalltalk", "restaurant", "gathering"]
+    ],
+    "extras": ["pasttense", "futuretense", "capstone"]
+  },
+  "topics": [
+    {
+      "id": "family",
+      "month": 1,
+      "title": "Family",
+      "subtitle": "Words for relatives",
+      "icon": "Fa",
+      "color": "#7dd3fc",
+      "note": "Your family speaks a Montenegrin-Dalmatian blend — words like đida and kukumar are your family's words, not mistakes.",
+      "items": [
+        {
+          "mn": "mama",
+          "en": "mom",
+          "emoji": "👩"
+        },
+        {
+          "mn": "tata",
+          "en": "dad",
+          "emoji": "👨"
+        },
+        {
+          "mn": "brat",
+          "en": "brother",
+          "emoji": "👦"
+        },
+        {
+          "mn": "sestra",
+          "en": "sister",
+          "emoji": "👧"
+        },
+        {
+          "mn": "baka",
+          "en": "grandma (also: baba)",
+          "emoji": "👵"
+        },
+        {
+          "mn": "đida",
+          "en": "grandpa (also: đed)",
+          "emoji": "👴"
+        },
+        {
+          "mn": "sin",
+          "en": "son",
+          "emoji": "👦"
+        },
+        {
+          "mn": "kćerka",
+          "en": "daughter (also: kći)",
+          "emoji": "👧"
+        },
+        {
+          "mn": "porodica",
+          "en": "family",
+          "emoji": "👪"
+        },
+        {
+          "mn": "roditelji",
+          "en": "parents"
+        },
+        {
+          "mn": "dijete / djeca",
+          "en": "child / children",
+          "emoji": "👶"
+        },
+        {
+          "mn": "ko",
+          "en": "who"
+        }
+      ]
+    },
+    {
+      "id": "greetings",
+      "month": 1,
+      "title": "Greetings",
+      "subtitle": "Say hello & introduce yourself",
+      "icon": "Zd",
+      "color": "#f472b6",
+      "items": [
+        {
+          "mn": "Zdravo",
+          "en": "Hello"
+        },
+        {
+          "mn": "Dobar dan",
+          "en": "Good afternoon"
+        },
+        {
+          "mn": "Dobro jutro",
+          "en": "Good morning"
+        },
+        {
+          "mn": "Hvala",
+          "en": "Thank you"
+        },
+        {
+          "mn": "Molim",
+          "en": "Please / You're welcome"
+        },
+        {
+          "mn": "Da",
+          "en": "Yes"
+        },
+        {
+          "mn": "Ne",
+          "en": "No"
+        },
+        {
+          "mn": "Doviđenja",
+          "en": "Goodbye"
+        },
+        {
+          "mn": "Ćao",
+          "en": "Bye / Hi (informal)"
+        },
+        {
+          "mn": "Izvini",
+          "en": "Sorry / Excuse me"
+        },
+        {
+          "mn": "Kako se zoveš?",
+          "en": "What's your name?"
+        },
+        {
+          "mn": "Zovem se...",
+          "en": "My name is..."
+        },
+        {
+          "mn": "Drago mi je",
+          "en": "Nice to meet you"
+        }
+      ],
+      "dialogue": {
+        "roles": [
+          "You",
+          "New Friend"
+        ],
+        "lines": [
+          {
+            "role": "You",
+            "mn": "Dobar dan! Kako se zoveš?",
+            "en": "Good afternoon! What is your name?"
+          },
+          {
+            "role": "New Friend",
+            "mn": "Zovem se Mia. A ti?",
+            "en": "My name is Mia. And you?"
+          },
+          {
+            "role": "You",
+            "mn": "Zovem se Jake. Drago mi je!",
+            "en": "My name is Jake. Nice to meet you!"
+          },
+          {
+            "role": "New Friend",
+            "mn": "Drago mi je! Doviđenja.",
+            "en": "Nice to meet you too! Goodbye."
+          }
+        ]
+      }
+    },
+    {
+      "id": "numbers",
+      "month": 2,
+      "title": "Numbers",
+      "subtitle": "Counting 1–100",
+      "icon": "123",
+      "color": "#a3e635",
+      "items": [
+        {
+          "mn": "jedan",
+          "en": "one (1)"
+        },
+        {
+          "mn": "dva",
+          "en": "two (2)"
+        },
+        {
+          "mn": "tri",
+          "en": "three (3)"
+        },
+        {
+          "mn": "četiri",
+          "en": "four (4)"
+        },
+        {
+          "mn": "pet",
+          "en": "five (5)"
+        },
+        {
+          "mn": "šest",
+          "en": "six (6)"
+        },
+        {
+          "mn": "sedam",
+          "en": "seven (7)"
+        },
+        {
+          "mn": "osam",
+          "en": "eight (8)"
+        },
+        {
+          "mn": "devet",
+          "en": "nine (9)"
+        },
+        {
+          "mn": "deset",
+          "en": "ten (10)"
+        },
+        {
+          "mn": "dvadeset",
+          "en": "twenty (20)"
+        },
+        {
+          "mn": "trideset",
+          "en": "thirty (30)"
+        },
+        {
+          "mn": "pedeset",
+          "en": "fifty (50)"
+        },
+        {
+          "mn": "sto",
+          "en": "one hundred (100)"
+        }
+      ]
+    },
+    {
+      "id": "colors",
+      "month": 2,
+      "title": "Colors",
+      "subtitle": "boje",
+      "icon": "Bo",
+      "color": "#7dd3fc",
+      "items": [
+        {
+          "mn": "crvena",
+          "en": "red",
+          "emoji": "🔴"
+        },
+        {
+          "mn": "plava",
+          "en": "blue",
+          "emoji": "🔵"
+        },
+        {
+          "mn": "zelena",
+          "en": "green",
+          "emoji": "🟢"
+        },
+        {
+          "mn": "žuta",
+          "en": "yellow",
+          "emoji": "🟡"
+        },
+        {
+          "mn": "crna",
+          "en": "black",
+          "emoji": "⚫"
+        },
+        {
+          "mn": "bijela",
+          "en": "white",
+          "emoji": "⚪"
+        }
+      ]
+    },
+    {
+      "id": "drinks",
+      "month": 3,
+      "title": "Drinks",
+      "subtitle": "piće",
+      "icon": "Pi",
+      "color": "#f472b6",
+      "items": [
+        {
+          "mn": "voda",
+          "en": "water",
+          "emoji": "💧"
+        },
+        {
+          "mn": "kafa",
+          "en": "coffee",
+          "emoji": "☕"
+        },
+        {
+          "mn": "čaj",
+          "en": "tea",
+          "emoji": "🍵"
+        },
+        {
+          "mn": "sok",
+          "en": "juice",
+          "emoji": "🧃"
+        },
+        {
+          "mn": "mlijeko",
+          "en": "milk",
+          "emoji": "🥛"
+        },
+        {
+          "mn": "pivo",
+          "en": "beer",
+          "emoji": "🍺"
+        },
+        {
+          "mn": "vino",
+          "en": "wine",
+          "emoji": "🍷"
+        },
+        {
+          "mn": "rakija",
+          "en": "rakija (homemade brandy)",
+          "emoji": "🥃"
+        }
+      ]
+    },
+    {
+      "id": "food",
+      "month": 3,
+      "title": "Food",
+      "subtitle": "hrana",
+      "icon": "Hr",
+      "color": "#a3e635",
+      "items": [
+        {
+          "mn": "kruh",
+          "en": "bread (also: hljeb)",
+          "emoji": "🍞"
+        },
+        {
+          "mn": "sir",
+          "en": "cheese",
+          "emoji": "🧀"
+        },
+        {
+          "mn": "meso",
+          "en": "meat",
+          "emoji": "🥩"
+        },
+        {
+          "mn": "riba",
+          "en": "fish",
+          "emoji": "🐟"
+        },
+        {
+          "mn": "jaje / jaja",
+          "en": "egg / eggs",
+          "emoji": "🥚"
+        },
+        {
+          "mn": "salata",
+          "en": "salad",
+          "emoji": "🥗"
+        },
+        {
+          "mn": "supa / čorba",
+          "en": "soup",
+          "emoji": "🍲"
+        },
+        {
+          "mn": "sladoled",
+          "en": "ice cream",
+          "emoji": "🍦"
+        },
+        {
+          "mn": "jabuka",
+          "en": "apple",
+          "emoji": "🍎"
+        }
+      ]
+    },
+    {
+      "id": "veg",
+      "month": 4,
+      "title": "Vegetables & Market",
+      "subtitle": "pijaca",
+      "icon": "Pj",
+      "color": "#7dd3fc",
+      "items": [
+        {
+          "mn": "paradajz",
+          "en": "tomato",
+          "emoji": "🍅"
+        },
+        {
+          "mn": "kukumar",
+          "en": "cucumber",
+          "emoji": "🥒"
+        },
+        {
+          "mn": "krompir",
+          "en": "potato",
+          "emoji": "🥔"
+        },
+        {
+          "mn": "luk",
+          "en": "onion",
+          "emoji": "🧅"
+        },
+        {
+          "mn": "bijeli luk",
+          "en": "garlic (literally 'white onion')",
+          "emoji": "🧄"
+        },
+        {
+          "mn": "paprika",
+          "en": "pepper",
+          "emoji": "🫑"
+        },
+        {
+          "mn": "mrkva",
+          "en": "carrot",
+          "emoji": "🥕"
+        },
+        {
+          "mn": "kupus",
+          "en": "cabbage",
+          "emoji": "🥬"
+        }
+      ]
+    },
+    {
+      "id": "cafe",
+      "month": 4,
+      "title": "At a Café",
+      "subtitle": "Order like a local",
+      "icon": "Ka",
+      "color": "#f472b6",
+      "note": "Hoću = I want, Neću = I don't want.\nWords ending in -a often change to -u after these: kafa → Hoću kafu, voda → Hoću vodu.",
+      "items": [
+        {
+          "mn": "Dobar dan!",
+          "en": "Good afternoon! (greeting)"
+        },
+        {
+          "mn": "Izvolite?",
+          "en": "What can I get you?"
+        },
+        {
+          "mn": "Hoću kafu, molim.",
+          "en": "I'd like a coffee, please."
+        },
+        {
+          "mn": "Još nešto?",
+          "en": "Anything else?"
+        },
+        {
+          "mn": "Hvala",
+          "en": "Thank you"
+        },
+        {
+          "mn": "Račun, molim.",
+          "en": "The bill, please."
+        }
+      ],
+      "dialogue": {
+        "roles": [
+          "Waiter",
+          "Customer"
+        ],
+        "lines": [
+          {
+            "role": "Waiter",
+            "mn": "Dobar dan! Izvolite?",
+            "en": "Good afternoon! What can I get you?"
+          },
+          {
+            "role": "Customer",
+            "mn": "Hoću kafu, molim.",
+            "en": "I'd like a coffee, please."
+          },
+          {
+            "role": "Waiter",
+            "mn": "Još nešto?",
+            "en": "Anything else?"
+          },
+          {
+            "role": "Customer",
+            "mn": "Hoću i vodu. Hvala.",
+            "en": "I'll also have water. Thanks."
+          },
+          {
+            "role": "Waiter",
+            "mn": "Izvolite.",
+            "en": "Here you go."
+          },
+          {
+            "role": "Customer",
+            "mn": "Hvala!",
+            "en": "Thank you!"
+          },
+          {
+            "role": "Customer",
+            "mn": "Račun, molim.",
+            "en": "The bill, please."
+          },
+          {
+            "role": "Waiter",
+            "mn": "Doviđenja!",
+            "en": "Goodbye!"
+          }
+        ]
+      }
+    },
+    {
+      "id": "talkfamily",
+      "month": 5,
+      "title": "Talking About Family",
+      "subtitle": "\"my brother\", \"I have a sister\"",
+      "icon": "Mo",
+      "color": "#a3e635",
+      "items": [
+        {
+          "mn": "moj",
+          "en": "my (masculine)"
+        },
+        {
+          "mn": "moja",
+          "en": "my (feminine)"
+        },
+        {
+          "mn": "moj brat",
+          "en": "my brother"
+        },
+        {
+          "mn": "moja sestra",
+          "en": "my sister"
+        },
+        {
+          "mn": "moje dijete",
+          "en": "my child"
+        },
+        {
+          "mn": "Imam brata.",
+          "en": "I have a brother."
+        },
+        {
+          "mn": "Imam sestru.",
+          "en": "I have a sister."
+        },
+        {
+          "mn": "Kako se zove tvoj brat?",
+          "en": "What's your brother's name?"
+        },
+        {
+          "mn": "Moj brat se zove Jake.",
+          "en": "My brother is named Jake."
+        },
+        {
+          "mn": "Ovo je moja porodica.",
+          "en": "This is my family."
+        },
+        {
+          "mn": "A ko je ovo?",
+          "en": "And who is this?"
+        }
+      ]
+    },
+    {
+      "id": "aboutme",
+      "month": 5,
+      "title": "About Me",
+      "subtitle": "Simple sentences about yourself",
+      "icon": "Ja",
+      "color": "#7dd3fc",
+      "items": [
+        {
+          "mn": "Ja se zovem ___.",
+          "en": "My name is ___."
+        },
+        {
+          "mn": "Koliko imaš godina?",
+          "en": "How old are you?"
+        },
+        {
+          "mn": "Imam ___ godina.",
+          "en": "I am ___ years old."
+        },
+        {
+          "mn": "Volim čokoladu.",
+          "en": "I love chocolate."
+        },
+        {
+          "mn": "Idem u školu.",
+          "en": "I am going to school."
+        },
+        {
+          "mn": "Idem na plažu.",
+          "en": "I'm going to the beach."
+        },
+        {
+          "mn": "Gdje živiš?",
+          "en": "Where do you live?"
+        },
+        {
+          "mn": "Živim u ___.",
+          "en": "I live in ___."
+        }
+      ]
+    },
+    {
+      "id": "days",
+      "month": 6,
+      "title": "Days & Time",
+      "subtitle": "dani u sedmici",
+      "icon": "Dn",
+      "color": "#f472b6",
+      "items": [
+        {
+          "mn": "ponedjeljak",
+          "en": "Monday"
+        },
+        {
+          "mn": "utorak",
+          "en": "Tuesday"
+        },
+        {
+          "mn": "srijeda",
+          "en": "Wednesday"
+        },
+        {
+          "mn": "četvrtak",
+          "en": "Thursday"
+        },
+        {
+          "mn": "petak",
+          "en": "Friday"
+        },
+        {
+          "mn": "subota",
+          "en": "Saturday"
+        },
+        {
+          "mn": "nedjelja",
+          "en": "Sunday"
+        },
+        {
+          "mn": "danas",
+          "en": "today"
+        },
+        {
+          "mn": "sutra",
+          "en": "tomorrow"
+        },
+        {
+          "mn": "juče",
+          "en": "yesterday"
+        }
+      ]
+    },
+    {
+      "id": "outabout",
+      "month": 6,
+      "title": "Out & About",
+      "subtitle": "Travel phrases",
+      "icon": "Va",
+      "color": "#a3e635",
+      "items": [
+        {
+          "mn": "Gdje je...?",
+          "en": "Where is...?"
+        },
+        {
+          "mn": "Koliko košta?",
+          "en": "How much does it cost?"
+        },
+        {
+          "mn": "Ne razumijem.",
+          "en": "I don't understand."
+        },
+        {
+          "mn": "Govorite li engleski?",
+          "en": "Do you speak English?"
+        },
+        {
+          "mn": "Molim vas.",
+          "en": "Please (formal)"
+        },
+        {
+          "mn": "Izvinite.",
+          "en": "Excuse me (formal)"
+        },
+        {
+          "mn": "lijevo",
+          "en": "left"
+        },
+        {
+          "mn": "desno",
+          "en": "right"
+        },
+        {
+          "mn": "plaža",
+          "en": "beach"
+        },
+        {
+          "mn": "more",
+          "en": "sea"
+        }
+      ]
+    },
+    {
+      "id": "weather",
+      "month": 7,
+      "title": "Weather",
+      "subtitle": "vrijeme",
+      "icon": "We",
+      "color": "#7dd3fc",
+      "items": [
+        {
+          "mn": "sunce",
+          "en": "sun",
+          "emoji": "☀️"
+        },
+        {
+          "mn": "kiša",
+          "en": "rain",
+          "emoji": "🌧️"
+        },
+        {
+          "mn": "vjetar",
+          "en": "wind",
+          "emoji": "💨"
+        },
+        {
+          "mn": "oblačno",
+          "en": "cloudy",
+          "emoji": "☁️"
+        },
+        {
+          "mn": "toplo",
+          "en": "warm"
+        },
+        {
+          "mn": "hladno",
+          "en": "cold",
+          "emoji": "🥶"
+        },
+        {
+          "mn": "Kakvo je vrijeme?",
+          "en": "What's the weather like?"
+        },
+        {
+          "mn": "Sunčano je.",
+          "en": "It's sunny."
+        }
+      ]
+    },
+    {
+      "id": "emotions",
+      "month": 7,
+      "title": "Emotions & Feelings",
+      "subtitle": "osjećanja",
+      "icon": "Em",
+      "color": "#f472b6",
+      "items": [
+        {
+          "mn": "sretan / sretna",
+          "en": "happy"
+        },
+        {
+          "mn": "tužan / tužna",
+          "en": "sad"
+        },
+        {
+          "mn": "umoran / umorna",
+          "en": "tired"
+        },
+        {
+          "mn": "gladan / gladna",
+          "en": "hungry"
+        },
+        {
+          "mn": "žedan / žedna",
+          "en": "thirsty"
+        },
+        {
+          "mn": "uzbuđen / uzbuđena",
+          "en": "excited"
+        },
+        {
+          "mn": "Kako se osjećaš?",
+          "en": "How do you feel?"
+        }
+      ]
+    },
+    {
+      "id": "house",
+      "month": 8,
+      "title": "House & Home",
+      "subtitle": "kuća",
+      "icon": "Ho",
+      "color": "#a3e635",
+      "items": [
+        {
+          "mn": "kuća",
+          "en": "house",
+          "emoji": "🏠"
+        },
+        {
+          "mn": "soba",
+          "en": "room"
+        },
+        {
+          "mn": "kuhinja",
+          "en": "kitchen",
+          "emoji": "🍳"
+        },
+        {
+          "mn": "kupatilo",
+          "en": "bathroom",
+          "emoji": "🚿"
+        },
+        {
+          "mn": "krevet",
+          "en": "bed",
+          "emoji": "🛏️"
+        },
+        {
+          "mn": "vrata",
+          "en": "door",
+          "emoji": "🚪"
+        },
+        {
+          "mn": "prozor",
+          "en": "window",
+          "emoji": "🪟"
+        },
+        {
+          "mn": "dvorište",
+          "en": "yard",
+          "emoji": "🌳"
+        }
+      ]
+    },
+    {
+      "id": "clothes",
+      "month": 8,
+      "title": "Clothes",
+      "subtitle": "odjeća",
+      "icon": "Cl",
+      "color": "#7dd3fc",
+      "items": [
+        {
+          "mn": "majica",
+          "en": "t-shirt",
+          "emoji": "👕"
+        },
+        {
+          "mn": "pantalone",
+          "en": "pants",
+          "emoji": "👖"
+        },
+        {
+          "mn": "haljina",
+          "en": "dress",
+          "emoji": "👗"
+        },
+        {
+          "mn": "cipele",
+          "en": "shoes",
+          "emoji": "👟"
+        },
+        {
+          "mn": "jakna",
+          "en": "jacket",
+          "emoji": "🧥"
+        },
+        {
+          "mn": "kupaći kostim",
+          "en": "swimsuit",
+          "emoji": "🩱"
+        },
+        {
+          "mn": "šešir",
+          "en": "hat",
+          "emoji": "👒"
+        }
+      ]
+    },
+    {
+      "id": "body",
+      "month": 9,
+      "title": "Body & Health",
+      "subtitle": "tijelo",
+      "icon": "Bd",
+      "color": "#f472b6",
+      "items": [
+        {
+          "mn": "glava",
+          "en": "head"
+        },
+        {
+          "mn": "ruka",
+          "en": "hand / arm"
+        },
+        {
+          "mn": "noga",
+          "en": "leg / foot"
+        },
+        {
+          "mn": "stomak",
+          "en": "stomach"
+        },
+        {
+          "mn": "Boli me glava.",
+          "en": "My head hurts."
+        },
+        {
+          "mn": "Dobro sam.",
+          "en": "I'm fine."
+        }
+      ]
+    },
+    {
+      "id": "shopping",
+      "month": 9,
+      "title": "Shopping",
+      "subtitle": "kupovina",
+      "icon": "Sh",
+      "color": "#a3e635",
+      "items": [
+        {
+          "mn": "Izvolite, šta želite?",
+          "en": "Hello, what would you like?"
+        },
+        {
+          "mn": "Koliko košta ovo?",
+          "en": "How much is this?"
+        },
+        {
+          "mn": "Hoću da kupim...",
+          "en": "I want to buy..."
+        },
+        {
+          "mn": "Imate li...?",
+          "en": "Do you have...?"
+        },
+        {
+          "mn": "Samo gledam.",
+          "en": "I'm just looking."
+        },
+        {
+          "mn": "skupo",
+          "en": "expensive"
+        },
+        {
+          "mn": "jeftino",
+          "en": "cheap"
+        }
+      ],
+      "dialogue": {
+        "roles": [
+          "Shopkeeper",
+          "You"
+        ],
+        "lines": [
+          {
+            "role": "Shopkeeper",
+            "mn": "Izvolite, šta želite?",
+            "en": "Hello, what would you like?"
+          },
+          {
+            "role": "You",
+            "mn": "Koliko košta ovo?",
+            "en": "How much is this?"
+          },
+          {
+            "role": "Shopkeeper",
+            "mn": "Deset eura.",
+            "en": "Ten euros."
+          },
+          {
+            "role": "You",
+            "mn": "To je malo skupo. Sedam?",
+            "en": "That's a bit expensive. Seven?"
+          },
+          {
+            "role": "Shopkeeper",
+            "mn": "Dobro, sedam.",
+            "en": "Okay, seven."
+          },
+          {
+            "role": "You",
+            "mn": "Hvala!",
+            "en": "Thank you!"
+          }
+        ]
+      }
+    },
+    {
+      "id": "directions",
+      "month": 10,
+      "title": "Directions & Places",
+      "subtitle": "pravci",
+      "icon": "Di",
+      "color": "#7dd3fc",
+      "items": [
+        {
+          "mn": "prodavnica",
+          "en": "store"
+        },
+        {
+          "mn": "banka",
+          "en": "bank"
+        },
+        {
+          "mn": "bolnica",
+          "en": "hospital"
+        },
+        {
+          "mn": "blizu",
+          "en": "near"
+        },
+        {
+          "mn": "daleko",
+          "en": "far"
+        },
+        {
+          "mn": "Idi pravo.",
+          "en": "Go straight."
+        },
+        {
+          "mn": "Skreni lijevo.",
+          "en": "Turn left."
+        },
+        {
+          "mn": "Skreni desno.",
+          "en": "Turn right."
+        }
+      ]
+    },
+    {
+      "id": "beach",
+      "month": 10,
+      "title": "Beach & Summer",
+      "subtitle": "plaža i ljeto",
+      "icon": "Bc",
+      "color": "#f472b6",
+      "items": [
+        {
+          "mn": "pijesak",
+          "en": "sand"
+        },
+        {
+          "mn": "talas",
+          "en": "wave"
+        },
+        {
+          "mn": "kupanje",
+          "en": "swimming"
+        },
+        {
+          "mn": "peškir",
+          "en": "towel"
+        },
+        {
+          "mn": "sunčane naočare",
+          "en": "sunglasses"
+        },
+        {
+          "mn": "Idemo na plažu!",
+          "en": "Let's go to the beach!"
+        }
+      ],
+      "dialogue": {
+        "roles": [
+          "Friend",
+          "You"
+        ],
+        "lines": [
+          {
+            "role": "Friend",
+            "mn": "Idemo na plažu!",
+            "en": "Let's go to the beach!"
+          },
+          {
+            "role": "You",
+            "mn": "Odlično! Gdje su moje naočare?",
+            "en": "Great! Where are my sunglasses?"
+          },
+          {
+            "role": "Friend",
+            "mn": "Evo ih, na peškiru.",
+            "en": "Here they are, on the towel."
+          },
+          {
+            "role": "You",
+            "mn": "Hvala! Je li voda hladna?",
+            "en": "Thanks! Is the water cold?"
+          },
+          {
+            "role": "Friend",
+            "mn": "Ne, topla je!",
+            "en": "No, it's warm!"
+          }
+        ]
+      }
+    },
+    {
+      "id": "time",
+      "month": 11,
+      "title": "Telling Time",
+      "subtitle": "sati",
+      "icon": "Tm",
+      "color": "#a3e635",
+      "items": [
+        {
+          "mn": "Koliko je sati?",
+          "en": "What time is it?"
+        },
+        {
+          "mn": "sat",
+          "en": "hour / o'clock"
+        },
+        {
+          "mn": "minut",
+          "en": "minute"
+        },
+        {
+          "mn": "podne",
+          "en": "noon"
+        },
+        {
+          "mn": "ponoć",
+          "en": "midnight"
+        },
+        {
+          "mn": "rano",
+          "en": "early"
+        },
+        {
+          "mn": "kasno",
+          "en": "late"
+        }
+      ]
+    },
+    {
+      "id": "hobbies",
+      "month": 11,
+      "title": "Hobbies",
+      "subtitle": "hobiji",
+      "icon": "Hb",
+      "color": "#7dd3fc",
+      "items": [
+        {
+          "mn": "plivati",
+          "en": "to swim",
+          "emoji": "🏊"
+        },
+        {
+          "mn": "čitati",
+          "en": "to read",
+          "emoji": "📖"
+        },
+        {
+          "mn": "igrati fudbal",
+          "en": "to play soccer",
+          "emoji": "⚽"
+        },
+        {
+          "mn": "slušati muziku",
+          "en": "to listen to music",
+          "emoji": "🎧"
+        },
+        {
+          "mn": "crtati",
+          "en": "to draw",
+          "emoji": "🎨"
+        },
+        {
+          "mn": "Šta voliš da radiš?",
+          "en": "What do you like to do?"
+        }
+      ]
+    },
+    {
+      "id": "travel",
+      "month": 12,
+      "title": "Travel Essentials",
+      "subtitle": "putovanje",
+      "icon": "Tr",
+      "color": "#f472b6",
+      "items": [
+        {
+          "mn": "aerodrom",
+          "en": "airport",
+          "emoji": "✈️"
+        },
+        {
+          "mn": "pasoš",
+          "en": "passport",
+          "emoji": "🛂"
+        },
+        {
+          "mn": "kofer",
+          "en": "suitcase",
+          "emoji": "🧳"
+        },
+        {
+          "mn": "avion",
+          "en": "plane",
+          "emoji": "✈️"
+        },
+        {
+          "mn": "karta",
+          "en": "ticket",
+          "emoji": "🎫"
+        },
+        {
+          "mn": "Idemo u Crnu Goru!",
+          "en": "We're going to Montenegro!"
+        }
+      ]
+    },
+    {
+      "id": "capstone",
+      "month": 12,
+      "title": "Arriving in Montenegro",
+      "subtitle": "Put it all together",
+      "icon": "MG",
+      "color": "#a3e635",
+      "items": [
+        {
+          "mn": "Dobro došli!",
+          "en": "Welcome!"
+        },
+        {
+          "mn": "Prijatan boravak.",
+          "en": "Enjoy your stay."
+        },
+        {
+          "mn": "Jedva čekam.",
+          "en": "I can't wait."
+        },
+        {
+          "mn": "Napokon smo ovdje!",
+          "en": "We're finally here!"
+        }
+      ],
+      "dialogue": {
+        "roles": [
+          "Agent",
+          "You"
+        ],
+        "lines": [
+          {
+            "role": "Agent",
+            "mn": "Dobro došli u Crnu Goru! Pasoš, molim.",
+            "en": "Welcome to Montenegro! Passport, please."
+          },
+          {
+            "role": "You",
+            "mn": "Izvolite.",
+            "en": "Here you go."
+          },
+          {
+            "role": "Agent",
+            "mn": "Hvala. Prijatan boravak!",
+            "en": "Thank you. Enjoy your stay!"
+          },
+          {
+            "role": "You",
+            "mn": "Hvala! Jedva čekam da vidim porodicu.",
+            "en": "Thank you! I can't wait to see my family."
+          }
+        ]
+      }
+    },
+    {
+      "id": "verbs1",
+      "title": "Verbs: To Be & To Have",
+      "subtitle": "biti, imati",
+      "icon": "V1",
+      "color": "#7dd3fc",
+      "items": [
+        {
+          "mn": "ja sam",
+          "en": "I am"
+        },
+        {
+          "mn": "ti si",
+          "en": "you are"
+        },
+        {
+          "mn": "on/ona je",
+          "en": "he/she is"
+        },
+        {
+          "mn": "mi smo",
+          "en": "we are"
+        },
+        {
+          "mn": "oni su",
+          "en": "they are"
+        },
+        {
+          "mn": "ja imam",
+          "en": "I have"
+        },
+        {
+          "mn": "ti imaš",
+          "en": "you have"
+        },
+        {
+          "mn": "mi imamo",
+          "en": "we have"
+        }
+      ]
+    },
+    {
+      "id": "adjectives",
+      "title": "Describing Things",
+      "subtitle": "pridjevi",
+      "icon": "Ad",
+      "color": "#f472b6",
+      "items": [
+        {
+          "mn": "velik / velika",
+          "en": "big"
+        },
+        {
+          "mn": "mali / mala",
+          "en": "small"
+        },
+        {
+          "mn": "lijep / lijepa",
+          "en": "beautiful"
+        },
+        {
+          "mn": "ružan / ružna",
+          "en": "ugly"
+        },
+        {
+          "mn": "dobar / dobra",
+          "en": "good"
+        },
+        {
+          "mn": "loš / loša",
+          "en": "bad"
+        },
+        {
+          "mn": "nov / nova",
+          "en": "new"
+        },
+        {
+          "mn": "star / stara",
+          "en": "old"
+        }
+      ]
+    },
+    {
+      "id": "questionwords",
+      "title": "Question Words",
+      "subtitle": "šta, ko, gdje...",
+      "icon": "Qw",
+      "color": "#a3e635",
+      "items": [
+        {
+          "mn": "šta",
+          "en": "what"
+        },
+        {
+          "mn": "ko",
+          "en": "who"
+        },
+        {
+          "mn": "gdje",
+          "en": "where"
+        },
+        {
+          "mn": "kada",
+          "en": "when"
+        },
+        {
+          "mn": "zašto",
+          "en": "why"
+        },
+        {
+          "mn": "kako",
+          "en": "how"
+        },
+        {
+          "mn": "koji / koja",
+          "en": "which"
+        }
+      ]
+    },
+    {
+      "id": "plans",
+      "title": "Making Plans",
+      "subtitle": "Hoćeš li..., Vidimo se!",
+      "icon": "Pl",
+      "color": "#7dd3fc",
+      "items": [
+        {
+          "mn": "Hoćeš li...?",
+          "en": "Do you want to...?"
+        },
+        {
+          "mn": "Možemo li...?",
+          "en": "Can we...?"
+        },
+        {
+          "mn": "Kada se vidimo?",
+          "en": "When do we meet?"
+        },
+        {
+          "mn": "Vidimo se sutra.",
+          "en": "See you tomorrow."
+        },
+        {
+          "mn": "Dogovoreno!",
+          "en": "It's a deal! / Agreed!"
+        }
+      ]
+    },
+    {
+      "id": "smalltalk",
+      "title": "Small Talk",
+      "subtitle": "Getting to know people",
+      "icon": "St",
+      "color": "#f472b6",
+      "items": [
+        {
+          "mn": "Šta radiš?",
+          "en": "What are you doing?"
+        },
+        {
+          "mn": "Odakle si?",
+          "en": "Where are you from?"
+        },
+        {
+          "mn": "Koliko dugo si ovdje?",
+          "en": "How long have you been here?"
+        },
+        {
+          "mn": "Sviđa mi se Crna Gora.",
+          "en": "I like Montenegro."
+        },
+        {
+          "mn": "Ovo mi je prvi put ovdje.",
+          "en": "This is my first time here."
+        }
+      ]
+    },
+    {
+      "id": "pasttense",
+      "title": "Talking About the Past",
+      "subtitle": "bio sam, jučer...",
+      "icon": "Pt",
+      "color": "#a3e635",
+      "items": [
+        {
+          "mn": "bio sam / bila sam",
+          "en": "I was"
+        },
+        {
+          "mn": "Jučer sam...",
+          "en": "Yesterday I..."
+        },
+        {
+          "mn": "Prošle godine...",
+          "en": "Last year..."
+        },
+        {
+          "mn": "Bilo je zabavno!",
+          "en": "It was fun!"
+        },
+        {
+          "mn": "Vidio sam / Vidjela sam",
+          "en": "I saw"
+        }
+      ]
+    },
+    {
+      "id": "futuretense",
+      "title": "Talking About the Future",
+      "subtitle": "sutra ću, sledeće godine...",
+      "icon": "Ft",
+      "color": "#7dd3fc",
+      "items": [
+        {
+          "mn": "Sutra ću...",
+          "en": "Tomorrow I will..."
+        },
+        {
+          "mn": "Sledeće godine ćemo...",
+          "en": "Next year we will..."
+        },
+        {
+          "mn": "Vidjećemo se opet.",
+          "en": "We'll see each other again."
+        },
+        {
+          "mn": "Jedva čekam ljeto.",
+          "en": "I can't wait for summer."
+        }
+      ]
+    },
+    {
+      "id": "restaurant",
+      "title": "At a Restaurant",
+      "subtitle": "Beyond the café",
+      "icon": "Rs",
+      "color": "#f472b6",
+      "items": [
+        {
+          "mn": "meni",
+          "en": "menu"
+        },
+        {
+          "mn": "konobar / konobarica",
+          "en": "waiter / waitress"
+        },
+        {
+          "mn": "Preporučujete li nešto?",
+          "en": "Do you recommend something?"
+        },
+        {
+          "mn": "Za piće?",
+          "en": "For drinks?"
+        },
+        {
+          "mn": "Dobar tek!",
+          "en": "Enjoy your meal!"
+        },
+        {
+          "mn": "Bilo je ukusno.",
+          "en": "It was delicious."
+        }
+      ],
+      "dialogue": {
+        "roles": [
+          "Waiter",
+          "You"
+        ],
+        "lines": [
+          {
+            "role": "Waiter",
+            "mn": "Dobro veče! Izvolite meni.",
+            "en": "Good evening! Here is the menu."
+          },
+          {
+            "role": "You",
+            "mn": "Hvala. Preporučujete li nešto?",
+            "en": "Thanks. Do you recommend something?"
+          },
+          {
+            "role": "Waiter",
+            "mn": "Riba je odlična danas.",
+            "en": "The fish is excellent today."
+          },
+          {
+            "role": "You",
+            "mn": "Dobro, hoću ribu, molim.",
+            "en": "Okay, I'll have the fish, please."
+          },
+          {
+            "role": "Waiter",
+            "mn": "Dobar tek!",
+            "en": "Enjoy your meal!"
+          },
+          {
+            "role": "You",
+            "mn": "Hvala, bilo je ukusno!",
+            "en": "Thanks, it was delicious!"
+          }
+        ]
+      }
+    },
+    {
+      "id": "gathering",
+      "title": "Family Gathering",
+      "subtitle": "A full conversation at the table",
+      "icon": "Fg",
+      "color": "#a3e635",
+      "items": [
+        {
+          "mn": "Sjedi ovdje.",
+          "en": "Sit here."
+        },
+        {
+          "mn": "Poslužite se.",
+          "en": "Help yourselves."
+        },
+        {
+          "mn": "Živjeli!",
+          "en": "Cheers!"
+        },
+        {
+          "mn": "Hvala na ručku.",
+          "en": "Thank you for lunch."
+        },
+        {
+          "mn": "Bilo je divno vidjeti vas.",
+          "en": "It was wonderful to see you."
+        }
+      ],
+      "dialogue": {
+        "roles": [
+          "Baka",
+          "You"
+        ],
+        "lines": [
+          {
+            "role": "Baka",
+            "mn": "Sjedi ovdje, dijete. Poslužite se!",
+            "en": "Sit here, child. Help yourselves!"
+          },
+          {
+            "role": "You",
+            "mn": "Hvala, bako! Miriše odlično.",
+            "en": "Thanks, grandma! It smells great."
+          },
+          {
+            "role": "Baka",
+            "mn": "Živjeli!",
+            "en": "Cheers!"
+          },
+          {
+            "role": "You",
+            "mn": "Živjeli! Hvala na ručku, bilo je divno.",
+            "en": "Cheers! Thank you for lunch, it was wonderful."
+          }
+        ]
+      }
+    }
+  ],
+  "bonusTopics": [
+    {
+      "id": "alphabet",
+      "title": "Alphabet",
+      "subtitle": "Latin & Cyrillic letters",
+      "icon": "Aa",
+      "color": "#7dd3fc",
+      "items": [
+        {
+          "mn": "A a",
+          "en": "Cyrillic: А а — \"ah\", as in auto (car)"
+        },
+        {
+          "mn": "B b",
+          "en": "Cyrillic: Б б — \"b\", as in brat (brother)"
+        },
+        {
+          "mn": "C c",
+          "en": "Cyrillic: Ц ц — \"ts\", as in cvijet (flower)"
+        },
+        {
+          "mn": "Č č",
+          "en": "Cyrillic: Ч ч — hard \"ch\", as in čokolada"
+        },
+        {
+          "mn": "Ć ć",
+          "en": "Cyrillic: Ћ ћ — soft \"ch\", as in ćevapi"
+        },
+        {
+          "mn": "D d",
+          "en": "Cyrillic: Д д — \"d\", as in dijete"
+        },
+        {
+          "mn": "Đ đ",
+          "en": "Cyrillic: Ђ ђ — soft \"j\", as in đak"
+        },
+        {
+          "mn": "Dž dž",
+          "en": "Cyrillic: Џ џ — hard \"j\", as in džak"
+        },
+        {
+          "mn": "Lj lj",
+          "en": "Cyrillic: Љ љ — \"ly\", as in ljubav"
+        },
+        {
+          "mn": "Nj nj",
+          "en": "Cyrillic: Њ њ — \"ny\", as in njiva"
+        },
+        {
+          "mn": "Š š",
+          "en": "Cyrillic: Ш ш — \"sh\", as in šuma"
+        },
+        {
+          "mn": "Ž ž",
+          "en": "Cyrillic: Ж ж — \"zh\", as in žena"
+        }
+      ]
+    }
+  ]
+}

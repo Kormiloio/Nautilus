@@ -1,7 +1,7 @@
 # Product requirements document: Učimo crnogorski
 
 **Repository codename:** Nautilus  
-**Document status:** Draft for family review  
+**Document status:** Implemented foundation; content and family review in progress
 **Last updated:** 2026-08-09  
 **Target:** A usable first-year learning experience spanning approximately 10 months
 
@@ -114,9 +114,22 @@ Every publishable word or phrase intended for listening practice should have app
 
 Content may include Latin, Cyrillic, English meaning, and optional learner-friendly notes. The interface must preserve Montenegrin diacritics. Activities should introduce script recognition deliberately rather than presenting transliteration as interchangeable in every context.
 
-## 8. Ten-month curriculum shape
+## 8. Ten-month learning voyage
 
-The product uses free navigation, but content should be deep enough for four broad learning phases:
+The planned experience contains **200 weekday lessons across 40 instructional weeks**. This is a recommended family rhythm, not a content lock: learners may still open any published topic or practice freely.
+
+Each of the ten learning months uses a four-week pattern:
+
+| Week | Focus | Weekday lessons |
+| --- | --- | --- |
+| 1 | Topic A | discover, recall, build, use, checkpoint |
+| 2 | Topic B | discover, recall, build, use, checkpoint |
+| 3 | Topic C | discover, recall, build, use, checkpoint |
+| 4 | Integration | mixed review, listening, sentence building, role-play, family challenge |
+
+Months containing additional calendar weeks may use them for rest, catch-up, bonus lessons, or trip simulations without increasing the 200-day core. Weekends are rest or optional catch-up days by default.
+
+The content progression still follows four broad phases:
 
 | Approximate period | Learning emphasis | Outcome |
 | --- | --- | --- |
@@ -125,7 +138,31 @@ The product uses free navigation, but content should be deep enough for four bro
 | Months 6–8 | travel, shopping, directions, needs, richer sentence patterns | navigate common trip situations |
 | Months 9–10 | mixed review, listening, role-play, family-specific language | improve recall and confidence under realistic conditions |
 
-This is a content-planning framework, not a forced learner path. The app should offer optional review collections across topics as the library grows. The current prototype's August–July 12-month journey, weekly content locks, and “Tonight's Session” recommendation are not approved requirements and must be reconciled before implementation proceeds.
+This is a content-planning framework, not a forced learner path. The app should offer optional review collections across topics as the library grows. The current prototype's August–July 12-month journey, weekly content locks, and “Tonight's Session” recommendation are superseded by the optional 200-day voyage.
+
+### 8.1 Five-day topic cycle
+
+| Day | Lesson purpose | Representative activity |
+| --- | --- | --- |
+| 1 — Discover | introduce useful language and pronunciation | 6–8 new items with reviewed audio |
+| 2 — Recall | retrieve meaning and recognize spoken/script forms | flashcards, matching, listening |
+| 3 — Build | apply one sentence or grammar pattern | guided sentence construction |
+| 4 — Use | rehearse language in context | dialogue or role-play |
+| 5 — Checkpoint | combine recall, listening, and production | mixed review and family challenge |
+
+A topic is voyage-ready only when it can support five meaningfully different lessons. Repeating the same item deck with a different button does not constitute five lessons.
+
+### 8.2 Calendar and day counter
+
+The learner dashboard should show:
+
+- `Voyage day N of 200`, representing the next planned lesson position;
+- active practice days this week and month;
+- a monthly calendar with planned, in-progress, completed, catch-up-available, and rest states;
+- today's recommended lesson and its topic/day purpose;
+- a separate route to browse all published topics freely.
+
+Suggested nautical display labels are `in harbor` (rest), `charted` (planned), `making way` (in progress), `full sail` (completed), and `open water` (available for catch-up). Missed days use neutral language and never shame the learner.
 
 ## 9. Functional requirements
 
@@ -145,16 +182,39 @@ This is a content-planning framework, not a forced learner path. The app should 
 | FR-12 | The app can add topics and activities by editing structured content rather than application code. | Must |
 | FR-13 | Core installed content and saved local progress remain usable after a page refresh; offline support is a later decision. | Must |
 | FR-14 | No topic is locked because of score, streak, or lesson order. | Must |
+| FR-15 | The app provides a configurable 200-lesson voyage organized as 40 five-day instructional weeks. | Must |
+| FR-16 | Each learning month contains three topic weeks and one integration/review week. | Must |
+| FR-17 | The dashboard shows voyage position, active-day counts, and a monthly learning calendar. | Must |
+| FR-18 | Opening a profile or lesson does not count as an active or completed learning day. | Must |
+| FR-19 | A scheduled day completes only after its declared required lesson segments are completed. | Must |
+| FR-20 | Missed lessons can be resumed or rescheduled without locking topics or applying punitive messaging. | Must |
+| FR-21 | Free practice remains available independently of the recommended daily voyage. | Must |
 
 ## 10. Quality requirements
 
 - **Responsive:** no horizontal scrolling at supported mobile widths; touch targets are comfortably usable.
 - **Accessible:** target WCAG 2.2 AA for the core experience, including keyboard operation, visible focus, text resizing, contrast, labels, and reduced motion.
-- **Fast:** core screens should become interactive quickly on an ordinary mobile connection; formal budgets will be set after architecture selection.
+- **Fast:** core screens should become interactive quickly on an ordinary mobile connection; formal performance budgets remain to be established from family-alpha measurements.
 - **Resilient:** unavailable audio, denied microphone permission, malformed content, or storage limits produce useful fallback behavior.
 - **Private:** no behavioral ads; no retained voice recordings by default; collect only data required for named product behavior.
 - **Maintainable:** learning content is schema-validated, versionable, and separable from presentation components.
 - **Testable:** scoring, progress, streaks, activity generation, and content validation have automated coverage.
+
+### 10.1 Implemented technical foundation
+
+The production foundation is a modular, static Vite web application:
+
+- `src/main.js` owns application state, navigation, and screen orchestration;
+- `src/components/` contains the dashboard, calendar, curriculum, profile, topic, and session views;
+- `src/engine/learning-engine.js` generates the 200-lesson voyage and weekday schedule;
+- `src/engine/progress-store.js` isolates profile-scoped local progress and calculates date-based streaks;
+- `src/content/topics.json` owns the 33 topics, 248 learning items, dialogues, bonus content, and explicit curriculum map;
+- `src/content/schema.json` and the Ajv validator reject malformed or inconsistent content before release;
+- Vitest covers voyage size, month/week structure, topic coverage, weekday scheduling, session generation, and streak behavior;
+- Vite writes the static production build to `web/` for the existing Netlify deployment;
+- `web/prototype.html` preserves the original generated prototype as a historical reference.
+
+The implemented curriculum assigns 30 unique core topics to ten months, three per month. Past Tense, Future Tense, and Arriving in Montenegro remain freely browsable advanced/capstone topics outside the core sequence. The architecture is selected and no longer an open foundation decision.
 
 ## 11. Content model
 
@@ -189,7 +249,7 @@ Success for the first year is demonstrated by sustained voluntary use and improv
 
 ### Foundation
 
-Import and audit the prototype and lesson material; validate the content model; choose the architecture; establish automated checks and accessible responsive navigation.
+Completed: the prototype was audited and preserved, content was extracted and schema-validated, the Vite architecture was selected, automated checks were established, and the responsive 200-day voyage was implemented.
 
 ### Family alpha
 
@@ -214,13 +274,16 @@ Prioritize listening recall, scenario rehearsal, offline/poor-connectivity needs
 7. Is the production name Učimo crnogorski, or is that still provisional?
 8. Should the current guided “family session” remain as an optional mode despite the no-next-suggestion decision?
 9. Should real family names be kept in the repository, or replaced with configurable/anonymous local profiles?
+10. Which holidays, vacations, and travel dates should be excluded when mapping the 200 instructional days to real dates?
+11. Should optional weekend practice advance the voyage, count only as an active day, or be family-configurable?
 
-## 15. Acceptance for product foundation
+## 15. Current acceptance status
 
-The foundation is ready for implementation when:
+The technical product foundation is implemented and passes content validation, unit tests, production build, and core browser-flow checks. Family-alpha readiness still requires:
 
-- the prototype and lesson source are present and audited;
-- the family approves this PRD's goals, non-goals, and unresolved decisions;
-- a language-review owner is named;
-- representative content validates the proposed data model;
-- the initial OpenSpec change is reviewed and its tasks are appropriately sized.
+- family approval of this PRD's goals, curriculum map, and unresolved calendar decisions;
+- a named fluent language/audio review owner;
+- expansion of core topics into meaningfully distinct daily lesson material;
+- reviewed audio or an approved fallback policy;
+- completion of keyboard, screen-reader, zoom, contrast, reduced-motion, storage-failure, and supported-device verification;
+- a four-week family pilot before treating the full 200-day sequence as release-ready.

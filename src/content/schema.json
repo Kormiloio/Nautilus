@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "curriculum": { "$ref": "#/definitions/curriculum" },
+    "topics": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/topic" }
+    },
+    "bonusTopics": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/topic" }
+    }
+  },
+  "required": ["curriculum", "topics", "bonusTopics"],
+  "additionalProperties": false,
+  "definitions": {
+    "curriculum": {
+      "type": "object",
+      "properties": {
+        "months": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "items": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": { "type": "string" }
+          }
+        },
+        "extras": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["months", "extras"],
+      "additionalProperties": false
+    },
+    "topic": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "month": { "type": "integer", "minimum": 1, "maximum": 12 },
+        "bucket": { "type": "integer", "minimum": 0 },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "icon": { "type": "string" },
+        "color": { "type": "string" },
+        "note": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/item" }
+        },
+        "dialogue": { "$ref": "#/definitions/dialogue" },
+        "unlockDate": { "type": "string" }
+      },
+      "required": ["id", "title", "subtitle", "icon", "color", "items"],
+      "additionalProperties": false
+    },
+    "item": {
+      "type": "object",
+      "properties": {
+        "mn": { "type": "string" },
+        "en": { "type": "string" },
+        "emoji": { "type": "string" },
+        "reviewStatus": {
+          "type": "string",
+          "enum": ["draft", "language-reviewed", "audio-reviewed", "publishable"],
+          "default": "draft"
+        },
+        "audioUrl": { "type": "string" }
+      },
+      "required": ["mn", "en"],
+      "additionalProperties": false
+    },
+    "dialogue": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "lines": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/dialogueLine" }
+        }
+      },
+      "required": ["roles", "lines"],
+      "additionalProperties": false
+    },
+    "dialogueLine": {
+      "type": "object",
+      "properties": {
+        "role": { "type": "string" },
+        "mn": { "type": "string" },
+        "en": { "type": "string" },
+        "reviewStatus": {
+          "type": "string",
+          "enum": ["draft", "language-reviewed", "audio-reviewed", "publishable"],
+          "default": "draft"
+        },
+        "audioUrl": { "type": "string" }
+      },
+      "required": ["role", "mn", "en"],
+      "additionalProperties": false
+    }
+  }
+}
