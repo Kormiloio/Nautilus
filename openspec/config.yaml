@@ -1,0 +1,26 @@
+schema: spec-driven
+
+context: |
+  Nautilus is the repository codename for Učimo crnogorski, a responsive,
+  teen-appropriate Montenegrin learning web app. The product supports roughly
+  ten months of family-guided preparation for travel to Montenegro. Learners
+  freely browse topics and practice with flashcards, matching, quizzes,
+  listening/repeat, and selected role-play. Prioritize reviewed language,
+  privacy for minors, accessibility, maintainable structured content, and a
+  light touch with stars and streaks.
+
+rules:
+  proposal:
+    - State the learner or family outcome, not only the technical change.
+    - Identify content, privacy, accessibility, and audio implications.
+    - List unresolved product decisions explicitly.
+  specs:
+    - Use SHALL or MUST for normative behavior.
+    - Give every requirement at least one observable Given/When/Then scenario.
+    - Do not claim draft language or synthetic audio has been human-reviewed.
+  design:
+    - Separate learning content from presentation and activity logic.
+    - Document storage, data retention, and fallback behavior.
+  tasks:
+    - Include content validation, automated tests, accessibility checks, and responsive checks where relevant.
+
