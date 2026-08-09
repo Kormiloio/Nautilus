@@ -2,9 +2,10 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   root: 'src',
-  // Relative assets keep the same build working at both the Netlify root and
-  // the kormilo.io/fleet/nautilus proxy path.
-  base: './',
+  // The Kormilo proxy route has no trailing slash, so relative assets would
+  // resolve under /fleet/assets. Use the canonical app origin for immutable
+  // production assets so both entry points load the same build.
+  base: 'https://kormilo-nautilus.netlify.app/',
   build: {
     outDir: '../web',
     emptyOutDir: false, // Prevent deleting prototype.html in web/
