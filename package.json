@@ -1,0 +1,17 @@
+{
+  "name": "nautilus-ucimo-crnogorski",
+  "version": "1.0.0",
+  "description": "Nautilus is the project repository for Učimo crnogorski, a responsive web app intended to help teenagers build practical Montenegrin language skills before a family trip.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest run",
+    "validate": "node scripts/validate-content.js"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "vite": "^6.0.0",
+    "vitest": "^2.1.0"
+  }
+}

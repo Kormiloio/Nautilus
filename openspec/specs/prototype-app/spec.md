@@ -30,7 +30,7 @@ The prototype SHALL assign scheduled topics weekly beginning 2026-08-09 and SHAL
 
 ### Requirement: Twelve-month journey display
 
-The prototype SHALL display an August-through-July 12-month journey and group its 34 scheduled topics into month buckets.
+The prototype SHALL display an August-through-July 12-month journey and group its 33 scheduled topics into month buckets.
 
 #### Scenario: Learner views the dashboard
 
@@ -66,4 +66,3 @@ The prototype SHALL run from its exported HTML bundle in a modern browser with J
 
 - **WHEN** the exported page loads without JavaScript execution
 - **THEN** it displays a message that JavaScript is required
-

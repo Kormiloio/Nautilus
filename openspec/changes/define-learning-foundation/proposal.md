@@ -4,6 +4,10 @@
 
 The current product direction exists primarily in prior conversation and a generated single-file prototype. The prototype has now been reviewed and conflicts with several stated decisions: it locks topics by week, presents a 12-month journey, and automatically chooses a “Tonight's Session.” Before extending the app, the family needs an agreed product contract for a ten-month, teen-appropriate Montenegrin learning experience and a maintainable plan for validating and migrating the existing work.
 
+## Implementation status
+
+The architecture and family-alpha foundation described by this change are now substantially implemented. Nautilus uses Vite, modular screen and engine modules, structured JSON content, Ajv validation, Vitest coverage, free topic browsing, separate local profiles, and a 200-day optional voyage. The original artifact is preserved at `web/prototype.html`. This change remains open for product decisions, reviewed audio, broader accessibility/failure testing, and fluent language review.
+
 ## What changes
 
 - Establish free-browse topic discovery and supported activity behavior.

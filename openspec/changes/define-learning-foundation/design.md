@@ -2,7 +2,7 @@
 
 ## Context
 
-The prototype is a single 243 KB responsive HTML export bundle containing an 81 KB generated template, application logic, embedded content, and compressed runtime assets. It has no package manifest, editable source tree, test suite, or build command. The source lesson document is still absent. This design therefore defines migration boundaries and evaluation criteria rather than selecting a production framework prematurely.
+The original prototype was a single 243 KB responsive HTML export bundle containing an 81 KB generated template, application logic, embedded content, and compressed runtime assets. It had no package manifest, editable source tree, test suite, or build command. The audit led to a modular Vite migration; the original artifact is now preserved at `web/prototype.html`, while the production source, structured content, validation, tests, and build pipeline live under `src/`, `scripts/`, and the root package configuration. The original 224-line lesson document remains absent as a separate raw source.
 
 ## Goals
 
@@ -49,9 +49,9 @@ Prefer approved recordings. A tested speech-synthesis voice may be used as a lab
 
 Listen/repeat may request temporary microphone access only when the feature needs it. Audio is not persisted or transmitted unless a later approved change defines the purpose, consent, retention, and deletion behavior.
 
-## Prototype decision gate
+## Resolved architecture decision
 
-After import, score the prototype against:
+The prototype was scored against:
 
 - content/UI separation;
 - automated testability;
@@ -61,7 +61,7 @@ After import, score the prototype against:
 - media reliability;
 - development/build reproducibility.
 
-Because the bundle has no supported source/build path, the default recommendation is to migrate validated visual and content concepts into a maintainable web application. Reconsider hardening only if editable source is recovered and can meet these requirements through limited refactoring.
+The bundle failed the maintainability and testability gate. Nautilus therefore migrated its validated visual and content concepts into a modular Vite application with JSON content, Ajv validation, a separate learning engine and progress store, modular screens, and Vitest coverage. The preserved prototype is historical reference material rather than a production dependency.
 
 ## Risks and mitigations
 
