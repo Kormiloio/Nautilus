@@ -1,4 +1,4 @@
-import { generateSession, getTopic, buildMatch, buildQuiz, shuffle } from '../engine/learning-engine.js';
+import { generateSession, getTopic, buildMatch, buildQuiz, shuffle, LANGUAGE_PACK } from '../engine/learning-engine.js';
 
 export function renderSessionView(container, state, actions) {
   const lesson = state.activeLesson;
@@ -25,8 +25,8 @@ export function renderSessionView(container, state, actions) {
     <!-- Top Nav bar -->
     <header class="navbar">
       <button class="logo" id="logo-btn" aria-label="Go to Dashboard">
-        <div class="logo-icon">CG</div>
-        <div class="logo-title">Učimo Crnogorski</div>
+        <div class="logo-icon">${LANGUAGE_PACK.targetLanguage.code.toUpperCase()}</div>
+        <div class="logo-title">Learn ${LANGUAGE_PACK.targetLanguage.name}</div>
       </button>
       <div class="nav-actions">
         <button class="btn btn-secondary btn-pill" id="exit-btn">← Exit Lesson</button>
@@ -307,7 +307,7 @@ function renderQuizStep(mount, step, state, actions) {
       </div>
 
       <div class="quiz-prompt">
-        Translate to Montenegrin:<br>
+        Translate to ${LANGUAGE_PACK.targetLanguage.name}:<br>
         <span style="font-family: var(--font-display); font-size: 24px; color: var(--cyan); font-weight: 800;">"${currentQ.promptText}"</span>
       </div>
 
