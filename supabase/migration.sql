@@ -286,7 +286,7 @@ create or replace function public.create_family_invitation(
 )
 returns text language plpgsql security definer set search_path = public
 as $$
-declare raw_token text := encode(gen_random_bytes(32), 'hex');
+declare raw_token text := encode(extensions.gen_random_bytes(32), 'hex');
 declare member_role public.family_role;
 declare learners_allowed boolean;
 begin
@@ -303,7 +303,7 @@ begin
     (family_id, email, role, token_hash, invited_by, expires_at)
   values
     (target_family, lower(trim(invite_email)), invite_role,
-     encode(digest(raw_token, 'sha256'), 'hex'), auth.uid(), now() + interval '7 days');
+     encode(extensions.digest(raw_token, 'sha256'), 'hex'), auth.uid(), now() + interval '7 days');
   return raw_token;
 end;
 $$;
@@ -315,7 +315,7 @@ declare invitation public.family_invitations%rowtype;
 begin
   if auth.uid() is null then raise exception 'Authentication required'; end if;
   select * into invitation from public.family_invitations
-    where token_hash = encode(digest(raw_token, 'sha256'), 'hex')
+    where token_hash = encode(extensions.digest(raw_token, 'sha256'), 'hex')
       and status = 'pending'
     for update;
   if invitation.id is null then raise exception 'Invitation not found'; end if;
@@ -411,6 +411,19 @@ create policy variants_adult_update on public.family_language_variants for updat
   with check (public.has_family_role(family_id, array['owner', 'adult_guide']::public.family_role[]));
 create policy variants_adult_delete on public.family_language_variants for delete
   using (public.has_family_role(family_id, array['owner', 'adult_guide']::public.family_role[]));
+
+grant select, update on public.user_accounts to authenticated;
+grant select, update on public.families to authenticated;
+grant select, delete on public.family_memberships to authenticated;
+grant select, update on public.family_invitations to authenticated;
+grant select on public.language_packs to authenticated;
+grant select, insert, update, delete on public.family_languages to authenticated;
+grant select, insert, update, delete on public.learner_profiles to authenticated;
+grant select, insert, update, delete on public.learner_language_progress to authenticated;
+grant select, insert, update, delete on public.completed_lessons to authenticated;
+grant select, insert, update, delete on public.completed_topics to authenticated;
+grant select, insert, update, delete on public.activity_history to authenticated;
+grant select, insert, update, delete on public.family_language_variants to authenticated;
 
 grant execute on function public.create_family(text) to authenticated;
 grant execute on function public.create_family_invitation(uuid, text, public.family_role) to authenticated;
