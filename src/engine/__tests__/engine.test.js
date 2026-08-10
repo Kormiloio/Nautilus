@@ -11,6 +11,7 @@ import {
   getExtraTopics,
   LANGUAGE_PACK,
   ALL_TOPICS,
+  setActiveLanguagePack,
 } from '../learning-engine.js';
 import { calculateStreak } from '../progress-store.js';
 
@@ -109,6 +110,18 @@ describe('Learning Engine', () => {
     const recallSteps = generateSession(recallLesson, completedTopics);
     expect(recallSteps.map(s => s.type)).toContain('recall-flash');
     expect(recallSteps.map(s => s.type)).toContain('quiz');
+  });
+
+  it('should expose a complete selectable Albanian voyage pack', () => {
+    setActiveLanguagePack('albanian-en');
+    try {
+      expect(LANGUAGE_PACK.targetLanguage.code).toBe('sq');
+      expect(VOYAGE_LESSONS).toHaveLength(200);
+      expect(getTopics()).toHaveLength(33);
+      expect(getTopic('greetings').items[0].targetText).toBe('Përshëndetje!');
+    } finally {
+      setActiveLanguagePack('montenegrin-en');
+    }
   });
 });
 

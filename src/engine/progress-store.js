@@ -1,16 +1,21 @@
 import { dateKey, LANGUAGE_PACK } from './learning-engine.js';
 import { supabase, isConfigured } from './supabase-client.js';
 
-// Default mock profiles for local-only execution
-const DEFAULT_PROFILES = [
-  { id: 'local-Mia', name: 'Mia', isGuide: false },
-  { id: 'local-Jake', name: 'Jake', isGuide: false },
-  { id: 'local-Mario', name: 'Mario', isGuide: true },
-  { id: 'local-Kristina', name: 'Kristina', isGuide: true }
-];
+export let ACTIVE_PACK_ID = LANGUAGE_PACK.id;
+export let ACTIVE_PACK_VERSION = LANGUAGE_PACK.version;
 
-export const ACTIVE_PACK_ID = LANGUAGE_PACK.id;
-export const ACTIVE_PACK_VERSION = LANGUAGE_PACK.version;
+export function setActiveProgressPack() {
+  ACTIVE_PACK_ID = LANGUAGE_PACK.id;
+  ACTIVE_PACK_VERSION = LANGUAGE_PACK.version;
+}
+
+export function getSelectedPackId(profileName) {
+  return localStorage.getItem(`nautilus:${profileName}:active-pack`) || 'montenegrin-en';
+}
+
+export function saveSelectedPackId(profileName, packId) {
+  localStorage.setItem(`nautilus:${profileName}:active-pack`, packId);
+}
 
 function progressKey(profileName, suffix, packId = ACTIVE_PACK_ID) {
   return `nautilus:${packId}:${profileName}:${suffix}`;
@@ -50,8 +55,7 @@ export function getProfiles() {
       return JSON.parse(stored);
     } catch (e) {}
   }
-  localStorage.setItem('mn_profiles', JSON.stringify(DEFAULT_PROFILES));
-  return DEFAULT_PROFILES;
+  return [];
 }
 
 export function saveProfiles(profiles) {
@@ -451,7 +455,8 @@ export async function syncCloudDataToLocal() {
   const mappedProfiles = cloudProfiles.map(p => ({
     id: p.id,
     name: p.display_name,
-    isGuide: memberships[0].role !== 'learner',
+    isGuide: false,
+    linkedUserId: p.linked_user_id,
     familyId,
   }));
   saveProfiles(mappedProfiles);

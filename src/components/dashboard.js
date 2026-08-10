@@ -6,11 +6,15 @@ import {
   getExtraTopics,
   getCurriculumMonth,
   getTopic,
+  LANGUAGE_PACK,
 } from '../engine/learning-engine.js';
 import { getGuidesProgress, getProfiles } from '../engine/progress-store.js';
 import { isConfigured } from '../engine/supabase-client.js';
 
 export function renderDashboard(container, state, actions) {
+  const visibleProfiles = state.sessionUser
+    ? getProfiles().filter(profile => !String(profile.id).startsWith('local-'))
+    : getProfiles();
   const nextLesson = VOYAGE_LESSONS.find(l => !state.completedLessons.includes(l.id)) || VOYAGE_LESSONS[199];
   const tonightTopic = getTopic(nextLesson.topicId) || getTopics()[0];
   const tonightDone = state.completedLessons.includes(nextLesson.id);
@@ -65,8 +69,6 @@ export function renderDashboard(container, state, actions) {
       } else {
         syncBadgeHtml = `<div class="badge-pill" style="border-color: var(--amber); color: var(--amber); font-size: 11px; padding: 2px 8px;" title="Offline: local changes remain on this device until synchronization succeeds">📴 Offline · Local Saved</div>`;
       }
-    } else {
-      syncBadgeHtml = `<button class="badge-pill" id="dashboard-login-btn" style="border-color: var(--text-muted); color: var(--text-muted); font-size: 11px; padding: 2px 8px; cursor: pointer; background: transparent; transition: all 0.2s;" title="Backup your progress to the cloud">👤 Local-Only (Sync)</button>`;
     }
   }
 
@@ -75,16 +77,24 @@ export function renderDashboard(container, state, actions) {
     <header class="navbar">
       <div style="display: flex; align-items: center; gap: 12px;">
         <button class="logo" id="logo-btn" aria-label="Go to Dashboard">
-          <div class="logo-icon">CG</div>
-          <div class="logo-title">Učimo Crnogorski</div>
+          <div class="logo-icon">${LANGUAGE_PACK.targetLanguage.code.toUpperCase()}</div>
+          <div class="logo-title">Learn ${LANGUAGE_PACK.targetLanguage.name}</div>
         </button>
         ${syncBadgeHtml}
       </div>
 
       <div class="nav-actions">
+        <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted);">
+          Language
+          <select id="language-select" class="badge-pill" aria-label="Learning language" style="color: var(--text-main); min-height: 44px;">
+            ${state.languagePacks.map(pack => `
+              <option value="${pack.id}" ${pack.id === state.activePackId ? 'selected' : ''}>${pack.targetLanguage.name}${pack.status === 'review' ? ' · Review' : ''}</option>
+            `).join('')}
+          </select>
+        </label>
         <!-- Profile switcher -->
         <div class="profile-pill-container" role="group" aria-label="Profiles">
-          ${getProfiles().map(p => `
+          ${visibleProfiles.map(p => `
             <button class="profile-pill-btn ${state.profile === p.name ? 'active' : ''}" data-profile="${p.name}" aria-label="Switch to profile ${p.name}">${p.name}</button>
           `).join('')}
           <button class="profile-pill-btn" id="nav-add-profile-btn" style="font-size: 14px; opacity: 0.7;">+</button>
@@ -241,6 +251,10 @@ export function renderDashboard(container, state, actions) {
     actions.goProfileSelect();
   });
 
+  container.querySelector('#language-select')?.addEventListener('change', event => {
+    actions.selectLanguage(event.target.value);
+  });
+
   // Topic card clicks
   container.querySelectorAll('.topic-card').forEach(card => {
     card.addEventListener('click', () => {
@@ -255,11 +269,4 @@ export function renderDashboard(container, state, actions) {
     mixedCard.addEventListener('click', actions.startMixedReview);
   }
 
-  // Dashboard login click
-  const dashboardLoginBtn = container.querySelector('#dashboard-login-btn');
-  if (dashboardLoginBtn) {
-    dashboardLoginBtn.addEventListener('click', () => {
-      actions.goProfileSelect();
-    });
-  }
 }

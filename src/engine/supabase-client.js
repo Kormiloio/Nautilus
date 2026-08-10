@@ -14,10 +14,14 @@ export async function signInWithGoogle() {
     alert('Supabase credentials are not configured in your environment variables. Please check the .env file.');
     return;
   }
+  const returnUrl = new URL(`${window.location.origin}${window.location.pathname}`);
+  const inviteToken = new URLSearchParams(window.location.search).get('invite');
+  if (inviteToken) returnUrl.searchParams.set('invite', inviteToken);
+
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}${window.location.pathname}`
+      redirectTo: returnUrl.toString()
     }
   });
   if (error) throw error;

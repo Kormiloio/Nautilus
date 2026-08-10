@@ -16,8 +16,11 @@ import {
   enqueueTransaction,
   triggerSync,
   awardStars,
-  completeVoyageLesson
+  completeVoyageLesson,
+  loadProfileData,
+  setActiveProgressPack,
 } from '../progress-store.js';
+import { setActiveLanguagePack } from '../learning-engine.js';
 
 // Mock the supabase client module
 vi.mock('../supabase-client.js', () => {
@@ -42,6 +45,8 @@ vi.mock('../supabase-client.js', () => {
 
 describe('Offline Sync Queue', () => {
   beforeEach(() => {
+    setActiveLanguagePack('montenegrin-en');
+    setActiveProgressPack();
     localStorage.clear();
     vi.clearAllMocks();
 
@@ -105,5 +110,23 @@ describe('Offline Sync Queue', () => {
 
     // The queue should remain intact because navigator is offline
     expect(JSON.parse(localStorage.getItem('mn_sync_queue'))).toHaveLength(1);
+  });
+
+  it('should isolate learner progress by selected language pack', () => {
+    const profiles = [{ id: 'local-Mia', name: 'Mia', isGuide: false }];
+    localStorage.setItem('mn_profiles', JSON.stringify(profiles));
+
+    awardStars('Mia', 5);
+    expect(loadProfileData('Mia').stars).toBe(5);
+
+    setActiveLanguagePack('albanian-en');
+    setActiveProgressPack();
+    expect(loadProfileData('Mia').stars).toBe(0);
+    awardStars('Mia', 3);
+    expect(loadProfileData('Mia').stars).toBe(3);
+
+    setActiveLanguagePack('montenegrin-en');
+    setActiveProgressPack();
+    expect(loadProfileData('Mia').stars).toBe(5);
   });
 });
