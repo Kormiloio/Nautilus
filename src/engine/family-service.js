@@ -38,6 +38,18 @@ export async function inviteFamilyMember(familyId, email, role = 'learner') {
   return data;
 }
 
+export async function inviteLearnerProfile(profileId, email) {
+  requireCloud();
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) throw new Error('Learner email is required.');
+  const { data, error } = await supabase.rpc('create_learner_profile_invitation', {
+    target_profile: profileId,
+    invite_email: normalizedEmail,
+  });
+  if (error) throw error;
+  return data;
+}
+
 export async function acceptFamilyInvitation(token) {
   requireCloud();
   const { data, error } = await supabase.rpc('accept_family_invitation', {

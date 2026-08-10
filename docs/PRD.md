@@ -231,6 +231,8 @@ The production foundation is a modular, static Vite web application:
 - `src/engine/learning-engine.js` generates the 200-lesson voyage and weekday schedule;
 - `src/engine/progress-store.js` isolates profile-scoped local progress and calculates date-based streaks;
 - `src/content/topics.json` is now explicitly identified as the draft `montenegrin-en` language pack; its 33 topics, 248 learning items, and dialogue lines use stable IDs plus language-neutral target/support text fields;
+- `src/content/albanian.js` provides the selectable `albanian-en@0.1.0` review pack across the same 200-day structure; its standard Albanian text remains explicitly pending fluent-family review;
+- authenticated adults can invite partners or link a child's Google account to an existing learner profile using email-bound, single-use, seven-day invitations;
 - `src/content/schema.json` and the Ajv validator currently reject structural errors and invalid curriculum references; publication filtering, stable item identifiers, detailed review metadata, and five-day readiness validation remain to be implemented;
 - Vitest covers voyage size, month/week structure, topic coverage, weekday scheduling, session generation, and streak behavior;
 - Vite writes the static production build to `web/` for the existing Netlify deployment;

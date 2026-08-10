@@ -3,7 +3,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(12);
+select extensions.plan(15);
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
@@ -14,7 +14,8 @@ values
   ('00000000-0000-0000-0000-000000000000', '10000000-0000-0000-0000-000000000001', 'authenticated', 'authenticated', 'parent-a@example.com', '', now(), '{"provider":"google","providers":["google"]}', '{"full_name":"Parent A"}', now(), now()),
   ('00000000-0000-0000-0000-000000000000', '10000000-0000-0000-0000-000000000002', 'authenticated', 'authenticated', 'kid-a@example.com', '', now(), '{"provider":"google","providers":["google"]}', '{"full_name":"Kid A"}', now(), now()),
   ('00000000-0000-0000-0000-000000000000', '10000000-0000-0000-0000-000000000003', 'authenticated', 'authenticated', 'friend@example.com', '', now(), '{"provider":"google","providers":["google"]}', '{"full_name":"Friend"}', now(), now()),
-  ('00000000-0000-0000-0000-000000000000', '20000000-0000-0000-0000-000000000001', 'authenticated', 'authenticated', 'parent-b@example.com', '', now(), '{"provider":"google","providers":["google"]}', '{"full_name":"Parent B"}', now(), now());
+  ('00000000-0000-0000-0000-000000000000', '20000000-0000-0000-0000-000000000001', 'authenticated', 'authenticated', 'parent-b@example.com', '', now(), '{"provider":"google","providers":["google"]}', '{"full_name":"Parent B"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000000', '10000000-0000-0000-0000-000000000004', 'authenticated', 'authenticated', 'mia@example.com', '', now(), '{"provider":"google","providers":["google"]}', '{"full_name":"Lena"}', now(), now());
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '10000000-0000-0000-0000-000000000001', true);
@@ -25,6 +26,11 @@ select set_config('test.family_a', :'family_a', true);
 select extensions.ok(
   (select role = 'owner' from public.family_memberships where family_id = :'family_a' and user_id = auth.uid()),
   'family creator must become owner'
+);
+
+select extensions.ok(
+  exists(select 1 from public.family_languages where family_id = :'family_a' and pack_id = 'albanian-en'),
+  'new family must have Albanian enabled'
 );
 
 insert into public.learner_profiles (family_id, linked_user_id, display_name, created_by)
@@ -119,6 +125,29 @@ select extensions.ok(
   'owner must approve family variant'
 );
 
+insert into public.learner_profiles (family_id, display_name, created_by)
+values (:'family_a', 'Lena', auth.uid()) returning id as mia_profile \gset
+select public.create_learner_profile_invitation(:'mia_profile', 'mia@example.com') as mia_token \gset
+
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '10000000-0000-0000-0000-000000000004', true);
+select set_config('request.jwt.claims', '{"sub":"10000000-0000-0000-0000-000000000004","email":"mia@example.com","role":"authenticated"}', true);
+select public.accept_family_invitation(:'mia_token');
+
+select extensions.ok(
+  exists(select 1 from public.learner_profiles where id = :'mia_profile' and linked_user_id = auth.uid()),
+  'learner invitation must link the authenticated account to the existing profile'
+);
+select extensions.ok(
+  exists(select 1 from public.family_memberships where family_id = :'family_a' and user_id = auth.uid() and role = 'learner'),
+  'linked learner must receive learner membership'
+);
+
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '10000000-0000-0000-0000-000000000001', true);
+select set_config('request.jwt.claims', '{"sub":"10000000-0000-0000-0000-000000000001","email":"parent-a@example.com","role":"authenticated"}', true);
 update public.families set learners_can_invite = false where id = :'family_a';
 
 reset role;

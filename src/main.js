@@ -1,7 +1,11 @@
 import {
   getActiveProfile,
+  getProfiles,
+  getSelectedPackId,
   loadProfileData,
+  saveSelectedPackId,
   setActiveProfile,
+  setActiveProgressPack,
   completeVoyageLesson,
   completeTopic,
   awardStars,
@@ -11,8 +15,23 @@ import {
   triggerSync
 } from './engine/progress-store.js';
 
-import { buildMatch, buildQuiz, getTopic, VOYAGE_LESSONS } from './engine/learning-engine.js';
+import {
+  buildMatch,
+  buildQuiz,
+  getAvailableLanguagePacks,
+  getTopic,
+  LANGUAGE_PACK,
+  setActiveLanguagePack,
+  VOYAGE_LESSONS,
+} from './engine/learning-engine.js';
 import { onAuthStateChange, getSession, isConfigured } from './engine/supabase-client.js';
+import {
+  acceptFamilyInvitation,
+  createFamily,
+  inviteFamilyMember,
+  inviteLearnerProfile,
+  listFamilies,
+} from './engine/family-service.js';
 
 // Import views
 import { renderProfileSelect } from './components/profile-select.js';
@@ -28,6 +47,11 @@ const state = {
   isGuide: false,
   screen: 'profile-select', // 'profile-select', 'dashboard', 'topic', 'session', 'curriculum'
   sessionUser: null, // Tracks Supabase authenticated user
+  families: null,
+  familyError: null,
+  familyNotice: null,
+  activePackId: 'montenegrin-en',
+  languagePacks: getAvailableLanguagePacks(),
 
   // Scored state
   stars: 0,
@@ -60,7 +84,7 @@ const appContainer = document.getElementById('app');
 // Speech synthesis handler
 function speak(text) {
   if (!('speechSynthesis' in window)) return;
-  const lang = 'hr-HR'; // regional fallback voice
+  const lang = LANGUAGE_PACK.targetLanguage.code === 'sq' ? 'sq-AL' : 'hr-HR';
   const u = new SpeechSynthesisUtterance(text);
   u.lang = lang;
   u.rate = 0.85;
@@ -70,6 +94,74 @@ function speak(text) {
 
 // Router actions
 const actions = {
+  selectLanguage: async (packId) => {
+    if (!state.profile) return;
+    activatePackForProfile(state.profile, packId);
+    if (state.sessionUser) {
+      try {
+        await syncCloudDataToLocal();
+      } catch (error) {
+        state.familyError = error.message;
+      }
+    }
+    loadProfileState(state.profile);
+    state.screen = 'dashboard';
+    cleanupSessionState();
+    rerender();
+  },
+  createFamily: async (name) => {
+    state.familyError = null;
+    try {
+      await createFamily(name);
+      state.families = await listFamilies();
+      await syncCloudDataToLocal();
+      rerender();
+    } catch (error) {
+      state.familyError = error.message;
+      rerender();
+    }
+  },
+
+  invitePartner: async (email) => {
+    const familyId = state.families?.[0]?.family_id;
+    if (!familyId) return;
+    state.familyError = null;
+    state.familyNotice = null;
+    try {
+      const token = await inviteFamilyMember(familyId, email, 'adult_guide');
+      const inviteUrl = new URL(`${window.location.origin}${window.location.pathname}`);
+      inviteUrl.searchParams.set('invite', token);
+      try {
+        await navigator.clipboard.writeText(inviteUrl.toString());
+      } catch {
+        window.prompt('Copy this invitation link:', inviteUrl.toString());
+      }
+      state.familyNotice = `Partner invitation copied. Send the link to ${email}; it expires in 7 days.`;
+    } catch (error) {
+      state.familyError = error.message;
+    }
+    rerender();
+  },
+
+  inviteLearner: async (profileId, learnerName, email) => {
+    state.familyError = null;
+    state.familyNotice = null;
+    try {
+      const token = await inviteLearnerProfile(profileId, email);
+      const inviteUrl = new URL(`${window.location.origin}${window.location.pathname}`);
+      inviteUrl.searchParams.set('invite', token);
+      try {
+        await navigator.clipboard.writeText(inviteUrl.toString());
+      } catch {
+        window.prompt('Copy this invitation link:', inviteUrl.toString());
+      }
+      state.familyNotice = `${learnerName}'s sign-in invitation was copied. Send it to ${email}; it expires in 7 days.`;
+    } catch (error) {
+      state.familyError = error.message;
+    }
+    rerender();
+  },
+
   goDashboard: () => {
     state.screen = 'dashboard';
     cleanupSessionState();
@@ -99,6 +191,7 @@ const actions = {
   switchProfile: (name) => {
     setActiveProfile(name);
     state.profile = name;
+    activatePackForProfile(name);
     loadProfileState(name);
     state.screen = 'dashboard';
     cleanupSessionState();
@@ -251,6 +344,24 @@ function loadProfileState(name) {
   }
 }
 
+function activatePackForProfile(profileName, requestedPackId = null) {
+  const packId = requestedPackId || getSelectedPackId(profileName);
+  const available = state.languagePacks.some(pack => pack.id === packId);
+  const selected = available ? packId : 'montenegrin-en';
+  setActiveLanguagePack(selected);
+  setActiveProgressPack();
+  saveSelectedPackId(profileName, selected);
+  state.activePackId = selected;
+}
+
+function selectLinkedLearnerProfile() {
+  if (state.families?.[0]?.role !== 'learner') return;
+  const linkedProfiles = getProfiles().filter(
+    profile => profile.linkedUserId === state.sessionUser?.id
+  );
+  if (linkedProfiles.length === 1) setActiveProfile(linkedProfiles[0].name);
+}
+
 // Global Rerender Controller
 function rerender() {
   appContainer.innerHTML = '';
@@ -306,16 +417,24 @@ async function init() {
       state.sessionUser = session?.user || null;
       if (session) {
         try {
+          state.families = await listFamilies();
           await syncCloudDataToLocal();
+          selectLinkedLearnerProfile();
           await triggerSync();
         } catch (e) {
           console.error('Error syncing cloud data on auth event:', e);
+          state.familyError = e.message;
         }
+      } else {
+        state.families = null;
+        setActiveProfile(null);
+        state.profile = null;
       }
 
       const activeUser = getActiveProfile();
       if (activeUser) {
         state.profile = activeUser;
+        activatePackForProfile(activeUser);
         loadProfileState(activeUser);
       } else {
         state.screen = 'profile-select';
@@ -329,17 +448,31 @@ async function init() {
     state.sessionUser = session?.user || null;
     if (session) {
       try {
+        const inviteToken = new URLSearchParams(window.location.search).get('invite');
+        if (inviteToken) {
+          await acceptFamilyInvitation(inviteToken);
+          const cleanUrl = new URL(window.location.href);
+          cleanUrl.searchParams.delete('invite');
+          window.history.replaceState({}, '', cleanUrl);
+          state.familyNotice = 'Family invitation accepted.';
+        }
+        state.families = await listFamilies();
         await syncCloudDataToLocal();
+        selectLinkedLearnerProfile();
         await triggerSync();
       } catch (e) {
         console.error('Error syncing initial cloud data:', e);
+        state.familyError = e.message;
       }
     }
   }
 
-  const activeUser = getActiveProfile();
+  // A hosted/cloud-configured app must never bypass authentication because an
+  // older build left a local active-profile value in this browser.
+  const activeUser = !isConfigured || state.sessionUser ? getActiveProfile() : null;
   if (activeUser) {
     state.profile = activeUser;
+    activatePackForProfile(activeUser);
     loadProfileState(activeUser);
     state.screen = 'dashboard';
 

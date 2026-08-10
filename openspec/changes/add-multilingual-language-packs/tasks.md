@@ -5,26 +5,26 @@
 - [x] 1.1 Define the initial target-language roadmap and English support-language policy.
 - [x] 1.2 Add pack identity, language metadata, version, scripts, and publication state to the current content schema.
 - [x] 1.3 Replace `mn`/`en` runtime fields with language-neutral `targetText`/`supportText` fields and stable item identifiers.
-- [ ] 1.4 Add a language-pack registry and per-pack schema/cross-reference validation.
+- [x] 1.4 Add a language-pack registry and per-pack schema/cross-reference validation.
 - [ ] 1.5 Define compatible and breaking pack-version migration rules.
 
 ## 2. Implement selection and isolation
 
 - [ ] 2.1 Add family-level enabled-language settings.
-- [ ] 2.2 Add an accessible learner language selector and persist the active choice.
-- [ ] 2.3 Key voyage state, stars, streaks, active dates, topic progress, and sessions by learner and pack.
-- [ ] 2.4 Prevent content, audio, sessions, and progress from leaking between packs.
+- [x] 2.2 Add an accessible learner language selector and persist the active choice.
+- [x] 2.3 Key voyage state, stars, streaks, active dates, topic progress, and sessions by learner and pack.
+- [x] 2.4 Prevent content, audio, sessions, and progress from leaking between packs.
 
 ## 3. Build and review packs
 
 - [ ] 3.1 Migrate and review Montenegrin as the reference `montenegrin-en` pack.
-- [ ] 3.2 Author and review the Albanian pack with a named fluent owner.
+- [ ] 3.2 Complete fluent review of the authored `albanian-en@0.1.0` starter pack; the selectable pack remains visibly marked Review until approval.
 - [ ] 3.3 Identify fluent owners and author separate Spanish, French, and Greek packs.
 - [ ] 3.4 Create script, pronunciation, audio, and voyage-readiness rules for every pack.
 
 ## 4. Verify
 
-- [ ] 4.1 Test switching languages without changing another pack's progress.
+- [x] 4.1 Test switching languages without changing another pack's progress.
 - [ ] 4.2 Test pack validation, unavailable-pack fallback, retirement, and version migration.
 - [ ] 4.3 Test Latin, Cyrillic, Albanian Latin, accented Spanish/French, and Greek text rendering/input.
 - [ ] 4.4 Complete fluent review and family pilots independently for every published pack.

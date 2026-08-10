@@ -1,24 +1,24 @@
 import { readFileSync } from 'node:fs';
 import Ajv from 'ajv';
+import albanian from '../src/content/albanian.js';
 
-try {
-  const schema = JSON.parse(readFileSync('./src/content/schema.json', 'utf8'));
-  const content = JSON.parse(readFileSync('./src/content/topics.json', 'utf8'));
+const schema = JSON.parse(readFileSync('./src/content/schema.json', 'utf8'));
+const montenegrin = JSON.parse(readFileSync('./src/content/topics.json', 'utf8'));
+const ajv = new Ajv({ allErrors: true, useDefaults: true });
+const validateSchema = ajv.compile(schema);
 
-  const ajv = new Ajv({ allErrors: true, useDefaults: true });
-  const validate = ajv.compile(schema);
-  const valid = validate(content);
-
+function validatePack(content) {
+  const valid = validateSchema(content);
   if (!valid) {
-    console.error('Content validation failed with the following errors:');
-    validate.errors.forEach(err => {
-      console.error(`- Path: ${err.instancePath} | Message: ${err.message} (params: ${JSON.stringify(err.params)})`);
-    });
-    process.exit(1);
+    const details = validateSchema.errors
+      .map(error => `${error.instancePath}: ${error.message}`)
+      .join('\n');
+    throw new Error(`${content.languagePack?.id || 'unknown pack'} schema failed:\n${details}`);
   }
 
+  const allTopics = [...content.topics, ...content.bonusTopics];
   const topicIds = content.topics.map(topic => topic.id);
-  const learningItems = [...content.topics, ...content.bonusTopics].flatMap(topic => [
+  const learningItems = allTopics.flatMap(topic => [
     ...topic.items,
     ...(topic.dialogue?.lines || []),
   ]);
@@ -28,25 +28,21 @@ try {
   const unknownIds = mappedIds.filter(id => !topicIds.includes(id));
   const unmappedIds = topicIds.filter(id => !mappedIds.includes(id));
 
-  if (new Set(topicIds).size !== topicIds.length) {
-    throw new Error('Topic IDs must be unique.');
+  const allTopicIds = allTopics.map(topic => topic.id);
+  if (new Set(allTopicIds).size !== allTopicIds.length) throw new Error('Topic IDs must be unique.');
+  if (new Set(itemIds).size !== itemIds.length) throw new Error('Learning item IDs must be unique within a pack.');
+  if (duplicateIds.length) throw new Error(`Duplicate curriculum topics: ${[...new Set(duplicateIds)].join(', ')}`);
+  if (unknownIds.length) throw new Error(`Unknown curriculum topics: ${unknownIds.join(', ')}`);
+  if (unmappedIds.length) throw new Error(`Unmapped topics: ${unmappedIds.join(', ')}`);
+  if (content.curriculum.months.some(month => month.length !== 3)) {
+    throw new Error('Every curriculum month must contain exactly three topics.');
   }
-  if (new Set(itemIds).size !== itemIds.length) {
-    throw new Error('Learning item IDs must be globally unique within a language pack.');
-  }
-  if (duplicateIds.length) {
-    throw new Error(`Curriculum topic IDs must be unique: ${[...new Set(duplicateIds)].join(', ')}`);
-  }
-  if (unknownIds.length) {
-    throw new Error(`Curriculum references unknown topics: ${unknownIds.join(', ')}`);
-  }
-  if (unmappedIds.length) {
-    throw new Error(`Every topic must be core or extra. Unmapped: ${unmappedIds.join(', ')}`);
-  }
+}
 
-  console.log('✓ Content schema validation passed successfully!');
-  process.exit(0);
-} catch (err) {
-  console.error('Error during validation execution:', err);
+try {
+  [montenegrin, albanian].forEach(validatePack);
+  console.log('✓ Montenegrin and Albanian pack validation passed successfully!');
+} catch (error) {
+  console.error('Content validation failed:', error.message);
   process.exit(1);
 }

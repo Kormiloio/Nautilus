@@ -1,18 +1,25 @@
-import content from '../content/topics.json';
+import montenegrin from '../content/topics.json';
+import albanian from '../content/albanian.js';
 
-export const LANGUAGE_PACK = content.languagePack;
-export const TOPICS = content.topics;
-export const BONUS_TOPICS = content.bonusTopics;
-export const ALL_TOPICS = [...TOPICS, ...BONUS_TOPICS];
+export const LANGUAGE_PACKS = new Map([
+  [montenegrin.languagePack.id, montenegrin],
+  [albanian.languagePack.id, albanian],
+]);
+
+let content = montenegrin;
+export let LANGUAGE_PACK = content.languagePack;
+export let TOPICS = content.topics;
+export let BONUS_TOPICS = content.bonusTopics;
+export let ALL_TOPICS = [...TOPICS, ...BONUS_TOPICS];
 
 export const MONTH_NAMES = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'];
 export const START_DATE = new Date(2026, 7, 10); // August 10, 2026
 
 // Thirty core topics make up the ten-month voyage. The remaining three stay
 // available in free practice as optional advanced/capstone material.
-export const CURRICULUM_TOPIC_IDS = content.curriculum.months;
-export const EXTRA_TOPIC_IDS = content.curriculum.extras;
-const CURRICULUM_MONTH_BY_ID = new Map(
+export let CURRICULUM_TOPIC_IDS = content.curriculum.months;
+export let EXTRA_TOPIC_IDS = content.curriculum.extras;
+let CURRICULUM_MONTH_BY_ID = new Map(
   CURRICULUM_TOPIC_IDS.flatMap((ids, monthIdx) => ids.map(id => [id, monthIdx + 1]))
 );
 
@@ -23,6 +30,26 @@ export const LESSON_KINDS = [
   { type: 'use', name: 'Use', detail: 'Speak, listen, and role-play' },
   { type: 'checkpoint', name: 'Checkpoint', detail: 'Show what you remember' },
 ];
+
+export function getAvailableLanguagePacks() {
+  return [...LANGUAGE_PACKS.values()].map(pack => pack.languagePack);
+}
+
+export function setActiveLanguagePack(packId) {
+  const next = LANGUAGE_PACKS.get(packId);
+  if (!next) throw new Error(`Unknown language pack: ${packId}`);
+  content = next;
+  LANGUAGE_PACK = content.languagePack;
+  TOPICS = content.topics;
+  BONUS_TOPICS = content.bonusTopics;
+  ALL_TOPICS = [...TOPICS, ...BONUS_TOPICS];
+  CURRICULUM_TOPIC_IDS = content.curriculum.months;
+  EXTRA_TOPIC_IDS = content.curriculum.extras;
+  CURRICULUM_MONTH_BY_ID = new Map(
+    CURRICULUM_TOPIC_IDS.flatMap((ids, monthIdx) => ids.map(id => [id, monthIdx + 1]))
+  );
+  VOYAGE_LESSONS = buildVoyageLessons();
+}
 
 export function getTopics() {
   return TOPICS;
@@ -49,7 +76,7 @@ export function getTopic(id) {
 }
 
 // Generate the 200 voyage lessons from topics
-export const VOYAGE_LESSONS = (() => {
+function buildVoyageLessons() {
   const lessons = [];
   let lessonNum = 1;
 
@@ -100,7 +127,9 @@ export const VOYAGE_LESSONS = (() => {
     }
   }
   return lessons;
-})();
+}
+
+export let VOYAGE_LESSONS = buildVoyageLessons();
 
 // Assign voyage lessons to local calendar dates skipping weekends
 export function getLessonForDate(date) {
