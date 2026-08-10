@@ -1,4 +1,4 @@
-import { getTopic, shuffle, buildMatch, buildQuiz } from '../engine/learning-engine.js';
+import { getTopic, shuffle, buildMatch, buildQuiz, LANGUAGE_PACK } from '../engine/learning-engine.js';
 
 export function renderTopicView(container, state, actions) {
   const topic = getTopic(state.topicId);
@@ -19,8 +19,8 @@ export function renderTopicView(container, state, actions) {
     <!-- Top Nav bar -->
     <header class="navbar">
       <button class="logo" id="logo-btn" aria-label="Go to Dashboard">
-        <div class="logo-icon">CG</div>
-        <div class="logo-title">Učimo Crnogorski</div>
+        <div class="logo-icon">${LANGUAGE_PACK.targetLanguage.code.toUpperCase()}</div>
+        <div class="logo-title">Learn ${LANGUAGE_PACK.targetLanguage.name}</div>
       </button>
       <div class="nav-actions">
         <button class="btn btn-secondary btn-pill" id="back-btn">← Back to Dashboard</button>
@@ -305,7 +305,7 @@ function renderQuiz(mount, topic, state, actions) {
       </div>
 
       <div class="quiz-prompt">
-        Translate to Montenegrin:<br>
+        Translate to ${LANGUAGE_PACK.targetLanguage.name}:<br>
         <span style="font-family: var(--font-display); font-size: 24px; color: var(--cyan); font-weight: 800;">"${currentQ.promptText}"</span>
       </div>
 

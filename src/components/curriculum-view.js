@@ -1,4 +1,4 @@
-import { VOYAGE_LESSONS, MONTH_NAMES, getTopic } from '../engine/learning-engine.js';
+import { VOYAGE_LESSONS, MONTH_NAMES, getTopic, LANGUAGE_PACK } from '../engine/learning-engine.js';
 
 export function renderCurriculum(container, state, actions) {
   // Group lessons by Month
@@ -11,8 +11,8 @@ export function renderCurriculum(container, state, actions) {
     <!-- Top Nav bar -->
     <header class="navbar">
       <button class="logo" id="logo-btn" aria-label="Go to Dashboard">
-        <div class="logo-icon">CG</div>
-        <div class="logo-title">Učimo Crnogorski</div>
+        <div class="logo-icon">${LANGUAGE_PACK.targetLanguage.code.toUpperCase()}</div>
+        <div class="logo-title">Learn ${LANGUAGE_PACK.targetLanguage.name}</div>
       </button>
       <div class="nav-actions">
         <button class="btn btn-secondary btn-pill" id="back-btn">← Back to Dashboard</button>
