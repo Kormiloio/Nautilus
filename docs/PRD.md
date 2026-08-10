@@ -211,6 +211,7 @@ Suggested nautical display labels are `in harbor` (rest), `charted` (planned), `
 | FR-27 | Families can show the standard form, both forms, or prefer an approved family alternative while retaining access to the standard. | Must |
 | FR-28 | Family additions and alternatives never appear for another family. | Must |
 | FR-29 | Activities accept configured family alternatives without treating accepted synonyms as mutually exclusive answers. | Must |
+| FR-30 | Authorized adults can open a family overview showing adult memberships, pending invitations, and each learner's language-scoped progress. | Must |
 
 ## 10. Quality requirements
 

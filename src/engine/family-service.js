@@ -16,6 +16,15 @@ export async function listFamilies() {
   return data || [];
 }
 
+export async function getFamilyOverview(familyId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('get_family_overview', {
+    target_family: familyId,
+  });
+  if (error) throw error;
+  return data;
+}
+
 export async function createFamily(name) {
   requireCloud();
   const trimmed = name.trim();

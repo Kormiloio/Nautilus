@@ -20,7 +20,7 @@ export function renderProfileSelect(container, state, actions) {
            <span>Family Account: <strong>${state.sessionUser.email}</strong></span>
            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 6px;">
              ${state.families?.some(family => family.role === 'owner' || family.role === 'adult_guide')
-               ? '<button class="btn btn-secondary" id="invite-partner-btn" style="padding: 4px 12px; font-size: 12px;">Invite Adult Partner</button>'
+               ? '<button class="btn btn-secondary" id="family-overview-btn" style="padding: 4px 12px; font-size: 12px;">Family Overview</button><button class="btn btn-secondary" id="invite-partner-btn" style="padding: 4px 12px; font-size: 12px;">Invite Adult Partner</button>'
                : ''}
              <button class="btn btn-secondary" id="logout-btn" style="padding: 4px 12px; font-size: 12px; border-color: var(--pink); color: var(--pink);">Sign Out</button>
            </div>
@@ -221,4 +221,5 @@ export function renderProfileSelect(container, state, actions) {
       if (email?.trim()) await actions.invitePartner(email.trim());
     });
   }
+  container.querySelector('#family-overview-btn')?.addEventListener('click', actions.goFamilyOverview);
 }

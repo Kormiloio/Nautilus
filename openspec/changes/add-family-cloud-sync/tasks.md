@@ -23,6 +23,7 @@
 - [ ] 3.5 Ensure sign-out, auth failure, and missing configuration preserve local learning.
 - [x] 3.6 Add an email-bound, seven-day adult-partner invitation link that survives Google sign-in and joins the authenticated adult to the family workspace.
 - [x] 3.7 Allow an adult to invite a learner by email, link the accepted Google account to an existing stable learner profile, and route that learner to their own profile.
+- [x] 3.8 Add an adult Family Overview for co-parent membership, pending invitations, and per-language learner progress; repeated invitations replace the prior pending link safely.
 
 ## 4. Verify
 

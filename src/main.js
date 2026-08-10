@@ -28,6 +28,7 @@ import { onAuthStateChange, getSession, isConfigured } from './engine/supabase-c
 import {
   acceptFamilyInvitation,
   createFamily,
+  getFamilyOverview,
   inviteFamilyMember,
   inviteLearnerProfile,
   listFamilies,
@@ -40,6 +41,7 @@ import { renderCalendar } from './components/calendar.js';
 import { renderTopicView } from './components/topic-view.js';
 import { renderSessionView } from './components/session-view.js';
 import { renderCurriculum } from './components/curriculum-view.js';
+import { renderFamilyOverview } from './components/family-overview.js';
 
 // Global state
 const state = {
@@ -50,6 +52,8 @@ const state = {
   families: null,
   familyError: null,
   familyNotice: null,
+  familyOverview: null,
+  familyOverviewLoading: false,
   activePackId: 'montenegrin-en',
   languagePacks: getAvailableLanguagePacks(),
 
@@ -122,7 +126,7 @@ const actions = {
     }
   },
 
-  invitePartner: async (email) => {
+  invitePartner: async (email, returnToOverview = false) => {
     const familyId = state.families?.[0]?.family_id;
     if (!familyId) return;
     state.familyError = null;
@@ -140,7 +144,8 @@ const actions = {
     } catch (error) {
       state.familyError = error.message;
     }
-    rerender();
+    if (returnToOverview) await actions.goFamilyOverview();
+    else rerender();
   },
 
   inviteLearner: async (profileId, learnerName, email) => {
@@ -179,6 +184,22 @@ const actions = {
     state.profile = null;
     cleanupSessionState();
     rerender();
+  },
+
+  goFamilyOverview: async () => {
+    state.profile = null;
+    state.screen = 'family-overview';
+    state.familyOverviewLoading = true;
+    state.familyError = null;
+    rerender();
+    try {
+      state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
+    } catch (error) {
+      state.familyError = error.message;
+    } finally {
+      state.familyOverviewLoading = false;
+      rerender();
+    }
   },
 
   refresh: () => {
@@ -367,8 +388,11 @@ function rerender() {
   appContainer.innerHTML = '';
 
   if (!state.profile) {
-    state.screen = 'profile-select';
-    renderProfileSelect(appContainer, state, actions);
+    if (state.screen === 'family-overview') renderFamilyOverview(appContainer, state, actions);
+    else {
+      state.screen = 'profile-select';
+      renderProfileSelect(appContainer, state, actions);
+    }
     return;
   }
 
