@@ -8,9 +8,9 @@ The family needs a visible day-by-day voyage that turns each topic into a five-d
 
 ## Implementation status
 
-The technical voyage foundation is implemented in the modular Vite application. The content-owned curriculum map assigns 30 unique core topics across ten months and retains three advanced/capstone extras. The engine generates 200 ordered lessons, maps them to weekdays, and exposes profile-scoped completion independently from active local dates. The responsive counter, calendar states, active-day summaries, free browsing, accessible calendar list, content validation, and core engine tests are present.
+The technical voyage scaffold is implemented in the modular Vite application. The content-owned curriculum map assigns 30 unique core topics across ten months and retains three advanced/capstone extras. The engine generates 200 ordered lesson slots, maps them to weekdays, and exposes profile-scoped completion independently from active local dates. The responsive counter, base calendar display, active-day summaries, free browsing, accessible calendar list, structural content validation, and core engine tests are present.
 
-This change remains open because configured holidays/rescheduling, structured activity-event history, content expansion, fluent language/audio review, broader failure/accessibility testing, and the four-week family pilot are not complete.
+These generated records are curriculum scaffolding, not 200 publishable lessons. This change remains open because distinct daily content, true missed-lesson/catch-up state, configured holidays/rescheduling, structured activity-event history, fluent language/audio review, broader failure/accessibility testing, and the four-week family pilot are not complete.
 
 ## What changes
 
@@ -43,9 +43,14 @@ This change remains open because configured holidays/rescheduling, structured ac
 - Migrates reliable legacy stars/topic summaries while refusing to treat the prototype's profile-selection streak as practice.
 - Adds substantial content authoring and human language/audio review work before all 200 days can ship.
 
+## Calendar decisions
+
+- The first instructional day is Monday, August 10, 2026.
+- Calendar calculations use the learner's local date; the initial family schedule is planned in `America/New_York`.
+- Saturday and Sunday contain no core scheduled lesson. Optional weekend practice may count as an active day but does not advance the 200-lesson voyage.
+- Holidays and family vacations will be configured as neutral rest days when dates are supplied.
+
 ## Open questions
 
-- What calendar date begins the first instructional day?
 - Which family holidays and vacations should pause the planned calendar?
-- Does optional weekend practice advance the voyage or only count as activity?
 - May a parent mark an offline family conversation as completed practice?

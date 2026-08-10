@@ -18,6 +18,11 @@ try {
   }
 
   const topicIds = content.topics.map(topic => topic.id);
+  const learningItems = [...content.topics, ...content.bonusTopics].flatMap(topic => [
+    ...topic.items,
+    ...(topic.dialogue?.lines || []),
+  ]);
+  const itemIds = learningItems.map(item => item.id);
   const mappedIds = [...content.curriculum.months.flat(), ...content.curriculum.extras];
   const duplicateIds = mappedIds.filter((id, index) => mappedIds.indexOf(id) !== index);
   const unknownIds = mappedIds.filter(id => !topicIds.includes(id));
@@ -25,6 +30,9 @@ try {
 
   if (new Set(topicIds).size !== topicIds.length) {
     throw new Error('Topic IDs must be unique.');
+  }
+  if (new Set(itemIds).size !== itemIds.length) {
+    throw new Error('Learning item IDs must be globally unique within a language pack.');
   }
   if (duplicateIds.length) {
     throw new Error(`Curriculum topic IDs must be unique: ${[...new Set(duplicateIds)].join(', ')}`);

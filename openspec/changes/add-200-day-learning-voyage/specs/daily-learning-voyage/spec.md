@@ -13,6 +13,8 @@ The system SHALL provide an approved voyage plan containing exactly 200 ordered 
 - **THEN** it contains 200 unique ordered core lesson identifiers
 - **AND** those lessons form exactly 40 instructional weeks of five lessons each
 
+Generated identifiers or lesson slots SHALL NOT by themselves make a voyage publishable. Every published lesson must also contain reviewed, purpose-specific required segments.
+
 ### Requirement: Monthly learning cadence
 
 Each learning month SHALL contain three topic weeks followed by one integration week, for a total of 20 core lessons.
@@ -57,3 +59,14 @@ The system SHALL display `Voyage day N of 200`, where N identifies the next inco
 - **WHEN** the learner returns
 - **THEN** the counter displays `Voyage day 37 of 200`
 - **AND** the learner can resume or reschedule without losing access to topics
+
+### Requirement: Weekday schedule and optional weekends
+
+The initial family plan SHALL begin August 10, 2026, SHALL schedule core lessons Monday through Friday, and SHALL treat weekend practice independently from core voyage advancement.
+
+#### Scenario: Learner practices on Saturday
+
+- **GIVEN** the learner has an incomplete next core lesson
+- **WHEN** the learner completes qualifying free practice on Saturday
+- **THEN** Saturday may count as an active practice day
+- **AND** the next core voyage lesson remains incomplete

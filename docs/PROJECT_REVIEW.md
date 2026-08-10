@@ -1,7 +1,7 @@
 # Nautilus project review
 
 **Review date:** 2026-08-09  
-**Status:** Modular migration and 200-day foundation verified; content review remains
+**Status:** Modular migration and 200-position voyage scaffold verified; authored content and production completion behavior remain
 
 ## Current implementation status
 
@@ -10,7 +10,7 @@ The initial review below describes the preserved Claude prototype and explains w
 - all 33 topics, 248 learning items, dialogues, and the Alphabet bonus are stored in `src/content/topics.json`;
 - an explicit content-owned curriculum map assigns 30 unique core topics across ten months and identifies three advanced/capstone extras;
 - Ajv validates the schema, topic identities, curriculum references, uniqueness, and complete topic coverage before release;
-- the learning engine deterministically generates 200 lessons across 40 five-day weeks and skips weekends when creating the calendar schedule;
+- the learning engine deterministically generates 200 structural lesson positions across 40 five-day weeks and skips weekends when creating the calendar schedule;
 - profile progress records actual qualifying activity dates separately from idempotent voyage-lesson completion;
 - profile selection no longer creates or advances a streak;
 - the dashboard includes `Voyage day N of 200`, active-day summaries, a responsive calendar, nautical states, and an accessible list representation;
@@ -44,7 +44,7 @@ The prototype is a useful interactive concept, but it should not be treated as p
 2. **Stars are easy to farm and their meaning is unclear.** Correct quiz answers award stars immediately; a fresh quiz can be generated repeatedly. Matching completion and a session wrap also award stars. There is no documented cap, mastery rule, or distinction between practice and achievement.
 3. **“Already know this — skip” marks a whole topic complete immediately.** There is no confirmation or diagnostic check, and completion is also used for badges and the journey display.
 4. **Named profiles are hard-coded and unauthenticated.** Any user can switch to a parent/guide profile and view both children's summaries. This may be acceptable for a private family-only local build, but it is not a parent-only control and should not be described as one.
-5. **Progress is fragile.** It lives only in browser `localStorage`; there is no export, recovery, schema version, cross-device sync, or handling for failed writes.
+5. **Released progress remains local and fragile.** The deployed foundation uses browser `localStorage`; optional family accounts and cloud synchronization now have a separate OpenSpec proposal, but the uncommitted proof of concept is not production-approved and still needs migration, conflict, recovery, authorization, privacy, and deletion verification.
 6. **Microphone recordings survive in memory until replaced or the page closes.** They are stored as object URLs and are not uploaded, which is a good privacy default, but previous object URLs are not revoked and recording state is not cleared when navigating away.
 7. **Synthetic Croatian speech is presented as pronunciation.** The default voice request is `hr-HR`, with Serbian and Bosnian options. Availability and Montenegrin pronunciation are device-dependent, and the UI does not disclose that the output is a synthesized approximation.
 8. **The empty recording player produces a failed network request.** On topic load, the rendered page attempted to fetch the literal template value `{{recordingUrl}}`, indicating that the audio element is created before a valid recording URL is bound.
@@ -104,7 +104,7 @@ The prototype is a useful interactive concept, but it should not be treated as p
 | Browser text-to-speech quality | Montenegrin voices may be unavailable or pronounced inconsistently across devices. | Treat browser speech as a fallback; plan for reviewed human or high-quality recorded audio. |
 | Ten-month retention | The 33 topics are broad but most remain too shallow for five distinct daily lessons. | Expand sentence work, dialogue, listening, and integration challenges before declaring the 200-day curriculum complete. |
 | Free browsing without guidance | Learners may repeatedly choose familiar topics and avoid weak areas. | Preserve free choice while showing optional progress and review cues, not forced navigation. |
-| Local-only progress | Browser storage can be lost and does not follow a learner between devices. | Use local profiles for the first release; evaluate optional accounts/sync only after family testing. |
+| Optional synchronized progress | Browser storage can be lost and does not follow a learner between devices. | Preserve local-only use while completing and approving the separate family-account/cloud-sync specification before deployment. |
 | Teen positioning | Childlike visuals or rewards could reduce engagement. | Use a modern travel-oriented tone and understated rewards. |
 | Privacy and minors | Accounts, analytics, recordings, or cloud speech create additional obligations. | Keep the first release account-free, avoid behavioral advertising, and do not retain microphone recordings. |
 

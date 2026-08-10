@@ -31,7 +31,7 @@ The original prototype was a single 243 KB responsive HTML export bundle contain
 
 ### Content is data, not component code
 
-Adding a topic or phrase must not require editing presentation logic. A validation step rejects missing identifiers, invalid review state, unusable activity data, and unresolved media references.
+Adding a topic or phrase must not require editing presentation logic. The implemented validator currently enforces structural shape and curriculum references. The reviewed-content contract additionally requires stable item identifiers, separate review metadata, usable declared-activity data, publication filtering, and resolved media references before content can be called publishable.
 
 ### Review status is explicit
 
