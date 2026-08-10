@@ -3,7 +3,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(15);
+select extensions.plan(17);
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
@@ -31,6 +31,20 @@ select extensions.ok(
 select extensions.ok(
   exists(select 1 from public.family_languages where family_id = :'family_a' and pack_id = 'albanian-en'),
   'new family must have Albanian enabled'
+);
+
+select public.create_family_invitation(:'family_a', 'partner@example.com', 'adult_guide');
+select public.create_family_invitation(:'family_a', 'partner@example.com', 'adult_guide');
+select extensions.is(
+  (select count(*)::integer from public.family_invitations where family_id = :'family_a' and email = 'partner@example.com' and status = 'pending'),
+  1,
+  're-inviting an email must replace the prior pending invitation'
+);
+
+select extensions.is(
+  public.get_family_overview(:'family_a') -> 'family' ->> 'name',
+  'Family A',
+  'adult owner can load the family overview'
 );
 
 insert into public.learner_profiles (family_id, linked_user_id, display_name, created_by)

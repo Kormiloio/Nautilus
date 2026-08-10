@@ -81,6 +81,9 @@ export function renderDashboard(container, state, actions) {
           <div class="logo-title">Learn ${LANGUAGE_PACK.targetLanguage.name}</div>
         </button>
         ${syncBadgeHtml}
+        ${state.families?.some(family => family.role === 'owner' || family.role === 'adult_guide')
+          ? '<button class="btn btn-secondary" id="family-overview-btn" style="padding: 6px 12px; font-size: 12px;">Family Overview</button>'
+          : ''}
       </div>
 
       <div class="nav-actions">
@@ -254,6 +257,7 @@ export function renderDashboard(container, state, actions) {
   container.querySelector('#language-select')?.addEventListener('change', event => {
     actions.selectLanguage(event.target.value);
   });
+  container.querySelector('#family-overview-btn')?.addEventListener('click', actions.goFamilyOverview);
 
   // Topic card clicks
   container.querySelectorAll('.topic-card').forEach(card => {
