@@ -52,7 +52,14 @@ export function getProfiles() {
   const stored = localStorage.getItem('mn_profiles');
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const profiles = JSON.parse(stored);
+      // Every UUID-backed record in this cache originates from
+      // learner_profiles. Adult access is represented by family membership,
+      // never by a learner profile flag. Normalize legacy cached values that
+      // incorrectly marked all profiles as guides for an adult viewer.
+      return profiles.map(profile => String(profile.id).startsWith('local-')
+        ? profile
+        : { ...profile, isGuide: false });
     } catch (e) {}
   }
   return [];

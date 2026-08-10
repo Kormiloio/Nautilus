@@ -17,6 +17,7 @@ import {
   triggerSync,
   awardStars,
   completeVoyageLesson,
+  getProfiles,
   loadProfileData,
   setActiveProgressPack,
 } from '../progress-store.js';
@@ -128,5 +129,12 @@ describe('Offline Sync Queue', () => {
     setActiveLanguagePack('montenegrin-en');
     setActiveProgressPack();
     expect(loadProfileData('Lena').stars).toBe(5);
+  });
+
+  it('should normalize legacy cloud profiles that were cached as guides', () => {
+    localStorage.setItem('mn_profiles', JSON.stringify([
+      { id: 'db-profile-uuid', name: 'Lena', isGuide: true },
+    ]));
+    expect(getProfiles()[0].isGuide).toBe(false);
   });
 });
