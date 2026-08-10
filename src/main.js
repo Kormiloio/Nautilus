@@ -6,10 +6,13 @@ import {
   completeTopic,
   awardStars,
   recordActivity,
-  incrementDialogues
+  incrementDialogues,
+  syncCloudDataToLocal,
+  triggerSync
 } from './engine/progress-store.js';
 
-import { VOYAGE_LESSONS, getTopic, buildMatch, buildQuiz } from './engine/learning-engine.js';
+import { buildMatch, buildQuiz, getTopic, VOYAGE_LESSONS } from './engine/learning-engine.js';
+import { onAuthStateChange, getSession, isConfigured } from './engine/supabase-client.js';
 
 // Import views
 import { renderProfileSelect } from './components/profile-select.js';
@@ -24,6 +27,7 @@ const state = {
   profile: null,
   isGuide: false,
   screen: 'profile-select', // 'profile-select', 'dashboard', 'topic', 'session', 'curriculum'
+  sessionUser: null, // Tracks Supabase authenticated user
 
   // Scored state
   stars: 0,
@@ -78,12 +82,33 @@ const actions = {
     rerender();
   },
 
+  goProfileSelect: () => {
+    state.screen = 'profile-select';
+    state.profile = null;
+    cleanupSessionState();
+    rerender();
+  },
+
+  refresh: () => {
+    if (state.profile) {
+      loadProfileState(state.profile);
+    }
+    rerender();
+  },
+
   switchProfile: (name) => {
     setActiveProfile(name);
     state.profile = name;
     loadProfileState(name);
     state.screen = 'dashboard';
     cleanupSessionState();
+
+    // Auto-navigate calendar to current lesson's month
+    const nextLesson = VOYAGE_LESSONS.find(l => !state.completedLessons.includes(l.id));
+    if (nextLesson) {
+      state.calendarMonth = nextLesson.month;
+    }
+
     rerender();
   },
 
@@ -232,9 +257,7 @@ function rerender() {
 
   if (!state.profile) {
     state.screen = 'profile-select';
-    renderProfileSelect(appContainer, (name) => {
-      actions.switchProfile(name);
-    });
+    renderProfileSelect(appContainer, state, actions);
     return;
   }
 
@@ -267,7 +290,53 @@ function rerender() {
 }
 
 // App Initialization
-function init() {
+async function init() {
+  // Listen for online status to flush pending offline transactions
+  window.addEventListener('online', () => {
+    triggerSync();
+    rerender();
+  });
+  window.addEventListener('offline', () => {
+    rerender();
+  });
+
+  if (isConfigured) {
+    // Listen for auth state changes
+    onAuthStateChange(async (event, session) => {
+      state.sessionUser = session?.user || null;
+      if (session) {
+        try {
+          await syncCloudDataToLocal();
+          await triggerSync();
+        } catch (e) {
+          console.error('Error syncing cloud data on auth event:', e);
+        }
+      }
+
+      const activeUser = getActiveProfile();
+      if (activeUser) {
+        state.profile = activeUser;
+        loadProfileState(activeUser);
+      } else {
+        state.screen = 'profile-select';
+        state.profile = null;
+      }
+      rerender();
+    });
+
+    // Check initial session
+    const session = await getSession();
+    state.sessionUser = session?.user || null;
+    if (session) {
+      try {
+        await syncCloudDataToLocal();
+        await triggerSync();
+      } catch (e) {
+        console.error('Error syncing initial cloud data:', e);
+      }
+    }
+  }
+
   const activeUser = getActiveProfile();
   if (activeUser) {
     state.profile = activeUser;
@@ -280,6 +349,7 @@ function init() {
   } else {
     state.screen = 'profile-select';
   }
+
   rerender();
 }
 

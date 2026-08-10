@@ -119,11 +119,11 @@ function renderFlashcards(mount, topic, state, actions) {
         <div class="flashcard ${f.flipped ? 'flipped' : ''}">
           <div class="flashcard-face flashcard-front">
             ${currentItem.emoji ? `<div class="flashcard-emoji">${currentItem.emoji}</div>` : ''}
-            <div class="flashcard-text-mn">${currentItem.mn}</div>
+            <div class="flashcard-text-mn">${currentItem.targetText}</div>
             <div class="flashcard-hint">Tap to reveal translation</div>
           </div>
           <div class="flashcard-face flashcard-back">
-            <div class="flashcard-text-en">${currentItem.en}</div>
+            <div class="flashcard-text-en">${currentItem.supportText}</div>
             <div class="flashcard-hint" style="margin-top: 24px; color: var(--pink);">Tap to flip back</div>
           </div>
         </div>
@@ -148,7 +148,7 @@ function renderFlashcards(mount, topic, state, actions) {
 
   mount.querySelector('#speak-btn').addEventListener('click', (e) => {
     e.stopPropagation();
-    actions.speak(currentItem.mn);
+    actions.speak(currentItem.targetText);
   });
 
   mount.querySelector('#prev-card-btn').addEventListener('click', () => {
@@ -377,7 +377,7 @@ function renderListen(mount, topic, state, actions) {
       </div>
 
       <div style="font-family: var(--font-display); font-weight: 800; font-size: 32px; text-align: center;">
-        ${currentItem.mn}
+        ${currentItem.targetText}
       </div>
 
       <button class="btn btn-primary" id="play-audio-btn">► Play pronunciation</button>
@@ -392,7 +392,7 @@ function renderListen(mount, topic, state, actions) {
 
       ${l.revealed ? `
         <div style="font-size: 18px; color: var(--cyan); font-weight: 600; text-align: center; animation: fadeIn 0.2s;">
-          "${currentItem.en}"
+          "${currentItem.supportText}"
         </div>
       ` : ''}
 
@@ -422,7 +422,7 @@ function renderListen(mount, topic, state, actions) {
 
   // Attach controls
   mount.querySelector('#play-audio-btn').addEventListener('click', () => {
-    actions.speak(currentItem.mn);
+    actions.speak(currentItem.targetText);
   });
 
   mount.querySelector('#reveal-meaning-btn').addEventListener('click', () => {
@@ -527,9 +527,9 @@ function renderDialogue(mount, topic, state, actions) {
                 <span>${line.role}</span>
                 <button class="dialogue-play-btn" data-play-line="${idx}">►</button>
               </div>
-              <div style="font-size: 17px; font-weight: 600; margin-top: 4px; color: var(--text-main);">${line.mn}</div>
+              <div style="font-size: 17px; font-weight: 600; margin-top: 4px; color: var(--text-main);">${line.targetText}</div>
               ${d.showEn ? `
-                <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">"${line.en}"</div>
+                <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">"${line.supportText}"</div>
               ` : ''}
             </div>
           `;
@@ -558,7 +558,7 @@ function renderDialogue(mount, topic, state, actions) {
   mount.querySelectorAll('[data-play-line]').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx = parseInt(btn.dataset.playLine);
-      const text = dialogue.lines[idx].mn;
+      const text = dialogue.lines[idx].targetText;
       actions.speak(text);
     });
   });

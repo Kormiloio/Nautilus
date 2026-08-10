@@ -23,7 +23,7 @@ Keeping these concepts separate prevents missed calendar dates from corrupting c
 
 ## Goals
 
-- Provide 200 meaningful weekday lessons across 40 instructional weeks.
+- Provide a validated structure for 200 meaningful weekday lessons across 40 instructional weeks; generated slots are not publishable lessons until their authored segments pass readiness review.
 - Keep the recommended plan compatible with free browsing.
 - Make lesson completion deterministic and profile-scoped.
 - Support breaks, missed days, and rescheduling without shame or data loss.
@@ -46,7 +46,7 @@ The core plan contains ten learning months. Each learning month contains:
 - total = 20 lessons per learning month;
 - ten learning months = 200 lessons.
 
-Calendar months may contain additional weekdays. The schedule mapper assigns core lessons to eligible weekdays and leaves configured holidays, breaks, and excess dates as rest or optional catch-up days.
+The initial family schedule begins Monday, August 10, 2026 and is planned in `America/New_York`. Calendar months may contain additional weekdays. Saturday and Sunday are optional free-practice days: qualifying practice may add an active date but does not consume or complete the next core lesson. The schedule mapper assigns core lessons to eligible weekdays and leaves configured holidays, breaks, and excess dates as rest or optional catch-up days.
 
 ## Daily lesson purposes
 

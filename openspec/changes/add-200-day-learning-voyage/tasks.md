@@ -2,8 +2,8 @@
 
 ## 1. Confirm curriculum calendar
 
-- [ ] 1.1 Confirm the voyage start date, timezone, trip target, holidays, and planned breaks.
-- [ ] 1.2 Confirm whether weekend practice advances the voyage or only counts as an active day.
+- [ ] 1.1 Configure the confirmed August 10, 2026 start, `America/New_York` family schedule, trip target, holidays, and planned breaks. Start date and initial timezone are decided; trip and exclusion dates remain open.
+- [x] 1.2 Confirm weekend behavior: optional practice counts as activity but does not advance the scheduled voyage.
 - [ ] 1.3 Confirm whether parents may record offline family practice.
 - [x] 1.4 Map 30 core topics and ten integration weeks; assign remaining topics as bonus or capstone material.
 
@@ -18,7 +18,7 @@
 ## 3. Implement voyage planning
 
 - [ ] 3.1 Add schema validation for voyage plans and planned lessons.
-- [x] 3.2 Generate the 200 ordered lesson records from the approved curriculum map.
+- [x] 3.2 Generate 200 ordered structural lesson slots from the approved curriculum map; these are not publishable until readiness validation and authored segments exist.
 - [ ] 3.3 Map lesson records onto eligible local calendar dates around configured breaks.
 - [x] 3.4 Keep all published topics available through free browse regardless of voyage position.
 
@@ -34,9 +34,9 @@
 
 - [x] 5.1 Add the dashboard `Voyage day N of 200` summary and today's lesson card.
 - [x] 5.2 Add active-day counts for the current week and month.
-- [x] 5.3 Build the responsive monthly calendar with rest, planned, in-progress, completed, and catch-up states.
+- [x] 5.3 Build the responsive monthly calendar shell and rest, planned, current-day, and completed visual states.
 - [x] 5.4 Add an accessible list alternative and complete programmatic labels.
-- [ ] 5.5 Add neutral catch-up/reschedule actions and optional weekend practice.
+- [ ] 5.5 Implement true past-incomplete catch-up state, neutral resume/reschedule actions, and optional weekend free practice.
 
 ## 6. Verify
 

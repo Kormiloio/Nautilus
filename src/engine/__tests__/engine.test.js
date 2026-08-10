@@ -9,10 +9,31 @@ import {
   getTopics,
   getCoreTopics,
   getExtraTopics,
+  LANGUAGE_PACK,
+  ALL_TOPICS,
 } from '../learning-engine.js';
 import { calculateStreak } from '../progress-store.js';
 
 describe('Learning Engine', () => {
+  it('should expose a versioned Montenegrin pack with stable language-neutral items', () => {
+    expect(LANGUAGE_PACK.id).toBe('montenegrin-en');
+    expect(LANGUAGE_PACK.targetLanguage.code).toBe('cnr');
+
+    const records = ALL_TOPICS.flatMap(topic => [
+      ...topic.items,
+      ...(topic.dialogue?.lines || []),
+    ]);
+    const ids = records.map(item => item.id);
+
+    expect(new Set(ids).size).toBe(ids.length);
+    records.forEach(item => {
+      expect(item.targetText).toBeTruthy();
+      expect(item.supportText).toBeTruthy();
+      expect(item).not.toHaveProperty('mn');
+      expect(item).not.toHaveProperty('en');
+    });
+  });
+
   it('should generate exactly 200 voyage lessons', () => {
     expect(VOYAGE_LESSONS).toHaveLength(200);
   });

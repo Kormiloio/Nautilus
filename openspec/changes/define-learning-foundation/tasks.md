@@ -11,7 +11,7 @@
 ## 2. Confirm product decisions
 
 - [ ] 2.1 Review the PRD with the family and update goals, non-goals, and product name.
-- [ ] 2.2 Decide local-only versus cross-device progress for the first year.
+- [x] 2.2 Preserve local-only use and pursue optional cross-device progress under `add-family-cloud-sync`; production approval remains tracked there.
 - [ ] 2.3 Name the language and audio review owner.
 - [ ] 2.4 Decide offline requirements and the minimum supported devices/browsers.
 - [ ] 2.5 Decide the first-release parent progress experience.
@@ -21,7 +21,7 @@
 ## 3. Validate architecture and content model
 
 - [ ] 3.1 Create representative structured items for a word, phrase, sentence, script pair, and dialogue.
-- [x] 3.2 Define and automate content-schema validation, including review status and media references.
+- [ ] 3.2 Extend the existing structural validator to enforce stable item IDs, separate language/audio review metadata, declared activity data, publication filtering, and voyage readiness.
 - [x] 3.3 Implement the learning-engine and profile-storage boundaries.
 - [x] 3.4 Select and implement the modular Vite migration while preserving the original artifact.
 - [x] 3.5 Define explicit star, streak, topic-progress, and session-completion rules.

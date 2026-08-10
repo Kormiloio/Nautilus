@@ -1,5 +1,6 @@
 import content from '../content/topics.json';
 
+export const LANGUAGE_PACK = content.languagePack;
 export const TOPICS = content.topics;
 export const BONUS_TOPICS = content.bonusTopics;
 export const ALL_TOPICS = [...TOPICS, ...BONUS_TOPICS];
@@ -156,8 +157,8 @@ export function buildMatch(items, pairsCount = 6) {
   const chosen = shuffle(items).slice(0, n);
   const tiles = [];
   chosen.forEach((it, i) => {
-    tiles.push({ id: `mn-${i}`, pairId: i, text: it.mn, kind: 'mn' });
-    tiles.push({ id: `en-${i}`, pairId: i, text: it.en, kind: 'en' });
+    tiles.push({ id: `target-${i}`, pairId: i, text: it.targetText, kind: 'target' });
+    tiles.push({ id: `support-${i}`, pairId: i, text: it.supportText, kind: 'support' });
   });
   return { tiles: shuffle(tiles), selectedIds: [], matchedIds: [] };
 }
@@ -166,12 +167,12 @@ export function buildQuiz(items, quizLength = 8) {
   const count = Math.min(quizLength, items.length);
   const order = shuffle(items).slice(0, count);
   const questions = order.map(correct => {
-    const distractorPool = items.filter(it => it.mn !== correct.mn);
+    const distractorPool = items.filter(it => it.targetText !== correct.targetText);
     const distractors = shuffle(distractorPool).slice(0, Math.min(3, distractorPool.length));
-    const options = shuffle([correct.mn, ...distractors.map(d => d.mn)]);
+    const options = shuffle([correct.targetText, ...distractors.map(d => d.targetText)]);
     return {
-      promptText: correct.en,
-      correctAnswer: correct.mn,
+      promptText: correct.supportText,
+      correctAnswer: correct.targetText,
       options,
     };
   });

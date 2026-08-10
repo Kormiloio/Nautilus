@@ -86,8 +86,8 @@ function renderWarmupStep(mount, step, state, actions) {
         ${step.items.map((it, idx) => `
           <div class="glass" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; border-radius: 12px; padding: 14px 16px;">
             <div>
-              <div style="font-weight: 700; font-size: 16px;">${it.mn}</div>
-              <div style="font-size: 13px; color: var(--text-muted);">${it.en}</div>
+              <div style="font-weight: 700; font-size: 16px;">${it.targetText}</div>
+              <div style="font-size: 13px; color: var(--text-muted);">${it.supportText}</div>
             </div>
             <button class="dialogue-play-btn" data-warmup-play="${idx}">►</button>
           </div>
@@ -101,7 +101,7 @@ function renderWarmupStep(mount, step, state, actions) {
   mount.querySelectorAll('[data-warmup-play]').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx = parseInt(btn.dataset.warmup-play);
-      actions.speak(step.items[idx].mn);
+      actions.speak(step.items[idx].targetText);
     });
   });
 
@@ -126,11 +126,11 @@ function renderDiscoverStep(mount, step, state, actions) {
         <div class="flashcard ${f.flipped ? 'flipped' : ''}">
           <div class="flashcard-face flashcard-front">
             ${currentItem.emoji ? `<div class="flashcard-emoji">${currentItem.emoji}</div>` : ''}
-            <div class="flashcard-text-mn" style="font-size: 28px;">${currentItem.mn}</div>
+            <div class="flashcard-text-mn" style="font-size: 28px;">${currentItem.targetText}</div>
             <div class="flashcard-hint">Tap to flip</div>
           </div>
           <div class="flashcard-face flashcard-back">
-            <div class="flashcard-text-en" style="font-size: 18px;">${currentItem.en}</div>
+            <div class="flashcard-text-en" style="font-size: 18px;">${currentItem.supportText}</div>
             <div class="flashcard-hint" style="color: var(--pink);">Tap to flip back</div>
           </div>
         </div>
@@ -157,7 +157,7 @@ function renderDiscoverStep(mount, step, state, actions) {
 
   mount.querySelector('#disc-speak-btn').addEventListener('click', (e) => {
     e.stopPropagation();
-    actions.speak(currentItem.mn);
+    actions.speak(currentItem.targetText);
   });
 
   mount.querySelector('#disc-prev-btn').addEventListener('click', () => {
@@ -200,11 +200,11 @@ function renderRecallFlashStep(mount, step, state, actions) {
         <div class="flashcard ${f.flipped ? 'flipped' : ''}">
           <div class="flashcard-face flashcard-front">
             <div class="flashcard-hint" style="margin-bottom: 16px; color: var(--cyan);">Can you recall the translation?</div>
-            <div class="flashcard-text-mn" style="font-size: 28px;">${currentItem.mn}</div>
+            <div class="flashcard-text-mn" style="font-size: 28px;">${currentItem.targetText}</div>
             <div class="flashcard-hint">Tap to check meaning</div>
           </div>
           <div class="flashcard-face flashcard-back">
-            <div class="flashcard-text-en" style="font-size: 18px;">${currentItem.en}</div>
+            <div class="flashcard-text-en" style="font-size: 18px;">${currentItem.supportText}</div>
             <div class="flashcard-hint" style="color: var(--pink);">Tap to flip back</div>
           </div>
         </div>
@@ -227,7 +227,7 @@ function renderRecallFlashStep(mount, step, state, actions) {
 
   mount.querySelector('#recall-speak-btn').addEventListener('click', (e) => {
     e.stopPropagation();
-    actions.speak(currentItem.mn);
+    actions.speak(currentItem.targetText);
   });
 
   const nextCard = () => {
@@ -490,8 +490,8 @@ function renderDialogueStep(mount, step, state, actions) {
                 <span>${line.role}</span>
                 <button class="dialogue-play-btn" data-play-line="${idx}">►</button>
               </div>
-              <div style="font-size: 17px; font-weight: 600; margin-top: 4px; color: var(--text-main);">${line.mn}</div>
-              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">"${line.en}"</div>
+              <div style="font-size: 17px; font-weight: 600; margin-top: 4px; color: var(--text-main);">${line.targetText}</div>
+              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">"${line.supportText}"</div>
             </div>
           `;
         }).join('')}
@@ -514,7 +514,7 @@ function renderDialogueStep(mount, step, state, actions) {
   mount.querySelectorAll('[data-play-line]').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx = parseInt(btn.dataset.playLine);
-      actions.speak(dialogue.lines[idx].mn);
+      actions.speak(dialogue.lines[idx].targetText);
     });
   });
 
@@ -540,13 +540,13 @@ function renderListenStep(mount, step, state, actions) {
       </div>
 
       <div style="font-family: var(--font-display); font-weight: 800; font-size: 28px; text-align: center;">
-        ${currentItem.mn}
+        ${currentItem.targetText}
       </div>
 
       <button class="btn btn-primary" id="play-audio-btn">► Play Pronunciation</button>
 
       <div style="font-size: 15px; color: var(--text-muted); text-align: center; margin: 4px 0;">
-        Meaning: <span style="color: var(--cyan); font-weight: 600;">"${currentItem.en}"</span>
+        Meaning: <span style="color: var(--cyan); font-weight: 600;">"${currentItem.supportText}"</span>
       </div>
 
       <div style="display: flex; gap: 12px; margin-top: 12px;">
@@ -562,7 +562,7 @@ function renderListenStep(mount, step, state, actions) {
 
   // Attach controls
   mount.querySelector('#play-audio-btn').addEventListener('click', () => {
-    actions.speak(currentItem.mn);
+    actions.speak(currentItem.targetText);
   });
 
   mount.querySelector('#listen-prev-btn').addEventListener('click', () => {

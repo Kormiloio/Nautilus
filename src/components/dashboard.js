@@ -7,7 +7,8 @@ import {
   getCurriculumMonth,
   getTopic,
 } from '../engine/learning-engine.js';
-import { getGuidesProgress, ALL_PROFILES } from '../engine/progress-store.js';
+import { getGuidesProgress, getProfiles } from '../engine/progress-store.js';
+import { isConfigured } from '../engine/supabase-client.js';
 
 export function renderDashboard(container, state, actions) {
   const nextLesson = VOYAGE_LESSONS.find(l => !state.completedLessons.includes(l.id)) || VOYAGE_LESSONS[199];
@@ -55,20 +56,38 @@ export function renderDashboard(container, state, actions) {
     `;
   }).join('');
 
+  // Define sync status badge
+  let syncBadgeHtml = '';
+  if (isConfigured) {
+    if (state.sessionUser) {
+      if (navigator.onLine) {
+        syncBadgeHtml = `<div class="badge-pill" style="border-color: var(--teal); color: var(--teal); font-size: 11px; padding: 2px 8px;" title="Signed in with Google; synchronization depends on family workspace setup">☁️ Google Signed In</div>`;
+      } else {
+        syncBadgeHtml = `<div class="badge-pill" style="border-color: var(--amber); color: var(--amber); font-size: 11px; padding: 2px 8px;" title="Offline: local changes remain on this device until synchronization succeeds">📴 Offline · Local Saved</div>`;
+      }
+    } else {
+      syncBadgeHtml = `<button class="badge-pill" id="dashboard-login-btn" style="border-color: var(--text-muted); color: var(--text-muted); font-size: 11px; padding: 2px 8px; cursor: pointer; background: transparent; transition: all 0.2s;" title="Backup your progress to the cloud">👤 Local-Only (Sync)</button>`;
+    }
+  }
+
   container.innerHTML = `
     <!-- Top Nav bar -->
     <header class="navbar">
-      <button class="logo" id="logo-btn" aria-label="Go to Dashboard">
-        <div class="logo-icon">CG</div>
-        <div class="logo-title">Učimo Crnogorski</div>
-      </button>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button class="logo" id="logo-btn" aria-label="Go to Dashboard">
+          <div class="logo-icon">CG</div>
+          <div class="logo-title">Učimo Crnogorski</div>
+        </button>
+        ${syncBadgeHtml}
+      </div>
 
       <div class="nav-actions">
         <!-- Profile switcher -->
         <div class="profile-pill-container" role="group" aria-label="Profiles">
-          ${ALL_PROFILES.map(name => `
-            <button class="profile-pill-btn ${state.profile === name ? 'active' : ''}" data-profile="${name}" aria-label="Switch to profile ${name}">${name}</button>
+          ${getProfiles().map(p => `
+            <button class="profile-pill-btn ${state.profile === p.name ? 'active' : ''}" data-profile="${p.name}" aria-label="Switch to profile ${p.name}">${p.name}</button>
           `).join('')}
+          <button class="profile-pill-btn" id="nav-add-profile-btn" style="font-size: 14px; opacity: 0.7;">+</button>
         </div>
 
         ${state.isGuide ? `
@@ -211,9 +230,15 @@ export function renderDashboard(container, state, actions) {
 
   // Profile switches
   container.querySelectorAll('.profile-pill-btn').forEach(btn => {
+    if (btn.id === 'nav-add-profile-btn') return;
     btn.addEventListener('click', (e) => {
       actions.switchProfile(e.target.dataset.profile);
     });
+  });
+
+  // Nav Add Profile
+  container.querySelector('#nav-add-profile-btn').addEventListener('click', () => {
+    actions.goProfileSelect();
   });
 
   // Topic card clicks
@@ -228,5 +253,13 @@ export function renderDashboard(container, state, actions) {
   const mixedCard = container.querySelector('#mixed-review-card');
   if (mixedCard) {
     mixedCard.addEventListener('click', actions.startMixedReview);
+  }
+
+  // Dashboard login click
+  const dashboardLoginBtn = container.querySelector('#dashboard-login-btn');
+  if (dashboardLoginBtn) {
+    dashboardLoginBtn.addEventListener('click', () => {
+      actions.goProfileSelect();
+    });
   }
 }
