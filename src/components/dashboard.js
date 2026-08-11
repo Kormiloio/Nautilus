@@ -10,13 +10,15 @@ import {
 } from '../engine/learning-engine.js';
 import { getGuidesProgress, getProfiles } from '../engine/progress-store.js';
 import { isConfigured } from '../engine/supabase-client.js';
+import { getLearningDayCount } from '../engine/learning-days.js';
 import { renderVoyageExperience } from './voyage-map.js';
 
 export function renderDashboard(container, state, actions) {
   const visibleProfiles = state.sessionUser
     ? getProfiles().filter(profile => !String(profile.id).startsWith('local-'))
     : getProfiles();
-  const nextLesson = VOYAGE_LESSONS.find(l => !state.completedLessons.includes(l.id)) || VOYAGE_LESSONS[199];
+  const learningDayCount = state.familyPlayState?.completedDays ?? getLearningDayCount(state.activityDates);
+  const nextLesson = VOYAGE_LESSONS[Math.min(learningDayCount, 199)];
   const tonightTopic = getTopic(nextLesson.topicId) || getTopics()[0];
   const tonightDone = state.completedLessons.includes(nextLesson.id);
 
@@ -97,6 +99,11 @@ export function renderDashboard(container, state, actions) {
     </header>
 
     <main class="container">
+      ${state.familyPlayState?.activeSession ? `
+        <section class="family-play-dashboard-banner" aria-label="Active Family Play session">
+          <div><span>Family Play is ${state.familyPlayState.activeSession.status}</span><strong>Voyage day ${state.familyPlayState.activeSession.voyageDay} · Join your family</strong></div>
+          <button class="btn btn-primary" id="join-family-play-btn">Open Shared Lesson →</button>
+        </section>` : ''}
       <!-- Tonight's Session Hero -->
       <section class="hero-card" aria-labelledby="hero-title-id">
         <div class="hero-text">
@@ -235,6 +242,7 @@ export function renderDashboard(container, state, actions) {
     actions.selectLanguage(event.target.value);
   });
   container.querySelector('#family-overview-btn')?.addEventListener('click', actions.goFamilyOverview);
+  container.querySelector('#join-family-play-btn')?.addEventListener('click', actions.openFamilySession);
 
   // Topic card clicks
   container.querySelectorAll('.topic-card').forEach(card => {

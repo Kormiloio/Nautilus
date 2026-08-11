@@ -1,6 +1,9 @@
 import { VOYAGE_LESSONS, MONTH_NAMES, getTopic, LANGUAGE_PACK } from '../engine/learning-engine.js';
+import { getLearningDayCount } from '../engine/learning-days.js';
+import { renderImmersiveVoyageHero } from './voyage-map.js';
 
 export function renderCurriculum(container, state, actions) {
+  const completedDayCount = state.familyPlayState?.completedDays ?? getLearningDayCount(state.activityDates);
   // Group lessons by Month
   const lessonsByMonth = {};
   for (let m = 0; m < 10; m++) {
@@ -19,10 +22,12 @@ export function renderCurriculum(container, state, actions) {
       </div>
     </header>
 
-    <main class="container" style="max-width: 760px;">
-      <h2 style="font-size: 28px; margin-bottom: 8px;">The 200-Day Voyage</h2>
+    <main>
+      ${renderImmersiveVoyageHero(state)}
+      <div class="container voyage-plan-content" id="voyage-plan" style="max-width: 760px;">
+      <h2 style="font-size: 28px; margin-bottom: 8px;">The 200-Day Family Voyage</h2>
       <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 32px; line-height: 1.6;">
-        Ten months, five learning days each week. Every fourth week is an integration week where we bring together the vocabulary and patterns from the month.
+        Ten months, five family learning days each week. Independent practice builds personal skill but does not move this shared route. Every fourth week brings the month's vocabulary and patterns together.
       </p>
 
       <div style="display: flex; flex-direction: column; gap: 24px;">
@@ -31,12 +36,14 @@ export function renderCurriculum(container, state, actions) {
           const monthLessons = lessonsByMonth[mIdx];
 
           // Check completion
-          const allCompleted = monthLessons.every(l => state.completedLessons.includes(l.id));
-          const anyCompleted = monthLessons.some(l => state.completedLessons.includes(l.id));
+          const monthStart = monthLessons[0].number;
+          const monthEnd = monthLessons.at(-1).number;
+          const allCompleted = completedDayCount >= monthEnd;
+          const anyCompleted = completedDayCount >= monthStart;
 
           let monthColor = 'var(--text-muted)';
           if (allCompleted) monthColor = 'var(--lime)';
-          else if (anyCompleted || (state.completedLessons.length / 20 === monthNum - 1)) monthColor = 'var(--cyan)';
+          else if (anyCompleted || completedDayCount + 1 === monthStart) monthColor = 'var(--cyan)';
 
           return `
             <div style="border-left: 2px solid ${monthColor}; padding-left: 20px; margin-bottom: 8px;">
@@ -49,9 +56,8 @@ export function renderCurriculum(container, state, actions) {
                   // Represent each week in this month
                   const weekNum = l.week;
                   const weekLessons = VOYAGE_LESSONS.filter(wl => wl.week === weekNum);
-                  const isWeekCompleted = weekLessons.every(wl => state.completedLessons.includes(wl.id));
-                  const isWeekActive = weekLessons.some(wl => !state.completedLessons.includes(wl.id)) &&
-                                       weekLessons[0].number <= state.completedLessons.length + 1;
+                  const isWeekCompleted = completedDayCount >= weekLessons.at(-1).number;
+                  const isWeekActive = completedDayCount + 1 >= weekLessons[0].number && !isWeekCompleted;
 
                   const topic = l.topicId ? getTopic(l.topicId) : null;
 
@@ -70,7 +76,7 @@ export function renderCurriculum(container, state, actions) {
                     <div class="glass" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; border-radius: 12px; padding: 14px 18px; cursor: pointer; transition: all var(--transition-fast);" data-week="${weekNum}">
                       <div>
                         <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 2px;">
-                          Week ${weekNum % 4 === 0 ? '4 (Integration)' : `Week ${weekNum % 4}: ${topic ? topic.title : 'Mixed review'}`}
+                          ${weekNum % 4 === 0 ? 'Week 4 (Integration)' : `Week ${weekNum % 4}: ${topic ? topic.title : 'Mixed review'}`}
                         </h4>
                         <p style="color: var(--text-muted); font-size: 13px;">
                           Lessons ${weekLessons[0].number} – ${weekLessons[4].number}
@@ -85,6 +91,7 @@ export function renderCurriculum(container, state, actions) {
           `;
         }).join('')}
       </div>
+      </div>
     </main>
   `;
 
@@ -97,8 +104,9 @@ export function renderCurriculum(container, state, actions) {
     el.addEventListener('click', () => {
       const weekNum = parseInt(el.dataset.week);
       const weekLessons = VOYAGE_LESSONS.filter(l => l.week === weekNum);
-      const firstIncomplete = weekLessons.find(l => !state.completedLessons.includes(l.id)) || weekLessons[0];
-      actions.startSession(firstIncomplete);
+      const currentDayLesson = VOYAGE_LESSONS[Math.min(completedDayCount, 199)];
+      const lessonInWeek = weekLessons.find(l => l.id === currentDayLesson.id) || weekLessons[0];
+      actions.startSession(lessonInWeek);
     });
   });
 }

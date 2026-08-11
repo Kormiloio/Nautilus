@@ -3,7 +3,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(17);
+select extensions.plan(23);
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
@@ -137,6 +137,62 @@ where id = :'variant_id';
 select extensions.ok(
   (select approval = 'approved' from public.family_language_variants where id = :'variant_id'),
   'owner must approve family variant'
+);
+
+select public.start_family_play(
+  :'family_a', 'montenegrin-en', '0.1.0', 'voyage-1', 1,
+  '2026-08-10', 'America/New_York', array[:'kid_profile'::uuid]
+) as family_session \gset
+
+select extensions.ok(
+  exists(
+    select 1 from public.family_voyage_sessions
+    where id = :'family_session' and status = 'live' and voyage_day = 1
+  ),
+  'adult starts the next family voyage day'
+);
+
+select extensions.ok(
+  exists(
+    select 1 from public.family_voyage_participants
+    where session_id = :'family_session' and profile_id = :'kid_profile'
+  ),
+  'selected learner is added to the shared session'
+);
+
+insert into public.completed_lessons
+  (profile_id, pack_id, pack_version, lesson_id, operation_id)
+values
+  (:'kid_profile', 'montenegrin-en', '0.1.0', 'voyage-1', gen_random_uuid());
+
+select extensions.is(
+  (public.get_family_play_state(:'family_a', 'montenegrin-en') ->> 'completedDays')::integer,
+  0,
+  'independent lesson completion does not move family progress'
+);
+
+select public.control_family_play(:'family_session', 'live', 3);
+select extensions.is(
+  (select current_segment from public.family_voyage_sessions where id = :'family_session'),
+  3,
+  'controlling adult advances the shared segment'
+);
+
+select public.complete_family_play(:'family_session');
+select extensions.is(
+  (public.get_family_play_state(:'family_a', 'montenegrin-en') ->> 'completedDays')::integer,
+  1,
+  'explicit adult completion advances exactly one family day'
+);
+
+select extensions.ok(
+  exists(
+    select 1 from public.family_voyage_participants
+    where session_id = :'family_session'
+      and profile_id = :'kid_profile'
+      and status = 'credited'
+  ),
+  'participants receive shared-session credit without replacing independent attempts'
 );
 
 insert into public.learner_profiles (family_id, display_name, created_by)

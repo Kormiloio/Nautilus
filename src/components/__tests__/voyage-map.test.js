@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { getEarnedCompanions, getPassportStamps, getVoyageStage, renderVoyageExperience } from '../voyage-map.js';
+import { getEarnedCompanions, getVoyageStage, renderVoyageExperience } from '../voyage-map.js';
+import { buildDayPassport } from '../../engine/learning-days.js';
 
 describe('learner voyage experience', () => {
   it('maps the 200 lessons onto five nautical stages', () => {
@@ -16,17 +17,17 @@ describe('learner voyage experience', () => {
     expect(getEarnedCompanions(200)).toHaveLength(4);
   });
 
-  it('earns one passport stamp for each complete 20-lesson month', () => {
-    const lessons = Array.from({ length: 21 }, (_, index) => `voyage-${index + 1}`);
-    const stamps = getPassportStamps(lessons);
+  it('earns one passport stamp for each complete 20-day month', () => {
+    const dates = Array.from({ length: 21 }, (_, index) => `2026-08-${String(index + 1).padStart(2, '0')}`);
+    const stamps = buildDayPassport(dates);
     expect(stamps).toHaveLength(10);
-    expect(stamps[0]).toMatchObject({ completedLessons: 20, earned: true });
-    expect(stamps[1]).toMatchObject({ completedLessons: 1, earned: false });
+    expect(stamps[0]).toMatchObject({ completedDays: 20, earned: true });
+    expect(stamps[1]).toMatchObject({ completedDays: 1, earned: false });
   });
 
   it('renders illustrations beneath the configured application base URL', () => {
     const html = renderVoyageExperience({
-      completedLessons: [], languagePacks: [], activePackId: 'montenegrin-en',
+      completedLessons: [], activityDates: [], languagePacks: [], activePackId: 'montenegrin-en',
       profile: 'Mia', streakDays: 0, stars: 0,
     });
     expect(html).toContain(`${import.meta.env.BASE_URL}assets/illustrations/nautilus-voyage-map.jpg`);
