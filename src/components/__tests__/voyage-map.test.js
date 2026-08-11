@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getEarnedCompanions, getPassportStamps, getVoyageStage } from '../voyage-map.js';
+import { getEarnedCompanions, getPassportStamps, getVoyageStage, renderVoyageExperience } from '../voyage-map.js';
 
 describe('learner voyage experience', () => {
   it('maps the 200 lessons onto five nautical stages', () => {
@@ -22,5 +22,14 @@ describe('learner voyage experience', () => {
     expect(stamps).toHaveLength(10);
     expect(stamps[0]).toMatchObject({ completedLessons: 20, earned: true });
     expect(stamps[1]).toMatchObject({ completedLessons: 1, earned: false });
+  });
+
+  it('renders illustrations beneath the configured application base URL', () => {
+    const html = renderVoyageExperience({
+      completedLessons: [], languagePacks: [], activePackId: 'montenegrin-en',
+      profile: 'Lena', streakDays: 0, stars: 0,
+    });
+    expect(html).toContain(`${import.meta.env.BASE_URL}assets/illustrations/nautilus-voyage-map.jpg`);
+    expect(html).toContain(`${import.meta.env.BASE_URL}assets/illustrations/friends-of-the-sea.jpg`);
   });
 });
