@@ -1,4 +1,5 @@
 import { getTopic, shuffle, buildMatch, buildQuiz, LANGUAGE_PACK } from '../engine/learning-engine.js';
+import { colorTileStyle, renderColorField, renderColorsIntro } from './lesson-visuals.js';
 
 export function renderTopicView(container, state, actions) {
   const topic = getTopic(state.topicId);
@@ -51,6 +52,8 @@ export function renderTopicView(container, state, actions) {
           ${topic.note}
         </div>
       ` : ''}
+
+      ${renderColorsIntro(topic.id)}
 
       <!-- Activities Tabs -->
       <div style="display: flex; gap: 8px; margin: 16px 0 24px; flex-wrap: wrap;" role="tablist" aria-label="Topic Activities">
@@ -118,7 +121,7 @@ function renderFlashcards(mount, topic, state, actions) {
       <button type="button" class="flashcard-wrapper" id="card-wrapper" aria-label="Flashcard, tap to flip">
         <div class="flashcard ${f.flipped ? 'flipped' : ''}">
           <div class="flashcard-face flashcard-front">
-            ${currentItem.emoji ? `<div class="flashcard-emoji">${currentItem.emoji}</div>` : ''}
+            ${renderColorField(topic.id, currentItem)}
             <div class="flashcard-text-mn">${currentItem.targetText}</div>
             <div class="flashcard-hint">Tap to reveal translation</div>
           </div>
@@ -206,7 +209,7 @@ function renderMatch(mount, topic, state, actions) {
             else if (isSelected) classes += ' selected';
 
             return `
-              <button class="${classes}" data-tile-id="${tile.id}" ${isMatched ? 'disabled' : ''}>
+              <button class="${classes}" data-tile-id="${tile.id}"${colorTileStyle(tile.text)} ${isMatched ? 'disabled' : ''}>
                 ${tile.text}
               </button>
             `;

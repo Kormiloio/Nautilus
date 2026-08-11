@@ -10,6 +10,7 @@ import {
 } from '../engine/learning-engine.js';
 import { getGuidesProgress, getProfiles } from '../engine/progress-store.js';
 import { isConfigured } from '../engine/supabase-client.js';
+import { renderVoyageExperience } from './voyage-map.js';
 
 export function renderDashboard(container, state, actions) {
   const visibleProfiles = state.sessionUser
@@ -38,27 +39,6 @@ export function renderDashboard(container, state, actions) {
     if (!topicsByMonth[monthKey]) topicsByMonth[monthKey] = [];
     topicsByMonth[monthKey].push(t);
   });
-
-  const timelineHtml = Array.from({ length: 10 }, (_, i) => {
-    const monthNum = i + 1;
-    const topicsInMonth = getCoreTopics().filter(t => getCurriculumMonth(t.id) === monthNum);
-    const anyCompleted = topicsInMonth.some(t => state.completedTopicIds.includes(t.id));
-    const allCompleted = topicsInMonth.length > 0 && topicsInMonth.every(t => state.completedTopicIds.includes(t.id));
-
-    let circleClass = 'timeline-circle';
-    if (allCompleted) circleClass += ' completed';
-    else if (anyCompleted || (nextLesson && nextLesson.month === i)) circleClass += ' unlocked';
-
-    let lineClass = 'timeline-line';
-    if (allCompleted) lineClass += ' completed';
-
-    return `
-      <div class="timeline-node">
-        <div class="${circleClass}" title="Month ${monthNum} progress">${monthNum}</div>
-        ${i < 9 ? `<div class="${lineClass}"></div>` : ''}
-      </div>
-    `;
-  }).join('');
 
   // Define sync status badge
   let syncBadgeHtml = '';
@@ -137,14 +117,11 @@ export function renderDashboard(container, state, actions) {
       <!-- Calendar Mount -->
       <section class="voyage-calendar" id="calendar-mount" aria-label="Learning Voyage Calendar"></section>
 
-      <!-- 10-Month Timeline Progress -->
-      <section style="margin-bottom: 32px;" aria-label="10-Month Progress Timeline">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-          <h3 class="section-title" style="margin: 0;">10-Month Journey</h3>
-          <button class="btn btn-secondary btn-pill" id="view-voyage-btn">See entire voyage plan →</button>
-        </div>
-        <div class="timeline">${timelineHtml}</div>
-      </section>
+      ${!state.isGuide ? renderVoyageExperience(state) : `
+        <section class="guide-voyage-link">
+          <h3>200-day learning voyage</h3>
+          <button class="btn btn-secondary btn-pill" id="view-voyage-btn">View voyage plan →</button>
+        </section>`}
 
       <!-- Guide Progress dashboard -->
       ${state.isGuide ? `

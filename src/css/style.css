@@ -233,6 +233,18 @@ button, input, select {
   color: var(--text-dark);
 }
 
+.visual-preview-btn {
+  border-color: var(--cyan) !important;
+  background: linear-gradient(135deg, rgba(125, 211, 252, .18), rgba(59, 130, 246, .1)) !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.visual-preview-btn > span:first-child { font-size: 26px; }
+.visual-preview-btn small { color: var(--text-muted); font-size: 11px; }
+
 /* Dashboard Hero */
 .hero-card {
   background: linear-gradient(135deg, #161e2b, #111119);
@@ -429,57 +441,69 @@ button, input, select {
   display: inline-block;
 }
 
-/* Topic Node Timeline */
-.timeline {
+/* Learner voyage map and Captain's Quarters */
+.voyage-map-card,
+.captains-quarters {
+  background: linear-gradient(145deg, #101d27, #111119 72%);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+
+.voyage-map__header,
+.guide-voyage-link {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  overflow-x: auto;
-  gap: 0;
-  padding-bottom: 20px;
-  margin-bottom: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-.timeline-node {
-  display: flex;
-  align-items: center;
-  flex: 0 0 auto;
-}
+.voyage-map__header h3,
+.captains-quarters h3,
+.guide-voyage-link h3 { font-size: 20px; }
+.voyage-map__header p,
+.quarters-profile p { color: var(--text-muted); font-size: 13px; margin-top: 4px; }
 
-.timeline-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 13px;
-  border: 2px solid var(--border-color);
-  background: var(--surface-color);
-  color: var(--text-muted);
-  transition: all var(--transition-fast);
-}
+.voyage-sea { position: relative; margin: 24px -24px -24px; min-height: 300px; overflow-x: auto; background: #071522; }
+.voyage-sea__art { position: absolute; inset: 0; width: 100%; height: 100%; min-width: 760px; object-fit: cover; object-position: center; }
+.voyage-sea__shade { position: absolute; inset: 0; min-width: 760px; background: linear-gradient(180deg, transparent 38%, rgba(5, 13, 22, .2) 58%, rgba(5, 13, 22, .92) 100%); }
+.voyage-route { position: absolute; bottom: 64px; left: 38px; right: 38px; min-width: 684px; height: 4px; background: rgba(255,255,255,.25); border-radius: 999px; box-shadow: 0 1px 8px rgba(0,0,0,.5); }
+.voyage-route span { display: block; width: var(--voyage-progress); max-width: 100%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--cyan), var(--lime)); }
+.voyage-ports { position: relative; display: grid; grid-template-columns: repeat(10, minmax(72px, 1fr)); align-items: end; list-style: none; min-width: 760px; min-height: 300px; padding: 0 2px 20px; }
+.voyage-port { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 11px; font-weight: 700; }
+.voyage-port__marker { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(14, 26, 37, .94); border: 2px solid #71808a; position: relative; box-shadow: 0 3px 10px rgba(0,0,0,.45); }
+.voyage-port.reached .voyage-port__marker { background: var(--lime); border-color: var(--lime); color: var(--text-dark); }
+.voyage-port.current .voyage-port__marker { background: #173243; border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 20px var(--cyan-muted); }
+.voyage-port.reached, .voyage-port.current { color: var(--text-main); }
 
-.timeline-circle.unlocked {
-  border-color: var(--cyan);
-  color: var(--cyan);
-}
+.quarters-profile { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
+.quarters-avatar { width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center; font-size: 34px; background: linear-gradient(135deg, var(--cyan-muted), var(--blue-muted)); border: 1px solid rgba(125, 211, 252, .35); }
+.quarters-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; }
+.quarters-panel { background: rgba(21, 21, 32, .78); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; }
+.quarters-panel h4 { font-size: 14px; }
+.quarters-help, .next-friend, .quarters-empty { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+.passport-stamps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 16px; }
+.passport-stamp { min-height: 58px; border: 1px dashed var(--border-focus); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); }
+.passport-stamp span { font-weight: 800; }
+.passport-stamp small { font-size: 9px; }
+.passport-stamp.earned { border-style: solid; border-color: var(--amber); background: var(--amber-muted); color: #ffe68d; transform: rotate(-3deg); }
+.sea-friends { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.sea-friends__art { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; border-radius: 12px; margin-top: 14px; border: 1px solid rgba(125, 211, 252, .25); }
+.sea-friends__art.waiting { filter: grayscale(.7) brightness(.5); opacity: .65; }
+.sea-friend { min-width: 72px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.sea-friend span { font-size: 32px; }
+.sea-friend small { color: var(--text-muted); font-size: 10px; }
+.next-friend { margin-top: 14px; color: var(--cyan); }
+.guide-voyage-link { margin-bottom: 32px; padding: 20px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 16px; }
 
-.timeline-circle.completed {
-  background: var(--lime);
-  border-color: var(--lime);
-  color: var(--text-dark);
-}
-
-.timeline-line {
-  width: 32px;
-  height: 2px;
-  background: var(--border-color);
-  flex: 0 0 auto;
-}
-
-.timeline-line.completed {
-  background: var(--lime);
+@media (max-width: 700px) {
+  .quarters-grid { grid-template-columns: 1fr; }
+  .passport-stamps { grid-template-columns: repeat(5, minmax(42px, 1fr)); }
+  .voyage-map-card, .captains-quarters { padding: 18px; }
+  .voyage-sea { margin: 20px -18px -18px; }
 }
 
 /* Section Header */
@@ -638,6 +662,22 @@ button, input, select {
   font-size: 52px;
   margin-bottom: 8px;
 }
+
+/* Visual vocabulary scenes */
+.lesson-scene { width: 100%; margin: 18px 0 26px; border: 1px solid var(--border-color); border-radius: 18px; overflow: hidden; background: var(--surface-color); }
+.lesson-scene img { display: block; width: 100%; aspect-ratio: 2 / 1; object-fit: cover; }
+.lesson-scene figcaption { display: flex; flex-direction: column; gap: 3px; padding: 12px 16px; font-size: 13px; }
+.lesson-scene figcaption strong { color: var(--cyan); }
+.lesson-scene figcaption span { color: var(--text-muted); }
+
+.color-field { --lesson-color: var(--cyan); width: min(210px, 70%); height: 92px; margin-bottom: 14px; border-radius: 46px 46px 18px 18px; position: relative; overflow: hidden; background: linear-gradient(180deg, color-mix(in srgb, var(--lesson-color) 72%, white), var(--lesson-color)); box-shadow: 0 12px 28px color-mix(in srgb, var(--lesson-color) 28%, transparent); border: 2px solid color-mix(in srgb, var(--lesson-color) 78%, white); }
+.color-field__sun { position: absolute; width: 25px; height: 25px; border-radius: 50%; right: 22px; top: 15px; background: rgba(255,255,255,.68); }
+.color-field__sail { position: absolute; width: 0; height: 0; left: 80px; bottom: 23px; border-left: 24px solid transparent; border-right: 2px solid transparent; border-bottom: 42px solid rgba(255,255,255,.88); }
+.color-field__wave { position: absolute; left: -8px; right: -8px; bottom: -17px; height: 46px; border-radius: 50%; background: color-mix(in srgb, var(--lesson-color) 65%, #071522); box-shadow: 55px -8px 0 color-mix(in srgb, var(--lesson-color) 78%, #071522), 125px 2px 0 color-mix(in srgb, var(--lesson-color) 58%, #071522); }
+
+.match-tile[data-color-tile="true"] { background: var(--tile-color); border-color: color-mix(in srgb, var(--tile-color) 72%, white); color: var(--tile-text); font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,.22); }
+.match-tile[data-color-tile="true"]:hover:not(.matched) { background: color-mix(in srgb, var(--tile-color) 82%, white); }
+.match-tile[data-color-tile="true"].selected { outline: 3px solid var(--cyan); outline-offset: 3px; }
 
 .flashcard-text-mn {
   font-family: var(--font-display);
