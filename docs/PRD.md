@@ -2,7 +2,7 @@
 
 **Repository codename:** Nautilus  
 **Document status:** Montenegrin technical scaffold implemented; multi-family and multilingual platform in specification
-**Last updated:** 2026-08-09  
+**Last updated:** 2026-08-10
 **Target:** A usable first-year learning experience spanning approximately 10 months
 
 ## 1. Product summary
@@ -105,6 +105,8 @@ The final curriculum and topic count depend on review of the existing lesson mat
 - **Listen and repeat:** play reviewed audio and invite the learner to repeat. The first release may use self-assessment and must not claim pronunciation accuracy without a validated scoring system.
 - **Role-play:** guide short branching or swappable-part dialogues for selected real situations.
 
+Topics that benefit from concrete visual recognition should open with an original contextual scene and carry the same visual cues into their supported activities. Visuals must teach or reinforce meaning rather than function only as decoration. Text, audio, and accessible names remain available so an image is never the sole source of essential information. The Colors topic is the initial reference implementation: a recognizable harbor scene introduces six colors, color-dominant cards support discovery and recall, and matching tiles retain the learned color cue.
+
 ### 7.3 Progress and motivation
 
 - Award stars for completed practice based on understandable rules.
@@ -178,6 +180,19 @@ The learner dashboard should show:
 
 Suggested nautical display labels are `in harbor` (rest), `charted` (planned), `making way` (in progress), `full sail` (completed), and `open water` (available for catch-up). Missed days use neutral language and never shame the learner.
 
+### 8.3 Voyage map and learner logbook
+
+The learner dashboard presents the 200-day curriculum as a ten-port voyage. Completed lessons advance the route and determine one of five milestone labels: `Anchors Aweigh`, `Making Headway`, `Rounding the Mark`, `Flying Colors`, and `Shipshape · Moored`. These milestones describe personal progress only; they are not family ranks or competitive leaderboards.
+
+Each learner has a Captain's Quarters logbook containing:
+
+- a language passport with one stamp for each completed 20-lesson month;
+- sea companions earned at published voyage milestones;
+- current stage, stars, and streak summary;
+- language-scoped progress, so a reward earned in one language never appears as earned in another.
+
+Companions and stamps must be deterministic consequences of completed lesson records. Profile selection, sign-in, free browsing, or merely opening a lesson must not award them. The experience must remain usable without animation and must not lock curriculum or imply that one learner is ahead of another.
+
 ## 9. Functional requirements
 
 | ID | Requirement | Priority |
@@ -212,6 +227,8 @@ Suggested nautical display labels are `in harbor` (rest), `charted` (planned), `
 | FR-28 | Family additions and alternatives never appear for another family. | Must |
 | FR-29 | Activities accept configured family alternatives without treating accepted synonyms as mutually exclusive answers. | Must |
 | FR-30 | Authorized adults can open a family overview showing adult memberships, pending invitations, and each learner's language-scoped progress. | Must |
+| FR-31 | The learner dashboard represents the 200-day curriculum as a ten-port voyage with five non-competitive progress stages. | Should |
+| FR-32 | The learner logbook shows deterministic language-scoped passport stamps and sea companions derived only from completed lessons. | Should |
 
 ## 10. Quality requirements
 

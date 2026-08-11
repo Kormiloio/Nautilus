@@ -190,6 +190,20 @@ export function renderProfileSelect(container, state, actions) {
   // Append add profile button to learners grid by default
   learnersGrid.appendChild(addProfileBtn);
 
+  // Local development should offer a direct route into the learner experience
+  // without requiring Supabase or pre-existing browser storage.
+  if (!isConfigured && learners.length === 0) {
+    const previewBtn = document.createElement('button');
+    previewBtn.className = 'profile-btn visual-preview-btn';
+    previewBtn.innerHTML = '<span aria-hidden="true">⛵</span><span>Explore the Visual Preview</span><small>Open the illustrated 200-day voyage</small>';
+    previewBtn.addEventListener('click', async () => {
+      const previewName = 'Preview Learner';
+      await addLearnerProfile(previewName, false);
+      actions.switchProfile(previewName);
+    });
+    learnersGrid.prepend(previewBtn);
+  }
+
   // Hook login/logout clicks
   const loginBtn = container.querySelector('#login-btn');
   if (loginBtn) {

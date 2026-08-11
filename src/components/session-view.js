@@ -1,4 +1,5 @@
 import { generateSession, getTopic, buildMatch, buildQuiz, shuffle, LANGUAGE_PACK } from '../engine/learning-engine.js';
+import { colorTileStyle, renderColorField, renderColorsIntro } from './lesson-visuals.js';
 
 export function renderSessionView(container, state, actions) {
   const lesson = state.activeLesson;
@@ -120,12 +121,13 @@ function renderDiscoverStep(mount, step, state, actions) {
       <h3 style="font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 4px;">${step.title}</h3>
       <p style="color: var(--text-muted); font-size: 14px; text-align: center; margin-bottom: 8px;">${step.subtitle}</p>
 
+      ${f.idx === 0 ? renderColorsIntro(state.activeLesson.topicId) : ''}
       <div class="flashcard-hint" style="font-weight: 700;">Word ${f.idx + 1} of ${step.items.length}</div>
 
       <button type="button" class="flashcard-wrapper" id="discover-card-wrapper" style="height: 240px; max-width: 400px;" aria-label="Learning card, tap to flip">
         <div class="flashcard ${f.flipped ? 'flipped' : ''}">
           <div class="flashcard-face flashcard-front">
-            ${currentItem.emoji ? `<div class="flashcard-emoji">${currentItem.emoji}</div>` : ''}
+            ${renderColorField(state.activeLesson.topicId, currentItem)}
             <div class="flashcard-text-mn" style="font-size: 28px;">${currentItem.targetText}</div>
             <div class="flashcard-hint">Tap to flip</div>
           </div>
@@ -200,6 +202,7 @@ function renderRecallFlashStep(mount, step, state, actions) {
         <div class="flashcard ${f.flipped ? 'flipped' : ''}">
           <div class="flashcard-face flashcard-front">
             <div class="flashcard-hint" style="margin-bottom: 16px; color: var(--cyan);">Can you recall the translation?</div>
+            ${renderColorField(state.activeLesson.topicId, currentItem)}
             <div class="flashcard-text-mn" style="font-size: 28px;">${currentItem.targetText}</div>
             <div class="flashcard-hint">Tap to check meaning</div>
           </div>
@@ -400,7 +403,7 @@ function renderMatchStep(mount, step, state, actions) {
             else if (isSelected) classes += ' selected';
 
             return `
-              <button class="${classes}" data-tile-id="${tile.id}" ${isMatched ? 'disabled' : ''}>
+              <button class="${classes}" data-tile-id="${tile.id}"${colorTileStyle(tile.text)} ${isMatched ? 'disabled' : ''}>
                 ${tile.text}
               </button>
             `;
