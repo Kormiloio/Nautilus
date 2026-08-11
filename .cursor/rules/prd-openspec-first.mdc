@@ -1,0 +1,13 @@
+---
+description: Read PRD and OpenSpec before development; keep docs in sync with code
+alwaysApply: true
+---
+
+# PRD and OpenSpec first
+
+Before starting any development work in this repository:
+
+1. **Read first.** Check `docs/PRD.md` and all relevant files under `openspec/` — including `openspec/specs/` and any active changes in `openspec/changes/`.
+2. **Align before building.** Confirm planned work matches current requirements and specifications. Do not implement behavior that contradicts documented product direction.
+3. **Update docs with every change.** When making product, behavior, or feature changes, update the PRD and OpenSpec in the same change set. Specs and code must stay in sync.
+4. **New capabilities need OpenSpec first.** If a change introduces new behavior or capabilities, add or update the OpenSpec change proposal, spec deltas, tasks, and design docs before implementation.

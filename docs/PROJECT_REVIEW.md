@@ -1,15 +1,32 @@
 # Nautilus project review
 
 **Review date:** 2026-08-09  
-**Status:** Initial product, source, and rendered-prototype review complete
+**Status:** Modular migration and 200-position voyage scaffold verified; authored content and production completion behavior remain
 
-## Executive assessment
+## Current implementation status
+
+The initial review below describes the preserved Claude prototype and explains why it was replaced. Nautilus has since migrated to a modular Vite production architecture:
+
+- all 33 topics, 248 learning items, dialogues, and the Alphabet bonus are stored in `src/content/topics.json`;
+- an explicit content-owned curriculum map assigns 30 unique core topics across ten months and identifies three advanced/capstone extras;
+- Ajv validates the schema, topic identities, curriculum references, uniqueness, and complete topic coverage before release;
+- the learning engine deterministically generates 200 structural lesson positions across 40 five-day weeks and skips weekends when creating the calendar schedule;
+- profile progress records actual qualifying activity dates separately from idempotent voyage-lesson completion;
+- profile selection no longer creates or advances a streak;
+- the dashboard includes `Voyage day N of 200`, active-day summaries, a responsive calendar, nautical states, and an accessible list representation;
+- free topic browsing, mixed review, guided sessions, profile progress, flashcards, matching, quizzes, listening, recording, and role-play are implemented as modular components;
+- Vitest currently passes 11 engine/progress tests, Ajv validation passes, and Vite builds directly into `web/`;
+- the original prototype is preserved at `web/prototype.html`.
+
+Remaining high-priority risks are content depth, fluent language/audio review, configured holidays and breaks, storage recovery/versioning, broader automated interaction coverage, full accessibility/device verification, and the four-week family pilot.
+
+## Historical prototype assessment
 
 The product idea is coherent and well suited to a responsive web app: a ten-month, practical Montenegrin learning experience for teenagers preparing to visit Montenegro. The supplied decisions give the app a useful shape—free topic choice, varied short activities, audio, role-play, and restrained gamification.
 
-The Claude-generated prototype is now present at `web/index.html`. It renders and its principal navigation is usable in a browser, including at a 390 × 844 phone viewport. It is a 243 KB export bundle: a loader unpacks an 81 KB generated template, embedded application logic/data, and compressed runtime assets. There is no editable source tree, package manifest, build command, test suite, or content file. The original 224-line teaching text remains missing as a separate source.
+At the time of the initial audit, the Claude-generated prototype was the application at `web/index.html`; it is now preserved at `web/prototype.html`. It rendered and its principal navigation was usable in a browser, including at a 390 × 844 phone viewport. The 243 KB export bundle used a loader to unpack an 81 KB generated template, embedded application logic/data, and compressed runtime assets. It had no editable source tree, package manifest, build command, test suite, or content file. The original 224-line teaching text remains missing as a separate source.
 
-The actual app is substantially larger and more prescriptive than the prior summary. It contains 34 scheduled topics plus one alphabet bonus, a 12-month August–July journey, one-week date-based unlocks, named profiles for Lena, Sam, Mario, and Kristina, family sessions, mixed review, seven badges, stars, streaks, browser text-to-speech, temporary microphone recording, and seven role-play topics.
+The actual app is substantially larger and more prescriptive than the prior summary. It contains 33 scheduled topics plus one alphabet bonus, a 12-month August–July journey, one-week date-based unlocks, named profiles for Lena, Sam, Mario, and Kristina, family sessions, mixed review, seven badges, stars, streaks, browser text-to-speech, temporary microphone recording, and seven role-play topics.
 
 The prototype is a useful interactive concept, but it should not be treated as production-ready or as the product contract. Several implemented choices contradict the decisions in the supplied context.
 
@@ -27,7 +44,7 @@ The prototype is a useful interactive concept, but it should not be treated as p
 2. **Stars are easy to farm and their meaning is unclear.** Correct quiz answers award stars immediately; a fresh quiz can be generated repeatedly. Matching completion and a session wrap also award stars. There is no documented cap, mastery rule, or distinction between practice and achievement.
 3. **“Already know this — skip” marks a whole topic complete immediately.** There is no confirmation or diagnostic check, and completion is also used for badges and the journey display.
 4. **Named profiles are hard-coded and unauthenticated.** Any user can switch to a parent/guide profile and view both children's summaries. This may be acceptable for a private family-only local build, but it is not a parent-only control and should not be described as one.
-5. **Progress is fragile.** It lives only in browser `localStorage`; there is no export, recovery, schema version, cross-device sync, or handling for failed writes.
+5. **Released progress remains local and fragile.** The deployed foundation uses browser `localStorage`; optional family accounts and cloud synchronization now have a separate OpenSpec proposal, but the uncommitted proof of concept is not production-approved and still needs migration, conflict, recovery, authorization, privacy, and deletion verification.
 6. **Microphone recordings survive in memory until replaced or the page closes.** They are stored as object URLs and are not uploaded, which is a good privacy default, but previous object URLs are not revoked and recording state is not cleared when navigating away.
 7. **Synthetic Croatian speech is presented as pronunciation.** The default voice request is `hr-HR`, with Serbian and Bosnian options. Availability and Montenegrin pronunciation are device-dependent, and the UI does not disclose that the output is a synthesized approximation.
 8. **The empty recording player produces a failed network request.** On topic load, the rendered page attempted to fetch the literal template value `{{recordingUrl}}`, indicating that the audio element is created before a valid recording URL is bound.
@@ -46,7 +63,7 @@ The prototype is a useful interactive concept, but it should not be treated as p
 2. **There are no automated tests or content validation.** Quiz distractors, duplicate meanings, topic data, progression, and storage behavior are unchecked.
 3. **The content model lacks stable item IDs, script fields, difficulty, review status, and audio metadata.** Activity state relies on array position and object identity.
 4. **The alphabet is incomplete as an alphabet lesson.** It contains only 12 selected Latin/Cyrillic mappings, despite being titled “Alphabet.”
-5. **Cyrillic is otherwise absent from the curriculum.** The main 34 topics contain only the Latin `mn` field.
+5. **Cyrillic is otherwise absent from the curriculum.** The main 33 topics contain only the Latin `mn` field.
 6. **Some curriculum claims and translations require fluent review.** The prototype intentionally includes family Dalmatian forms such as `đida`, `kruh`, and `kukumar`; other items mix variants such as `sretan`, `sledeće`, and `jučer/juče`. These may be intentional family language, but the app currently has no variant/source metadata and should not label all forms uniformly as standard Montenegrin without review.
 
 ### P2 — UX and content observations
@@ -55,7 +72,7 @@ The prototype is a useful interactive concept, but it should not be treated as p
 2. Role selection and optional translation display are useful foundations for rehearsed dialogues.
 3. The role-play implementation is linear reading, not branching or “swappable parts” as previously described.
 4. Listen/repeat records and plays the learner back but does not evaluate pronunciation, which is the correct limitation; the UI should state this plainly.
-5. Most scheduled topics contain only 4–14 items. Without spaced review and content expansion, 34 short topics may not sustain ten months of effective retention.
+5. The 33 scheduled topics contain 248 vocabulary/phrase items, with a median of seven items per topic; 18 topics contain fewer than eight items. Without sentence work, dialogue, spaced review, and content expansion, they will not sustain approximately 200 meaningful weekday lessons.
 
 ## What is already decided
 
@@ -85,13 +102,13 @@ The prototype is a useful interactive concept, but it should not be treated as p
 | --- | --- | --- |
 | Unverified language content | Incorrect translations or pronunciation would undermine trust. | Require review by a fluent Montenegrin speaker before content is marked publishable. |
 | Browser text-to-speech quality | Montenegrin voices may be unavailable or pronounced inconsistently across devices. | Treat browser speech as a fallback; plan for reviewed human or high-quality recorded audio. |
-| Ten-month retention | A static set of 13 topics may be exhausted quickly or forgotten. | Plan recurring review, increasing difficulty, and enough content for approximately 40 weeks. |
+| Ten-month retention | The 33 topics are broad but most remain too shallow for five distinct daily lessons. | Expand sentence work, dialogue, listening, and integration challenges before declaring the 200-day curriculum complete. |
 | Free browsing without guidance | Learners may repeatedly choose familiar topics and avoid weak areas. | Preserve free choice while showing optional progress and review cues, not forced navigation. |
-| Local-only progress | Browser storage can be lost and does not follow a learner between devices. | Use local profiles for the first release; evaluate optional accounts/sync only after family testing. |
+| Optional synchronized progress | Browser storage can be lost and does not follow a learner between devices. | Preserve local-only use while completing and approving the separate family-account/cloud-sync specification before deployment. |
 | Teen positioning | Childlike visuals or rewards could reduce engagement. | Use a modern travel-oriented tone and understated rewards. |
 | Privacy and minors | Accounts, analytics, recordings, or cloud speech create additional obligations. | Keep the first release account-free, avoid behavioral advertising, and do not retain microphone recordings. |
 
-## Implementation review checklist
+## Ongoing implementation review checklist
 
 When the prototype is added, review it for:
 
@@ -111,12 +128,12 @@ When the prototype is added, review it for:
 ## Missing inputs
 
 1. The complete 224-line lesson material in its original form.
-2. Editable source for the Claude artifact, if Claude can export more than the bundle.
-3. Confirmation that the named family profiles should remain in version control.
-4. Confirmation of who will validate translations and audio.
-5. Whether progress must follow learners across devices in the first year.
-6. Whether parents need a protected dashboard or only a simple shared-device progress view.
+2. Confirmation that the named family profiles should remain in version control.
+3. Confirmation of who will validate translations and audio.
+4. Whether progress must follow learners across devices in the first year.
+5. Whether parents need a protected dashboard or only a simple shared-device progress view.
+6. The holidays, vacations, and trip dates that should pause or reshape the weekday schedule.
 
 ## Recommendation
 
-Do not add more topics to the bundle. First resolve the free-browse/ten-month/session conflicts, recover the lesson source, and validate representative language. Then migrate the validated experience into maintainable source with structured content and tests; the export bundle is suitable as a visual reference, not as the production foundation.
+Use the modular Vite application as the production foundation and keep the original export only as a visual reference. The next investment should be content quality rather than architectural migration: expand Month 1 into 20 genuinely distinct lessons, obtain fluent language/audio review, test it with the family for four weeks, and use the results to refine the remaining voyage before full-scale authoring.

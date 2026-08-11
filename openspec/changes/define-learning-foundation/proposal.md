@@ -4,6 +4,10 @@
 
 The current product direction exists primarily in prior conversation and a generated single-file prototype. The prototype has now been reviewed and conflicts with several stated decisions: it locks topics by week, presents a 12-month journey, and automatically chooses a “Tonight's Session.” Before extending the app, the family needs an agreed product contract for a ten-month, teen-appropriate Montenegrin learning experience and a maintainable plan for validating and migrating the existing work.
 
+## Implementation status
+
+The architecture and technical scaffold described by this change are substantially implemented. Nautilus uses Vite, modular screen and engine modules, structured JSON content, structural Ajv validation, Vitest coverage, free topic browsing, separate local profiles, and a 200-position optional voyage. The original artifact is preserved at `web/prototype.html`. This change remains open for strengthened publication validation, reviewed audio, broader accessibility/failure testing, fluent language review, and family-alpha acceptance.
+
 ## What changes
 
 - Establish free-browse topic discovery and supported activity behavior.
@@ -30,11 +34,11 @@ None. The current bundled prototype is documented separately as baseline behavio
 - Introduces the first product and behavior contracts for the repository.
 - Requires recovery and audit of the 224-line lesson source; the prototype bundle is present and its initial audit is complete.
 - Requires migration away from the opaque export bundle unless editable source can be recovered and shown to meet maintainability and testing requirements.
-- Defers accounts, cloud sync, open-ended speech scoring, native apps, and heavy gamification.
+- Defers open-ended speech scoring, native apps, and heavy gamification. Optional family accounts and cloud sync are now proposed separately by `add-family-cloud-sync` and are not approved for deployment yet.
 
 ## Open questions
 
-- Is cross-device synchronization required during the first year?
+- Who will own and approve the optional first-year family cloud account?
 - Who owns language and audio approval?
 - Is offline trip use required?
 - Does a parent-only progress view belong in the first family alpha?

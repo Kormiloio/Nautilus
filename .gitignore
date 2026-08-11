@@ -1,2 +1,11 @@
 .DS_Store
+node_modules/
+.netlify/
+.env
+.env.local
+*.local
 
+# Historical extraction inputs retained locally but not used by the Vite app.
+scripts/extract-content.js
+scripts/pack-template.mjs
+src/app.template.html
