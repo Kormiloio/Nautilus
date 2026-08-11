@@ -172,33 +172,33 @@ export function getVoyageSchedule() {
 }
 
 // Helpers for activity building
-export function shuffle(arr) {
+export function shuffle(arr, random = Math.random) {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
 }
 
-export function buildMatch(items, pairsCount = 6) {
+export function buildMatch(items, pairsCount = 6, random = Math.random) {
   const n = Math.min(pairsCount, items.length);
-  const chosen = shuffle(items).slice(0, n);
+  const chosen = shuffle(items, random).slice(0, n);
   const tiles = [];
   chosen.forEach((it, i) => {
     tiles.push({ id: `target-${i}`, pairId: i, text: it.targetText, kind: 'target' });
     tiles.push({ id: `support-${i}`, pairId: i, text: it.supportText, kind: 'support' });
   });
-  return { tiles: shuffle(tiles), selectedIds: [], matchedIds: [] };
+  return { tiles: shuffle(tiles, random), selectedIds: [], matchedIds: [] };
 }
 
-export function buildQuiz(items, quizLength = 8) {
+export function buildQuiz(items, quizLength = 8, random = Math.random) {
   const count = Math.min(quizLength, items.length);
-  const order = shuffle(items).slice(0, count);
+  const order = shuffle(items, random).slice(0, count);
   const questions = order.map(correct => {
     const distractorPool = items.filter(it => it.targetText !== correct.targetText);
-    const distractors = shuffle(distractorPool).slice(0, Math.min(3, distractorPool.length));
-    const options = shuffle([correct.targetText, ...distractors.map(d => d.targetText)]);
+    const distractors = shuffle(distractorPool, random).slice(0, Math.min(3, distractorPool.length));
+    const options = shuffle([correct.targetText, ...distractors.map(d => d.targetText)], random);
     return {
       promptText: correct.supportText,
       correctAnswer: correct.targetText,
@@ -209,8 +209,20 @@ export function buildQuiz(items, quizLength = 8) {
 }
 
 // Builds the session steps dynamically based on the lesson
-export function generateSession(lesson, completedTopicIds) {
+export function createSeededRandom(seedText) {
+  let seed = [...String(seedText)].reduce((value, char) => ((value * 31) + char.charCodeAt(0)) >>> 0, 2166136261);
+  return () => {
+    seed = (seed + 0x6D2B79F5) >>> 0;
+    let value = seed;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+export function generateSession(lesson, completedTopicIds, options = {}) {
   const steps = [];
+  const random = options.random || Math.random;
 
   if (lesson.topicId) {
     const topic = getTopic(lesson.topicId);
@@ -238,7 +250,7 @@ export function generateSession(lesson, completedTopicIds) {
         type: 'match',
         title: 'Recall Match',
         subtitle: 'Connect the translations',
-        match: buildMatch(topic.items, 4),
+        match: buildMatch(topic.items, 4, random),
       });
     } else if (lesson.type === 'recall') {
       // Recall Cycle: Flashcard review -> Quiz
@@ -246,13 +258,13 @@ export function generateSession(lesson, completedTopicIds) {
         type: 'recall-flash',
         title: 'Vocabulary Recall',
         subtitle: 'Self-assess your memory',
-        items: shuffle(topic.items),
+        items: shuffle(topic.items, random),
       });
       steps.push({
         type: 'quiz',
         title: 'Quick Quiz',
         subtitle: 'Test your understanding',
-        quiz: buildQuiz(topic.items, 5),
+        quiz: buildQuiz(topic.items, 5, random),
       });
     } else if (lesson.type === 'build') {
       // Build Cycle: Notes -> Build quiz (sentence completion)
@@ -266,7 +278,7 @@ export function generateSession(lesson, completedTopicIds) {
         type: 'quiz',
         title: 'Pattern Practice',
         subtitle: 'Complete the sentences correctly',
-        quiz: buildQuiz(topic.items, 6),
+        quiz: buildQuiz(topic.items, 6, random),
       });
     } else if (lesson.type === 'use') {
       // Use Cycle: Role-play Dialogue (if exists) or Listen & Repeat
@@ -291,13 +303,13 @@ export function generateSession(lesson, completedTopicIds) {
         type: 'quiz',
         title: 'Topic Quiz',
         subtitle: 'Show what you remember',
-        quiz: buildQuiz(topic.items, 8),
+        quiz: buildQuiz(topic.items, 8, random),
       });
       steps.push({
         type: 'match',
         title: 'Vocabulary Match',
         subtitle: 'Match all pairs to complete the topic',
-        match: buildMatch(topic.items, 6),
+        match: buildMatch(topic.items, 6, random),
       });
     }
   } else {
@@ -310,13 +322,13 @@ export function generateSession(lesson, completedTopicIds) {
       type: 'quiz',
       title: 'Integration Quiz',
       subtitle: `Review from Month ${lesson.month + 1}`,
-      quiz: buildQuiz(pool, 8),
+      quiz: buildQuiz(pool, 8, random),
     });
     steps.push({
       type: 'match',
       title: 'Integration Match',
       subtitle: 'Connect the words quickly',
-      match: buildMatch(pool, 8),
+      match: buildMatch(pool, 8, random),
     });
   }
 

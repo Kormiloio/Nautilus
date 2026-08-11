@@ -1,3 +1,5 @@
+import { buildDayPassport, getLearningDayCount } from '../engine/learning-days.js';
+
 const VOYAGE_STAGES = [
   { id: 'anchors-aweigh', label: 'Anchors Aweigh', min: 0, icon: '⚓' },
   { id: 'making-headway', label: 'Making Headway', min: 50, icon: '⛵' },
@@ -25,20 +27,6 @@ export function getEarnedCompanions(completedCount) {
   return COMPANIONS.filter(companion => safeCount >= companion.min);
 }
 
-export function getPassportStamps(completedLessonIds) {
-  const completed = new Set(completedLessonIds || []);
-  return Array.from({ length: 10 }, (_, index) => {
-    const start = index * 20 + 1;
-    const lessonIds = Array.from({ length: 20 }, (__, offset) => `voyage-${start + offset}`);
-    const completedLessons = lessonIds.filter(id => completed.has(id)).length;
-    return {
-      month: index + 1,
-      completedLessons,
-      earned: completedLessons === 20,
-    };
-  });
-}
-
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>'"]/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;',
@@ -46,10 +34,10 @@ function escapeHtml(value) {
 }
 
 export function renderVoyageExperience(state) {
-  const completedCount = Math.min(200, state.completedLessons.length);
+  const completedCount = state.familyPlayState?.completedDays ?? getLearningDayCount(state.activityDates);
   const stage = getVoyageStage(completedCount);
   const companions = getEarnedCompanions(completedCount);
-  const stamps = getPassportStamps(state.completedLessons);
+  const stamps = buildDayPassport(state.familyPlayState?.completedDates || state.activityDates);
   const nextCompanion = COMPANIONS.find(companion => completedCount < companion.min);
   const percent = Math.round((completedCount / 200) * 100);
   const activeLanguage = state.languagePacks.find(pack => pack.id === state.activePackId)?.targetLanguage.name || 'Language';
@@ -96,10 +84,10 @@ export function renderVoyageExperience(state) {
       <div class="quarters-grid">
         <div class="quarters-panel">
           <h4>${escapeHtml(activeLanguage)} Passport</h4>
-          <p class="quarters-help">Earn one stamp for every 20 voyage lessons.</p>
+          <p class="quarters-help">Earn one stamp for every 20 learning days.</p>
           <div class="passport-stamps">
-            ${stamps.map(stamp => `<div class="passport-stamp ${stamp.earned ? 'earned' : ''}" title="Month ${stamp.month}: ${stamp.completedLessons} of 20 lessons">
-              <span>${stamp.earned ? '⚓' : stamp.month}</span><small>${stamp.completedLessons}/20</small>
+            ${stamps.map(stamp => `<div class="passport-stamp ${stamp.earned ? 'earned' : ''}" title="Month ${stamp.month}: ${stamp.completedDays} of 20 learning days">
+              <span>${stamp.earned ? '⚓' : stamp.month}</span><small>${stamp.completedDays}/20</small>
             </div>`).join('')}
           </div>
         </div>
@@ -114,4 +102,34 @@ export function renderVoyageExperience(state) {
         </div>
       </div>
     </section>`;
+}
+
+export function renderImmersiveVoyageHero(state) {
+  const completedDays = state.familyPlayState?.completedDays ?? getLearningDayCount(state.activityDates);
+  const percent = Math.round((completedDays / 200) * 100);
+  const stage = getVoyageStage(completedDays);
+  const port = Math.min(10, Math.floor(completedDays / 20) + 1);
+  const daysToNextPort = Math.max(0, Math.min(20, port * 20 - completedDays));
+  const cameraPosition = Math.max(0, Math.min(100, percent));
+
+  return `<section class="immersive-voyage" style="--voyage-camera:${cameraPosition}%;--voyage-progress:${percent}%" aria-labelledby="immersive-voyage-title">
+    <picture class="immersive-voyage__world-frame">
+      <source media="(min-width: 700px)" srcset="${PUBLIC_ASSET_BASE}assets/illustrations/nautilus-journey-world-wide.jpg">
+      <img class="immersive-voyage__world" src="${PUBLIC_ASSET_BASE}assets/illustrations/nautilus-journey-world.jpg" alt="A winding Adriatic learning route from a moonlit family harbor through coastal villages to a bright mountain lookout">
+    </picture>
+    <div class="immersive-voyage__veil" aria-hidden="true"></div>
+    <div class="immersive-voyage__masthead">
+      <span class="immersive-voyage__eyebrow">The 200-day family voyage</span>
+      <span>Port ${port} of 10</span>
+    </div>
+    <div class="immersive-voyage__hud">
+      <div class="hero-tag">Together on the same route</div>
+      <h1 id="immersive-voyage-title">${stage.icon} ${stage.label}</h1>
+      <p>${completedDays} family learning days complete · ${daysToNextPort} to the next port</p>
+      <div class="immersive-voyage__meter" aria-label="${percent}% of family voyage complete"><span></span></div>
+      <a class="btn btn-primary" href="#voyage-plan">Explore the route plan ↓</a>
+    </div>
+    <div class="immersive-voyage__vessel" aria-hidden="true"><span>⛵</span><i></i></div>
+    <div class="immersive-voyage__hint">The world climbs from moonlit harbor to mountain sunrise as your family learns together.</div>
+  </section>`;
 }

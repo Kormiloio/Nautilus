@@ -116,6 +116,13 @@ Topics that benefit from concrete visual recognition should open with an origina
 - Make missed days neutral; do not use shame-oriented messages.
 - Support more than one local learner profile on a shared device.
 
+Nautilus distinguishes shared curriculum movement from individual practice:
+
+- A **Family Voyage Day** is a parent-led learning session completed by the family on one local calendar date. It advances the shared 200-day route at most once on that date, regardless of how many activities the family completes.
+- **Independent Practice** includes flashcards, quizzes, matching, listening, and topic exploration completed by one learner outside the parent-led session. It contributes to that learner's personal practice history, stars, and topic mastery but does not advance the shared family route.
+- Independent completion never consumes, skips, or completes the matching Family Play lesson. A learner who has practiced ahead can repeat that material with the family; the shared lesson remains incomplete until an authorized adult explicitly completes it.
+- Completing several activity or lesson records on one date never creates several learning days.
+
 ### 7.4 Audio
 
 Every publishable word or phrase intended for listening practice should have approved audio or a clearly communicated fallback. Playback must be replayable and interruptible. If speech synthesis is used, voice availability and pronunciation must be checked on supported devices. Microphone use, if enabled for repetition, must be optional and recordings must not be retained by default.
@@ -191,7 +198,17 @@ Each learner has a Captain's Quarters logbook containing:
 - current stage, stars, and streak summary;
 - language-scoped progress, so a reward earned in one language never appears as earned in another.
 
-Companions and stamps must be deterministic consequences of completed lesson records. Profile selection, sign-in, free browsing, or merely opening a lesson must not award them. The experience must remain usable without animation and must not lock curriculum or imply that one learner is ahead of another.
+Companions and stamps must be deterministic consequences of completed Family Voyage Days. Profile selection, sign-in, independent practice, free browsing, or merely opening a lesson must not award them. The experience must remain usable without animation and must not lock curriculum or imply that one learner is ahead of another.
+
+### 8.4 Family Play Mode
+
+An authorized adult can start a Family Play session for a selected language and voyage day, choose participating learners, and control the shared lesson from the parent device. Participating learner devices show the same current segment and may respond locally, but cannot move the family to the next segment. The parent can pause, replay audio, move forward or backward, and end or complete the session.
+
+Completing the session records one shared Family Voyage Day and credits each selected participant. Every curriculum lesson therefore has separate family-session and learner-practice states. Learners may complete, repeat, or move ahead through the same content independently before or afterward without moving the family route or marking the family lesson complete. When the family returns to that lesson, its complete content remains available to do together; only an authorized adult's explicit **Complete for Family** action advances the shared position. A disconnected participant can rejoin the active session. The initial release should favor clear state and recoverability over real-time animation complexity.
+
+### 8.5 Immersive voyage presentation
+
+The primary voyage view should use most of the viewport as a moving world rather than present the route only as a static card. Wide screens use a cinematic left-to-right archipelago; phones use a vertically winding route composed for the narrow viewport. The camera position, vessel, environment, and route treatment change with shared family progress. Detailed calendar and curriculum management remain available below or outside the immersive view. Motion respects reduced-motion preferences and essential state remains available as text.
 
 ## 9. Functional requirements
 
@@ -229,6 +246,11 @@ Companions and stamps must be deterministic consequences of completed lesson rec
 | FR-30 | Authorized adults can open a family overview showing adult memberships, pending invitations, and each learner's language-scoped progress. | Must |
 | FR-31 | The learner dashboard represents the 200-day curriculum as a ten-port voyage with five non-competitive progress stages. | Should |
 | FR-32 | The learner logbook shows deterministic language-scoped passport stamps and sea companions derived only from completed lessons. | Should |
+| FR-33 | Multiple completed activities on one local date count as exactly one Family Voyage Day. | Must |
+| FR-34 | Independent practice never advances the shared Family Voyage Day position. | Must |
+| FR-35 | An authorized adult can start, control, pause, and complete a synchronized Family Play session for selected learners. | Must |
+| FR-36 | Learners in Family Play follow the adult-controlled segment while retaining separate independent-practice progress. | Must |
+| FR-37 | The voyage plan provides an immersive, progress-positioned world with an accessible reduced-motion presentation. | Should |
 
 ## 10. Quality requirements
 

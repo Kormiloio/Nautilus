@@ -27,11 +27,17 @@ import {
 import { onAuthStateChange, getSession, isConfigured } from './engine/supabase-client.js';
 import {
   acceptFamilyInvitation,
+  completeFamilyPlay,
+  controlFamilyPlay,
   createFamily,
+  getFamilyPlayState,
   getFamilyOverview,
   inviteFamilyMember,
   inviteLearnerProfile,
+  joinFamilyPlay,
   listFamilies,
+  startFamilyPlay,
+  subscribeToFamilyPlay,
 } from './engine/family-service.js';
 
 // Import views
@@ -42,6 +48,7 @@ import { renderTopicView } from './components/topic-view.js';
 import { renderSessionView } from './components/session-view.js';
 import { renderCurriculum } from './components/curriculum-view.js';
 import { renderFamilyOverview } from './components/family-overview.js';
+import { renderFamilyPlayView } from './components/family-play-view.js';
 
 // Global state
 const state = {
@@ -54,6 +61,7 @@ const state = {
   familyNotice: null,
   familyOverview: null,
   familyOverviewLoading: false,
+  familyPlayState: null,
   activePackId: 'montenegrin-en',
   languagePacks: getAvailableLanguagePacks(),
 
@@ -109,6 +117,13 @@ const actions = {
       }
     }
     loadProfileState(state.profile);
+    if (state.sessionUser) {
+      try {
+        await loadFamilyPlayState();
+      } catch (error) {
+        state.familyError = error.message;
+      }
+    }
     state.screen = 'dashboard';
     cleanupSessionState();
     rerender();
@@ -171,12 +186,14 @@ const actions = {
     state.screen = 'dashboard';
     cleanupSessionState();
     rerender();
+    window.scrollTo({ top: 0, behavior: 'auto' });
   },
 
   goCurriculum: () => {
     state.screen = 'curriculum';
     cleanupSessionState();
     rerender();
+    window.scrollTo({ top: 0, behavior: 'auto' });
   },
 
   goProfileSelect: () => {
@@ -193,13 +210,82 @@ const actions = {
     state.familyError = null;
     rerender();
     try {
-      state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
+      const familyId = state.families?.[0]?.family_id;
+      state.familyOverview = await getFamilyOverview(familyId);
+      state.familyPlayState = await getFamilyPlayState(familyId, state.activePackId);
     } catch (error) {
       state.familyError = error.message;
     } finally {
       state.familyOverviewLoading = false;
       rerender();
     }
+  },
+
+  startFamilySession: async (participantProfileIds) => {
+    const familyId = state.families?.[0]?.family_id;
+    const pack = state.languagePacks.find(item => item.id === state.activePackId);
+    const completedDays = state.familyPlayState?.completedDays || 0;
+    const lesson = VOYAGE_LESSONS[Math.min(completedDays, 199)];
+    state.familyError = null;
+    try {
+      await startFamilyPlay({
+        familyId,
+        packId: pack.id,
+        packVersion: pack.version,
+        lessonId: lesson.id,
+        voyageDay: completedDays + 1,
+        participantProfileIds,
+      });
+      await loadFamilyPlayState();
+      state.activeLesson = lesson;
+      state.screen = 'family-play';
+    } catch (error) {
+      state.familyError = error.message;
+    }
+    rerender();
+  },
+
+  openFamilySession: async () => {
+    const active = state.familyPlayState?.activeSession;
+    if (!active) return;
+    state.familyError = null;
+    try {
+      if (state.families?.[0]?.role === 'learner') await joinFamilyPlay(active.id);
+      await loadFamilyPlayState();
+      state.activeLesson = VOYAGE_LESSONS.find(lesson => lesson.id === active.lessonId) || VOYAGE_LESSONS[active.voyageDay - 1];
+      state.screen = 'family-play';
+    } catch (error) {
+      state.familyError = error.message;
+    }
+    rerender();
+  },
+
+  controlFamilySession: async (status, segment) => {
+    const sessionId = state.familyPlayState?.activeSession?.id;
+    if (!sessionId) return;
+    try {
+      await controlFamilyPlay(sessionId, status, segment);
+      await loadFamilyPlayState();
+    } catch (error) {
+      state.familyError = error.message;
+    }
+    rerender();
+  },
+
+  completeFamilySession: async () => {
+    const sessionId = state.familyPlayState?.activeSession?.id;
+    if (!sessionId) return;
+    try {
+      await completeFamilyPlay(sessionId);
+      await loadFamilyPlayState();
+      state.screen = 'family-overview';
+      state.activeLesson = null;
+      state.familyNotice = 'Family voyage day completed together.';
+      state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
+    } catch (error) {
+      state.familyError = error.message;
+    }
+    rerender();
   },
 
   refresh: () => {
@@ -383,9 +469,40 @@ function selectLinkedLearnerProfile() {
   if (linkedProfiles.length === 1) setActiveProfile(linkedProfiles[0].name);
 }
 
+let stopFamilyPlaySubscription = null;
+
+async function loadFamilyPlayState() {
+  const familyId = state.families?.[0]?.family_id;
+  if (!familyId || !state.sessionUser) {
+    state.familyPlayState = null;
+    return;
+  }
+  state.familyPlayState = await getFamilyPlayState(familyId, state.activePackId);
+}
+
+function watchFamilyPlay() {
+  stopFamilyPlaySubscription?.();
+  stopFamilyPlaySubscription = null;
+  const familyId = state.families?.[0]?.family_id;
+  if (!familyId || !state.sessionUser) return;
+  stopFamilyPlaySubscription = subscribeToFamilyPlay(familyId, async () => {
+    try {
+      await loadFamilyPlayState();
+      rerender();
+    } catch (error) {
+      state.familyError = error.message;
+    }
+  });
+}
+
 // Global Rerender Controller
 function rerender() {
   appContainer.innerHTML = '';
+
+  if (state.screen === 'family-play') {
+    renderFamilyPlayView(appContainer, state, actions);
+    return;
+  }
 
   if (!state.profile) {
     if (state.screen === 'family-overview') renderFamilyOverview(appContainer, state, actions);
@@ -444,6 +561,8 @@ async function init() {
           state.families = await listFamilies();
           await syncCloudDataToLocal();
           selectLinkedLearnerProfile();
+          await loadFamilyPlayState();
+          watchFamilyPlay();
           await triggerSync();
         } catch (e) {
           console.error('Error syncing cloud data on auth event:', e);
@@ -451,6 +570,9 @@ async function init() {
         }
       } else {
         state.families = null;
+        state.familyPlayState = null;
+        stopFamilyPlaySubscription?.();
+        stopFamilyPlaySubscription = null;
         setActiveProfile(null);
         state.profile = null;
       }
@@ -483,6 +605,8 @@ async function init() {
         state.families = await listFamilies();
         await syncCloudDataToLocal();
         selectLinkedLearnerProfile();
+        await loadFamilyPlayState();
+        watchFamilyPlay();
         await triggerSync();
       } catch (e) {
         console.error('Error syncing initial cloud data:', e);
