@@ -126,3 +126,88 @@ export async function suggestFamilyVariant(variant) {
   if (error) throw error;
   return data;
 }
+
+function isoLocalDate(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export async function getFamilyPlayState(familyId, packId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('get_family_play_state', {
+    target_family: familyId,
+    target_pack_id: packId,
+  });
+  if (error) throw error;
+  return data || { completedDays: 0, completedDates: [], activeSession: null };
+}
+
+export async function startFamilyPlay({
+  familyId,
+  packId,
+  packVersion,
+  lessonId,
+  voyageDay,
+  participantProfileIds = [],
+  date = new Date(),
+  timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+}) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('start_family_play', {
+    target_family: familyId,
+    target_pack_id: packId,
+    target_pack_version: packVersion,
+    target_lesson_id: lessonId,
+    target_voyage_day: voyageDay,
+    target_local_date: isoLocalDate(date),
+    target_timezone: timezone,
+    participant_profiles: participantProfileIds,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function controlFamilyPlay(sessionId, status, segment = null) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('control_family_play', {
+    target_session: sessionId,
+    requested_status: status,
+    requested_segment: segment,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function joinFamilyPlay(sessionId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('join_family_play', {
+    target_session: sessionId,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function completeFamilyPlay(sessionId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('complete_family_play', {
+    target_session: sessionId,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export function subscribeToFamilyPlay(familyId, onChange) {
+  requireCloud();
+  const channel = supabase
+    .channel(`family-play:${familyId}`)
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'family_voyage_sessions',
+      filter: `family_id=eq.${familyId}`,
+    }, onChange)
+    .subscribe();
+  return () => { supabase.removeChannel(channel); };
+}
