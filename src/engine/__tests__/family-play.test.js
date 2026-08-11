@@ -1,0 +1,85 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const { rpc, subscribe, removeChannel, on, channel } = vi.hoisted(() => {
+  const rpcMock = vi.fn();
+  const subscribeMock = vi.fn();
+  const removeChannelMock = vi.fn();
+  const onMock = vi.fn(() => ({ subscribe: subscribeMock }));
+  const channelMock = vi.fn(() => ({ on: onMock }));
+  return {
+    rpc: rpcMock,
+    subscribe: subscribeMock,
+    removeChannel: removeChannelMock,
+    on: onMock,
+    channel: channelMock,
+  };
+});
+
+vi.mock('../supabase-client.js', () => ({
+  isConfigured: true,
+  supabase: { rpc, channel, removeChannel },
+}));
+
+import {
+  completeFamilyPlay,
+  controlFamilyPlay,
+  getFamilyPlayState,
+  startFamilyPlay,
+  subscribeToFamilyPlay,
+} from '../family-service.js';
+
+describe('Family Play cloud service', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    rpc.mockResolvedValue({ data: null, error: null });
+    subscribe.mockReturnValue({});
+  });
+
+  it('starts a family session with an explicit local date and participants', async () => {
+    rpc.mockResolvedValueOnce({ data: 'session-1', error: null });
+    await expect(startFamilyPlay({
+      familyId: 'family-1',
+      packId: 'montenegrin-en',
+      packVersion: '0.1.0',
+      lessonId: 'voyage-1',
+      voyageDay: 1,
+      participantProfileIds: ['mia', 'jake'],
+      date: new Date(2026, 7, 10, 22, 30),
+      timezone: 'America/New_York',
+    })).resolves.toBe('session-1');
+
+    expect(rpc).toHaveBeenCalledWith('start_family_play', expect.objectContaining({
+      target_local_date: '2026-08-10',
+      target_voyage_day: 1,
+      participant_profiles: ['mia', 'jake'],
+    }));
+  });
+
+  it('keeps completion an explicit RPC separate from segment control', async () => {
+    await controlFamilyPlay('session-1', 'live', 3);
+    await completeFamilyPlay('session-1');
+    expect(rpc).toHaveBeenNthCalledWith(1, 'control_family_play', {
+      target_session: 'session-1', requested_status: 'live', requested_segment: 3,
+    });
+    expect(rpc).toHaveBeenNthCalledWith(2, 'complete_family_play', {
+      target_session: 'session-1',
+    });
+  });
+
+  it('returns an empty shared state without converting learner activity', async () => {
+    rpc.mockResolvedValueOnce({ data: null, error: null });
+    await expect(getFamilyPlayState('family-1', 'montenegrin-en')).resolves.toEqual({
+      completedDays: 0, completedDates: [], activeSession: null,
+    });
+  });
+
+  it('subscribes only to shared session changes for the selected family', () => {
+    const stop = subscribeToFamilyPlay('family-1', vi.fn());
+    expect(channel).toHaveBeenCalledWith('family-play:family-1');
+    expect(on).toHaveBeenCalledWith('postgres_changes', expect.objectContaining({
+      table: 'family_voyage_sessions', filter: 'family_id=eq.family-1',
+    }), expect.any(Function));
+    stop();
+    expect(removeChannel).toHaveBeenCalled();
+  });
+});

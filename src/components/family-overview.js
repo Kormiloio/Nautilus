@@ -25,11 +25,34 @@ export function renderFamilyOverview(container, state, actions) {
     <main class="container">
       ${state.familyOverviewLoading ? '<p>Loading family…</p>' : ''}
       ${state.familyError ? `<p role="alert" style="color: var(--pink);">${escapeHtml(state.familyError)}</p>` : ''}
+      ${state.familyNotice ? `<p role="status" style="color: var(--lime); margin-bottom: 16px;">${escapeHtml(state.familyNotice)}</p>` : ''}
       ${overview ? `
         <section class="hero-card" style="margin-bottom: 28px;">
           <div class="hero-text"><div class="hero-tag">Family workspace</div>
           <h1 class="hero-title">${escapeHtml(overview.family.name)}</h1>
           <p class="hero-subtitle">Members, invitations, and progress across every language.</p></div>
+        </section>
+
+        <section class="family-play-launch" aria-labelledby="family-play-launch-title">
+          <div>
+            <div class="hero-tag">Shared family voyage</div>
+            <h2 id="family-play-launch-title">${state.familyPlayState?.activeSession ? 'Family session in progress' : `Ready for voyage day ${(state.familyPlayState?.completedDays || 0) + 1}`}</h2>
+            <p>Independent practice stays personal. This shared position moves only when an adult chooses Complete for Family.</p>
+          </div>
+          ${state.familyPlayState?.activeSession ? `
+            <div class="family-play-active-summary">
+              <strong>Voyage day ${state.familyPlayState.activeSession.voyageDay}</strong>
+              <span>${escapeHtml(state.familyPlayState.activeSession.status)} · Part ${(state.familyPlayState.activeSession.currentSegment || 0) + 1}</span>
+              <button class="btn btn-primary" id="continue-family-play-btn">Continue Family Play →</button>
+            </div>` : `
+            <fieldset class="family-play-roster">
+              <legend>Who is learning together?</legend>
+              ${overview.learners.map(learner => `<label>
+                <input type="checkbox" name="family-participant" value="${escapeHtml(learner.id)}" checked>
+                <span>${escapeHtml(learner.name)}</span>
+              </label>`).join('') || '<p>Add a learner before starting Family Play.</p>'}
+            </fieldset>
+            <button class="btn btn-primary" id="start-family-play-btn" ${overview.learners.length ? '' : 'disabled'}>Start Family Session →</button>`}
         </section>
 
         <section style="margin-bottom: 32px;">
@@ -75,4 +98,14 @@ export function renderFamilyOverview(container, state, actions) {
     const email = prompt("Enter your partner's Google account email:");
     if (email?.trim()) await actions.invitePartner(email.trim(), true);
   });
+  container.querySelector('#start-family-play-btn')?.addEventListener('click', async () => {
+    const participantIds = [...container.querySelectorAll('input[name="family-participant"]:checked')]
+      .map(input => input.value);
+    if (!participantIds.length) {
+      window.alert('Select at least one learner for Family Play.');
+      return;
+    }
+    await actions.startFamilySession(participantIds);
+  });
+  container.querySelector('#continue-family-play-btn')?.addEventListener('click', actions.openFamilySession);
 }

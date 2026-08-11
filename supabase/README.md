@@ -18,7 +18,7 @@ npm run test:db
 npm run lint:db
 ```
 
-The pgTAP suite creates temporary Google-style test identities inside a transaction and rolls everything back. It verifies family creation, owner membership, learner and friend invitations, privilege-escalation denial, learner progress privacy, owner controls, family variants, and cross-family isolation.
+The pgTAP suite creates temporary Google-style test identities inside a transaction and rolls everything back. It verifies family creation, owner membership, learner and friend invitations, privilege-escalation denial, learner progress privacy, owner controls, family variants, cross-family isolation, and Family Play separation. Family Play tests prove that independent lesson attempts do not move shared progress and only explicit adult completion advances one family day.
 
 ## Authentication configuration
 

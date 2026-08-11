@@ -4,6 +4,7 @@ import {
   getVoyageSchedule,
   getTopic,
   generateSession,
+  createSeededRandom,
   CURRICULUM_TOPIC_IDS,
   EXTRA_TOPIC_IDS,
   getTopics,
@@ -110,6 +111,13 @@ describe('Learning Engine', () => {
     const recallSteps = generateSession(recallLesson, completedTopics);
     expect(recallSteps.map(s => s.type)).toContain('recall-flash');
     expect(recallSteps.map(s => s.type)).toContain('quiz');
+  });
+
+  it('should generate identical Family Play content from the same session seed', () => {
+    const lesson = VOYAGE_LESSONS.find(l => l.type === 'checkpoint');
+    const first = generateSession(lesson, [], { random: createSeededRandom('family-session-1') });
+    const second = generateSession(lesson, [], { random: createSeededRandom('family-session-1') });
+    expect(second).toEqual(first);
   });
 
   it('should expose a complete selectable Albanian voyage pack', () => {
