@@ -1,19 +1,19 @@
-# Product requirements document: Učimo crnogorski
+# Product requirements document: Nautilus language learning
 
 **Repository codename:** Nautilus  
-**Document status:** Draft for family review  
-**Last updated:** 2026-08-09  
+**Document status:** Montenegrin technical scaffold implemented; multi-family and multilingual platform in specification
+**Last updated:** 2026-08-10
 **Target:** A usable first-year learning experience spanning approximately 10 months
 
 ## 1. Product summary
 
-Učimo crnogorski is a responsive web application that helps teenage learners build enough practical Montenegrin to interact with relatives and navigate common situations during a trip to Montenegro. It combines short, repeatable activities with audio and travel-oriented role-play. Learners choose topics freely and receive lightweight feedback through stars, streaks, and visible topic progress.
+Nautilus is a responsive family language-learning application. Its first course, Učimo crnogorski, helps teenage learners build enough practical Montenegrin to interact with relatives and navigate common situations during a trip to Montenegro. The platform will also support separately reviewed Albanian, Spanish, French, and Greek language packs. It combines short, repeatable activities with audio and practical role-play. Learners select a language, choose topics freely, and receive lightweight feedback through stars, streaks, and visible topic progress.
 
 The app is a supplement to family teaching, not a comprehensive language course or a substitute for a fluent speaker.
 
 ## 2. Problem
 
-The learners know some words but need a sustainable way to practice for roughly ten months. Existing generic language products may not offer Montenegrin, may not reflect the family's lesson material, and may overemphasize linear courses or childish reward systems. The family needs one accessible place for correct vocabulary, phrases, scripts, listening, repetition, and situational practice across shared and personal devices.
+Learners need a sustainable way to practice for roughly ten months. Existing generic products may not offer a family's heritage language, may not reflect household vocabulary, and may overemphasize linear courses or childish reward systems. Families need one accessible place for reviewed standard vocabulary, optional family variants, phrases, scripts, listening, repetition, and situational practice across shared and personal devices.
 
 ## 3. Goals
 
@@ -33,6 +33,8 @@ Product goals:
 - make practice sessions useful in 5–15 minutes;
 - preserve learner choice while making progress and weak areas visible;
 - keep content maintainable and reviewable outside of UI code.
+- let families enable supported languages without mixing curricula or progress;
+- preserve reviewed standard language while allowing clearly labeled private family wording.
 
 ## 4. Non-goals for the first release
 
@@ -44,6 +46,8 @@ Product goals:
 - retention of microphone recordings;
 - native iOS or Android applications;
 - teacher/classroom administration.
+- automatic translation of the Montenegrin curriculum into another supposedly publishable course;
+- presenting a family variant as globally reviewed standard language.
 
 ## 5. Users
 
@@ -53,12 +57,16 @@ Product goals:
 - Knows some words but has limited ability to form or understand sentences
 - Uses a phone or tablet most often, with occasional computer access
 - Wants direct, age-appropriate practice without a childish interface
+- May use an individual email-based account to join a family and carry progress across devices
+- May invite friends or relatives into the family workspace as learners when the parent owner permits it
 
 ### Secondary: parent or family guide
 
 - Adds or reviews family lesson material
 - Helps select useful topics and validates progress informally
 - Needs clear wording and simple management, without a complex teacher dashboard
+- Creates or joins a family, invites members, and manages roles and learner profiles when cloud features are enabled
+- Owns the workspace, can revoke learner-created invitations or memberships, and may disable learner invitations
 
 ### Content reviewer
 
@@ -97,6 +105,8 @@ The final curriculum and topic count depend on review of the existing lesson mat
 - **Listen and repeat:** play reviewed audio and invite the learner to repeat. The first release may use self-assessment and must not claim pronunciation accuracy without a validated scoring system.
 - **Role-play:** guide short branching or swappable-part dialogues for selected real situations.
 
+Topics that benefit from concrete visual recognition should open with an original contextual scene and carry the same visual cues into their supported activities. Visuals must teach or reinforce meaning rather than function only as decoration. Text, audio, and accessible names remain available so an image is never the sole source of essential information. The Colors topic is the initial reference implementation: a recognizable harbor scene introduces six colors, color-dominant cards support discovery and recall, and matching tiles retain the learned color cue.
+
 ### 7.3 Progress and motivation
 
 - Award stars for completed practice based on understandable rules.
@@ -114,9 +124,28 @@ Every publishable word or phrase intended for listening practice should have app
 
 Content may include Latin, Cyrillic, English meaning, and optional learner-friendly notes. The interface must preserve Montenegrin diacritics. Activities should introduce script recognition deliberately rather than presenting transliteration as interchangeable in every context.
 
-## 8. Ten-month curriculum shape
+### 7.6 Languages and family variants
 
-The product uses free navigation, but content should be deep enough for four broad learning phases:
+The initial target-language roadmap is Montenegrin, Albanian, Spanish, French, and Greek, with English as the initial interface and instructional support language. Every target language is an independently versioned and reviewed language pack with its own content, scripts, audio rules, curriculum, and voyage readiness. Selecting one language must not alter another language's progress.
+
+Published language-pack content remains the standard source. A family may privately add a word or phrase or attach a labeled alternative to a stable standard item. For example, the standard Montenegrin pack may teach `deda` while a Croatian-influenced family chooses to show or prefer `dida`. The family can use standard-only, show-both, or prefer-family display behavior without overwriting the standard pack or affecting another family.
+
+## 8. Ten-month learning voyage
+
+The planned experience contains **200 weekday lesson positions across 40 instructional weeks**. The engine currently generates all 200 structural positions; they become publishable lessons only after their distinct segments and language/audio content pass readiness review. This is a recommended family rhythm, not a content lock: learners may still open any published topic or practice freely.
+
+Each of the ten learning months uses a four-week pattern:
+
+| Week | Focus | Weekday lessons |
+| --- | --- | --- |
+| 1 | Topic A | discover, recall, build, use, checkpoint |
+| 2 | Topic B | discover, recall, build, use, checkpoint |
+| 3 | Topic C | discover, recall, build, use, checkpoint |
+| 4 | Integration | mixed review, listening, sentence building, role-play, family challenge |
+
+Months containing additional calendar weeks may use them for rest, catch-up, bonus lessons, or trip simulations without increasing the 200-day core. The initial schedule begins Monday, August 10, 2026 and is planned in `America/New_York`. Weekends have no scheduled core lesson; optional weekend practice may count as an active day but does not advance the core voyage.
+
+The content progression still follows four broad phases:
 
 | Approximate period | Learning emphasis | Outcome |
 | --- | --- | --- |
@@ -125,7 +154,44 @@ The product uses free navigation, but content should be deep enough for four bro
 | Months 6–8 | travel, shopping, directions, needs, richer sentence patterns | navigate common trip situations |
 | Months 9–10 | mixed review, listening, role-play, family-specific language | improve recall and confidence under realistic conditions |
 
-This is a content-planning framework, not a forced learner path. The app should offer optional review collections across topics as the library grows. The current prototype's August–July 12-month journey, weekly content locks, and “Tonight's Session” recommendation are not approved requirements and must be reconciled before implementation proceeds.
+This is a content-planning framework, not a forced learner path. The app should offer optional review collections across topics as the library grows. The current prototype's August–July 12-month journey, weekly content locks, and “Tonight's Session” recommendation are superseded by the optional 200-day voyage.
+
+### 8.1 Five-day topic cycle
+
+| Day | Lesson purpose | Representative activity |
+| --- | --- | --- |
+| 1 — Discover | introduce useful language and pronunciation | 6–8 new items with reviewed audio |
+| 2 — Recall | retrieve meaning and recognize spoken/script forms | flashcards, matching, listening |
+| 3 — Build | apply one sentence or grammar pattern | guided sentence construction |
+| 4 — Use | rehearse language in context | dialogue or role-play |
+| 5 — Checkpoint | combine recall, listening, and production | mixed review and family challenge |
+
+A topic is voyage-ready only when it can support five meaningfully different lessons. Repeating the same item deck with a different button does not constitute five lessons.
+
+### 8.2 Calendar and day counter
+
+The learner dashboard should show:
+
+- `Voyage day N of 200`, representing the next planned lesson position;
+- active practice days this week and month;
+- a monthly calendar with planned, in-progress, completed, catch-up-available, and rest states;
+- today's recommended lesson and its topic/day purpose;
+- a separate route to browse all published topics freely.
+
+Suggested nautical display labels are `in harbor` (rest), `charted` (planned), `making way` (in progress), `full sail` (completed), and `open water` (available for catch-up). Missed days use neutral language and never shame the learner.
+
+### 8.3 Voyage map and learner logbook
+
+The learner dashboard presents the 200-day curriculum as a ten-port voyage. Completed lessons advance the route and determine one of five milestone labels: `Anchors Aweigh`, `Making Headway`, `Rounding the Mark`, `Flying Colors`, and `Shipshape · Moored`. These milestones describe personal progress only; they are not family ranks or competitive leaderboards.
+
+Each learner has a Captain's Quarters logbook containing:
+
+- a language passport with one stamp for each completed 20-lesson month;
+- sea companions earned at published voyage milestones;
+- current stage, stars, and streak summary;
+- language-scoped progress, so a reward earned in one language never appears as earned in another.
+
+Companions and stamps must be deterministic consequences of completed lesson records. Profile selection, sign-in, free browsing, or merely opening a lesson must not award them. The experience must remain usable without animation and must not lock curriculum or imply that one learner is ahead of another.
 
 ## 9. Functional requirements
 
@@ -145,16 +211,52 @@ This is a content-planning framework, not a forced learner path. The app should 
 | FR-12 | The app can add topics and activities by editing structured content rather than application code. | Must |
 | FR-13 | Core installed content and saved local progress remain usable after a page refresh; offline support is a later decision. | Must |
 | FR-14 | No topic is locked because of score, streak, or lesson order. | Must |
+| FR-15 | The app provides a configurable 200-lesson voyage organized as 40 five-day instructional weeks. | Must |
+| FR-16 | Each learning month contains three topic weeks and one integration/review week. | Must |
+| FR-17 | The dashboard shows voyage position, active-day counts, and a monthly learning calendar. | Must |
+| FR-18 | Opening a profile or lesson does not count as an active or completed learning day. | Must |
+| FR-19 | A scheduled day completes only after its declared required lesson segments are completed. | Must |
+| FR-20 | Missed lessons can be resumed or rescheduled without locking topics or applying punitive messaging. | Must |
+| FR-21 | Free practice remains available independently of the recommended daily voyage. | Must |
+| FR-22 | A family can enable any published Montenegrin, Albanian, Spanish, French, or Greek language pack. | Must |
+| FR-23 | A learner can select an enabled language and see that active language throughout learning flows. | Must |
+| FR-24 | Curriculum, content, audio, voyage state, stars, streaks, and progress remain isolated by learner and language pack. | Must |
+| FR-25 | Every published language pack has independent fluent language/audio review and publication status. | Must |
+| FR-26 | Authorized adults can add private family words or phrases to a selected language without modifying standard content. | Must |
+| FR-27 | Families can show the standard form, both forms, or prefer an approved family alternative while retaining access to the standard. | Must |
+| FR-28 | Family additions and alternatives never appear for another family. | Must |
+| FR-29 | Activities accept configured family alternatives without treating accepted synonyms as mutually exclusive answers. | Must |
+| FR-30 | Authorized adults can open a family overview showing adult memberships, pending invitations, and each learner's language-scoped progress. | Must |
+| FR-31 | The learner dashboard represents the 200-day curriculum as a ten-port voyage with five non-competitive progress stages. | Should |
+| FR-32 | The learner logbook shows deterministic language-scoped passport stamps and sea companions derived only from completed lessons. | Should |
 
 ## 10. Quality requirements
 
 - **Responsive:** no horizontal scrolling at supported mobile widths; touch targets are comfortably usable.
 - **Accessible:** target WCAG 2.2 AA for the core experience, including keyboard operation, visible focus, text resizing, contrast, labels, and reduced motion.
-- **Fast:** core screens should become interactive quickly on an ordinary mobile connection; formal budgets will be set after architecture selection.
+- **Fast:** core screens should become interactive quickly on an ordinary mobile connection; formal performance budgets remain to be established from family-alpha measurements.
 - **Resilient:** unavailable audio, denied microphone permission, malformed content, or storage limits produce useful fallback behavior.
 - **Private:** no behavioral ads; no retained voice recordings by default; collect only data required for named product behavior.
 - **Maintainable:** learning content is schema-validated, versionable, and separable from presentation components.
 - **Testable:** scoring, progress, streaks, activity generation, and content validation have automated coverage.
+
+### 10.1 Implemented technical foundation
+
+The production foundation is a modular, static Vite web application:
+
+- `src/main.js` owns application state, navigation, and screen orchestration;
+- `src/components/` contains the dashboard, calendar, curriculum, profile, topic, and session views;
+- `src/engine/learning-engine.js` generates the 200-lesson voyage and weekday schedule;
+- `src/engine/progress-store.js` isolates profile-scoped local progress and calculates date-based streaks;
+- `src/content/topics.json` is now explicitly identified as the draft `montenegrin-en` language pack; its 33 topics, 248 learning items, and dialogue lines use stable IDs plus language-neutral target/support text fields;
+- `src/content/albanian.js` provides the selectable `albanian-en@0.1.0` review pack across the same 200-day structure; its standard Albanian text remains explicitly pending fluent-family review;
+- authenticated adults can invite partners or link a child's Google account to an existing learner profile using email-bound, single-use, seven-day invitations;
+- `src/content/schema.json` and the Ajv validator currently reject structural errors and invalid curriculum references; publication filtering, stable item identifiers, detailed review metadata, and five-day readiness validation remain to be implemented;
+- Vitest covers voyage size, month/week structure, topic coverage, weekday scheduling, session generation, and streak behavior;
+- Vite writes the static production build to `web/` for the existing Netlify deployment;
+- `web/prototype.html` preserves the original generated prototype as a historical reference.
+
+The implemented curriculum assigns 30 unique core topics to ten months, three per month. Past Tense, Future Tense, and Arriving in Montenegro remain freely browsable advanced/capstone topics outside the core sequence. The architecture is selected and no longer an open foundation decision.
 
 ## 11. Content model
 
@@ -170,6 +272,8 @@ At minimum, a learning item needs:
 - audio reference and review status;
 - language-review status and reviewer/date metadata;
 - activity eligibility and distractor data where needed.
+
+Every item belongs to a versioned language pack declaring its target language, English support language, scripts, and publication state. Runtime fields will use language-neutral names such as target text and support text rather than Montenegrin-specific property names. Family additions and alternatives are stored separately with family, language-pack, stable standard-item target, approval, preference, creator, and audit metadata.
 
 Content should move through `draft → language reviewed → audio reviewed → publishable`. The UI must not imply that draft machine-generated language is authoritative.
 
@@ -189,11 +293,15 @@ Success for the first year is demonstrated by sustained voluntary use and improv
 
 ### Foundation
 
-Import and audit the prototype and lesson material; validate the content model; choose the architecture; establish automated checks and accessible responsive navigation.
+Completed: the prototype was audited and preserved, content was extracted and structurally validated, the Vite architecture was selected, automated engine checks were established, and the responsive 200-position voyage scaffold was implemented.
 
 ### Family alpha
 
-Ship a small number of fully reviewed topics with all core activity patterns, local profiles, progress, and reliable audio. Observe real use before scaling content.
+Ship a small number of fully reviewed Montenegrin topics with all core activity patterns, accounts/families, language-scoped progress, and reliable audio. Observe real use before scaling content or publishing another pack.
+
+### Multilingual alpha
+
+Ship Albanian as the second independently reviewed language pack, validate learner language switching and family variants, and use that work to prove the pack platform before Spanish, French, and Greek publication.
 
 ### Ten-month beta
 
@@ -205,22 +313,32 @@ Prioritize listening recall, scenario rehearsal, offline/poor-connectivity needs
 
 ## 14. Decisions still needed
 
-1. Is cross-device progress required, or is separate local progress acceptable for the first year?
+1. Optional cross-device progress is planned through parent-owned family workspaces. Adults and learners authenticate using Google OAuth, the only family-alpha sign-in method. Owners and adult/guides may invite permitted roles; learners may invite friends or relatives only as learners. Owners may revoke or disable learner invitations. Parent-managed learner profiles and local-only use remain supported. Ownership transfer and rollout timing remain to be confirmed.
 2. Will a fluent family member or an external reviewer approve language and recordings?
-3. Should the first release include a parent-only progress view, and if so how is it entered without accounts?
+3. Should the first release include a parent-only progress view, and how should access work in both local-only and family-account modes?
 4. Is offline use during travel a must-have?
 5. Should learners see English first, Montenegrin first, or choose per activity?
 6. What browsers and oldest devices must be supported?
 7. Is the production name Učimo crnogorski, or is that still provisional?
-8. Should the current guided “family session” remain as an optional mode despite the no-next-suggestion decision?
+8. Should the guided voyage be the default dashboard emphasis or a secondary optional mode alongside free browsing?
 9. Should real family names be kept in the repository, or replaced with configurable/anonymous local profiles?
+10. Which holidays, vacations, and travel dates should be excluded when mapping the 200 instructional days to real dates?
+11. Who owns fluent language and audio review for Spanish, French, and Greek?
+12. May a learner follow more than one active voyage concurrently?
+13. May families attach private recorded audio to variants, and what retention controls apply?
 
-## 15. Acceptance for product foundation
+## 15. Current acceptance status
 
-The foundation is ready for implementation when:
+The technical product scaffold passes structural content validation, engine/unit tests, production build, and manual core browser-flow checks. It does not yet represent 200 publishable lessons, production-ready catch-up/rescheduling, or approved cloud synchronization. Family-alpha readiness still requires:
 
-- the prototype and lesson source are present and audited;
-- the family approves this PRD's goals, non-goals, and unresolved decisions;
-- a language-review owner is named;
-- representative content validates the proposed data model;
-- the initial OpenSpec change is reviewed and its tasks are appropriately sized.
+- family approval of this PRD's goals, curriculum map, and unresolved calendar decisions;
+- a named fluent language/audio review owner;
+- expansion of core topics into meaningfully distinct daily lesson material;
+- implementation of stable content identifiers, publication filtering, and voyage-readiness validation;
+- migration from `mn`/`en` fields to language-neutral, versioned language-pack content;
+- reviewed audio or an approved fallback policy;
+- complete language-scoped progress isolation and family-variant authorization tests;
+- named fluent review and a separate pilot before any Albanian, Spanish, French, or Greek pack is published;
+- completion and verification of optional family-account migration, authorization, synchronization, recovery, and deletion behavior before cloud sync is deployed;
+- completion of keyboard, screen-reader, zoom, contrast, reduced-motion, storage-failure, and supported-device verification;
+- a four-week family pilot before treating the full 200-day sequence as release-ready.

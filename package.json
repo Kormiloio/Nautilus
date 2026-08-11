@@ -1,0 +1,23 @@
+{
+  "name": "nautilus-ucimo-crnogorski",
+  "version": "1.0.0",
+  "description": "Nautilus is a family language-learning web app with versioned language packs, private family vocabulary, and an initial Montenegrin voyage.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/clean-build.mjs && vite build",
+    "test": "vitest run",
+    "validate": "node scripts/validate-content.js",
+    "db:reset": "supabase db reset --local",
+    "test:db": "supabase test db --local supabase/tests/rls.sql",
+    "lint:db": "supabase db lint --local --level warning"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "vite": "^6.0.0",
+    "vitest": "^2.1.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.2"
+  }
+}
