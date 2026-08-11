@@ -6,6 +6,8 @@ const VOYAGE_STAGES = [
   { id: 'shipshape-moored', label: 'Shipshape · Moored', min: 200, icon: '🏝️' },
 ];
 
+const PUBLIC_ASSET_BASE = import.meta.env.BASE_URL;
+
 const COMPANIONS = [
   { min: 1, icon: '🐠', name: 'Reef Scout', note: 'First lesson completed' },
   { min: 25, icon: '🐬', name: 'Bright Dolphin', note: '25 voyage days completed' },
@@ -75,7 +77,7 @@ export function renderVoyageExperience(state) {
         <button class="btn btn-secondary btn-pill" id="view-voyage-btn">View voyage plan →</button>
       </div>
       <div class="voyage-sea" style="--voyage-progress:${percent}%">
-        <img class="voyage-sea__art" src="./assets/illustrations/nautilus-voyage-map.jpg" alt="An illustrated sea route leading from a moonlit harbor toward the mountains and coastal towns of Montenegro">
+        <img class="voyage-sea__art" src="${PUBLIC_ASSET_BASE}assets/illustrations/nautilus-voyage-map.jpg" alt="An illustrated sea route leading from a moonlit harbor toward the mountains and coastal towns of Montenegro">
         <div class="voyage-sea__shade" aria-hidden="true"></div>
         <div class="voyage-route" aria-hidden="true"><span></span></div>
         <ol class="voyage-ports" aria-label="Ten voyage ports">${route}</ol>
@@ -104,7 +106,7 @@ export function renderVoyageExperience(state) {
         <div class="quarters-panel">
           <h4>Friends of the Sea</h4>
           <p class="quarters-help">Companions mark steady progress, never competition.</p>
-          <img class="sea-friends__art ${companions.length ? '' : 'waiting'}" src="./assets/illustrations/friends-of-the-sea.jpg" alt="A reef fish, dolphin, sea turtle, and whale swimming together as a voyage crew">
+          <img class="sea-friends__art ${companions.length ? '' : 'waiting'}" src="${PUBLIC_ASSET_BASE}assets/illustrations/friends-of-the-sea.jpg" alt="A reef fish, dolphin, sea turtle, and whale swimming together as a voyage crew">
           <div class="sea-friends">
             ${companions.length ? companions.map(friend => `<div class="sea-friend" title="${friend.note}"><span>${friend.icon}</span><small>${friend.name}</small></div>`).join('') : '<p class="quarters-empty">Complete your first lesson to meet your Reef Scout.</p>'}
           </div>

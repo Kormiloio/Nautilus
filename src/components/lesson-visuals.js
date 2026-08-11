@@ -7,6 +7,8 @@ const COLOR_SPECS = [
   { id: 'white', hex: '#f5f1e8', dark: true, terms: ['white', 'bijela', 'e bardhë'] },
 ];
 
+const PUBLIC_ASSET_BASE = import.meta.env.BASE_URL;
+
 export function getColorSpec(value) {
   const normalized = String(value || '').trim().toLocaleLowerCase();
   return COLOR_SPECS.find(spec => spec.terms.includes(normalized)) || null;
@@ -34,7 +36,7 @@ export function colorTileStyle(text) {
 export function renderColorsIntro(topicId) {
   if (topicId !== 'colors') return '';
   return `<figure class="lesson-scene lesson-scene--colors">
-    <img src="./assets/illustrations/colors-harbor.jpg" alt="A Montenegro harbor with a red boat, blue sea, green shutters, yellow umbrella, black cat, and white church tower">
+    <img src="${PUBLIC_ASSET_BASE}assets/illustrations/colors-harbor.jpg" alt="A Montenegro harbor with a red boat, blue sea, green shutters, yellow umbrella, black cat, and white church tower">
     <figcaption><strong>Find the colors in the harbor.</strong><span>Red boat · blue sea · green shutters · yellow umbrella · black cat · white tower</span></figcaption>
   </figure>`;
 }
