@@ -111,7 +111,7 @@ export function renderVoyageExperience(state) {
         <button class="btn btn-secondary btn-pill" id="view-voyage-btn">View voyage plan →</button>
       </div>
       <div class="voyage-sea" style="--voyage-progress:${percent}%">
-        <img class="voyage-sea__art" src="${PUBLIC_ASSET_BASE}assets/illustrations/nautilus-voyage-map.jpg" alt="An illustrated sea route leading from a moonlit harbor toward the mountains and coastal towns of Montenegro">
+        <img class="voyage-sea__art" src="${PUBLIC_ASSET_BASE}assets/illustrations/nautilus-voyage-panorama-v3.jpg" alt="A vintage travel-poster voyage from a moonlit Adriatic harbor toward the mountains and coastal towns of Montenegro">
         <div class="voyage-sea__shade" aria-hidden="true"></div>
         <div class="voyage-route" aria-hidden="true"><span></span></div>
         <ol class="voyage-ports" aria-label="Ten voyage ports">${route}</ol>
@@ -178,7 +178,7 @@ export function renderImmersiveVoyageHero(state) {
 
   return `<section class="immersive-voyage" style="--voyage-camera:${cameraPosition}%;--voyage-progress:${percent}%;--voyage-x:${vessel.x}%;--voyage-y:${vessel.y}%" aria-labelledby="immersive-voyage-title">
     <picture class="immersive-voyage__world-frame">
-      <img class="immersive-voyage__world" src="${PUBLIC_ASSET_BASE}assets/illustrations/nautilus-voyage-panorama-v2.jpg" alt="An Adriatic learning voyage from a moonlit family harbor through islands toward a sunlit Montenegrin mountain town">
+      <img class="immersive-voyage__world" src="${PUBLIC_ASSET_BASE}assets/illustrations/nautilus-voyage-panorama-v3.jpg" alt="A vintage travel-poster Adriatic voyage from a moonlit family harbor through islands toward a sunlit Montenegrin mountain town">
     </picture>
     <div class="immersive-voyage__veil" aria-hidden="true"></div>
     <div class="immersive-voyage__clouds" aria-hidden="true"></div>

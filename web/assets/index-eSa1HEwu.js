@@ -108,7 +108,7 @@ ${b}`}class N extends Error{constructor({message:e,code:r,cause:i,name:s}){var n
         <button class="btn btn-secondary btn-pill" id="view-voyage-btn">View voyage plan →</button>
       </div>
       <div class="voyage-sea" style="--voyage-progress:${a}%">
-        <img class="voyage-sea__art" src="${Nt}assets/illustrations/nautilus-voyage-map.jpg" alt="An illustrated sea route leading from a moonlit harbor toward the mountains and coastal towns of Montenegro">
+        <img class="voyage-sea__art" src="${Nt}assets/illustrations/nautilus-voyage-panorama-v3.jpg" alt="A vintage travel-poster voyage from a moonlit Adriatic harbor toward the mountains and coastal towns of Montenegro">
         <div class="voyage-sea__shade" aria-hidden="true"></div>
         <div class="voyage-route" aria-hidden="true"><span></span></div>
         <ol class="voyage-ports" aria-label="Ten voyage ports">${c}</ol>
@@ -157,7 +157,7 @@ ${b}`}class N extends Error{constructor({message:e,code:r,cause:i,name:s}){var n
       <span class="voyage-landmark__label"><strong>${h.name}</strong><small>${h.chapter}</small></span>
     </button>`}).join(""),d=Pe[s-1];return`<section class="immersive-voyage" style="--voyage-camera:${a}%;--voyage-progress:${r}%;--voyage-x:${o.x}%;--voyage-y:${o.y}%" aria-labelledby="immersive-voyage-title">
     <picture class="immersive-voyage__world-frame">
-      <img class="immersive-voyage__world" src="${Nt}assets/illustrations/nautilus-voyage-panorama-v2.jpg" alt="An Adriatic learning voyage from a moonlit family harbor through islands toward a sunlit Montenegrin mountain town">
+      <img class="immersive-voyage__world" src="${Nt}assets/illustrations/nautilus-voyage-panorama-v3.jpg" alt="A vintage travel-poster Adriatic voyage from a moonlit family harbor through islands toward a sunlit Montenegrin mountain town">
     </picture>
     <div class="immersive-voyage__veil" aria-hidden="true"></div>
     <div class="immersive-voyage__clouds" aria-hidden="true"></div>

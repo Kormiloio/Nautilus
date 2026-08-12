@@ -30,7 +30,7 @@ describe('learner voyage experience', () => {
       completedLessons: [], activityDates: [], languagePacks: [], activePackId: 'montenegrin-en',
       profile: 'Lena', streakDays: 0, stars: 0,
     });
-    expect(html).toContain(`${import.meta.env.BASE_URL}assets/illustrations/nautilus-voyage-map.jpg`);
+    expect(html).toContain(`${import.meta.env.BASE_URL}assets/illustrations/nautilus-voyage-panorama-v3.jpg`);
     expect(html).toContain(`${import.meta.env.BASE_URL}assets/illustrations/friends-of-the-sea.jpg`);
     expect(html.match(/class="destination-poster /g)).toHaveLength(6);
     expect(html).toContain('Posters from your voyage');
@@ -41,7 +41,7 @@ describe('learner voyage experience', () => {
     const html = renderImmersiveVoyageHero({
       activityDates: [], familyPlayState: { completedDays: 42 },
     });
-    expect(html).toContain('nautilus-voyage-panorama-v2.jpg');
+    expect(html).toContain('nautilus-voyage-panorama-v3.jpg');
     expect(html.match(/class="voyage-landmark /g)).toHaveLength(10);
     expect(html).toContain('Port 3: Echo Arch');
     expect(html).toContain('--voyage-progress:21%');
