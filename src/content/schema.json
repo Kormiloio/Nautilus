@@ -23,9 +23,21 @@
         "targetLanguage": { "$ref": "#/definitions/languageIdentity" },
         "supportLanguage": { "$ref": "#/definitions/supportLanguageIdentity" },
         "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
-        "status": { "type": "string", "enum": ["draft", "review", "published", "retired"] }
+        "status": { "type": "string", "enum": ["draft", "review", "published", "retired"] },
+        "audio": { "$ref": "#/definitions/audioProfile" }
       },
       "required": ["id", "targetLanguage", "supportLanguage", "version", "status"],
+      "additionalProperties": false
+    },
+    "audioProfile": {
+      "type": "object",
+      "properties": {
+        "locale": { "type": "string", "minLength": 2 },
+        "delivery": { "type": "string", "enum": ["recorded", "speech-synthesis-draft", "none"] },
+        "reviewStatus": { "type": "string", "enum": ["draft", "audio-reviewed", "publishable"] },
+        "note": { "type": "string" }
+      },
+      "required": ["locale", "delivery", "reviewStatus"],
       "additionalProperties": false
     },
     "languageIdentity": {

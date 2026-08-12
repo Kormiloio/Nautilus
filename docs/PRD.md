@@ -206,9 +206,17 @@ An authorized adult can start a Family Play session for a selected language and 
 
 Completing the session records one shared Family Voyage Day and credits each selected participant. Every curriculum lesson therefore has separate family-session and learner-practice states. Learners may complete, repeat, or move ahead through the same content independently before or afterward without moving the family route or marking the family lesson complete. When the family returns to that lesson, its complete content remains available to do together; only an authorized adult's explicit **Complete for Family** action advances the shared position. A disconnected participant can rejoin the active session. The initial release should favor clear state and recoverability over real-time animation complexity.
 
+Adult control uses a short renewable lease. Reconnecting controllers resume the stored segment and renew their lease; they may explicitly hand control to another owner or adult guide, and another authorized adult may take control after an abandoned lease expires. Controller changes are retained as an audit trail. Completed sessions remain in family history and an adult may launch a review of an earlier lesson. Completing a review records the shared activity but never advances the family calendar or voyage position.
+
+Each shared session begins in a readiness lobby. Selected learners join from their own devices and appear as connecting or ready in a persistent crew rail. The controlling adult starts the lesson after the selected crew is ready. During shared activities, the interface rotates a visible speaking prompt among participants while keeping next, back, audio, pause, handoff, and completion controls restricted to the active adult controller.
+
+The Family Overview compares the shared voyage position with each learner's personal practice progress. Personal practice may be ahead of or behind the shared route without changing it. The dashboard also exposes participation, stars, completed family sessions, and review history without ranking learners against one another.
+
 ### 8.5 Immersive voyage presentation
 
-The primary voyage view should use most of the viewport as a moving world rather than present the route only as a static card. Wide screens use a cinematic left-to-right archipelago; phones use a vertically winding route composed for the narrow viewport. The camera position, vessel, environment, and route treatment change with shared family progress. Detailed calendar and curriculum management remain available below or outside the immersive view. Motion respects reduced-motion preferences and essential state remains available as text.
+The primary voyage view should use most of the viewport as a moving world rather than present the route only as a static card. Wide screens use a cinematic left-to-right archipelago; phones use a vertically winding route composed for the narrow viewport. The camera position, vessel, atmospheric layers, active-port feedback, and route treatment change with shared family progress so the experience feels like movement through a place. Detailed calendar and curriculum management remain available below or outside the immersive view. Motion respects reduced-motion preferences and essential state remains available as text.
+
+Selected lesson topics extend that world into the activity itself. Their vocabulary, practice, audio, and completion controls appear within a responsive illustrated environment, and a visible trail marker advances between lesson phases. Colors and Family establish the first reusable environment templates; later topic scenes must preserve the same activity behavior, touch targets, readable contrast, and reduced-motion support.
 
 ## 9. Functional requirements
 

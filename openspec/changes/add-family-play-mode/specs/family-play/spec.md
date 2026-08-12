@@ -61,6 +61,22 @@ The system SHALL advance the shared voyage only when an authorized adult complet
 - **THEN** the session remains live or paused
 - **AND** neither the family calendar nor shared voyage advances
 
+### Requirement: Shared-session readiness
+
+The shared presentation SHALL show the connection readiness of every selected learner before the controller begins the lesson.
+
+#### Scenario: Learners join from separate devices
+
+- **WHEN** selected learners open the active Family Play session
+- **THEN** each learner changes from connecting to ready in the controller's crew display
+- **AND** Start Together becomes available when the selected crew is ready
+
+#### Scenario: Shared speaking turn
+
+- **WHEN** the controller advances through speaking or practice activities
+- **THEN** the shared interface identifies the next participant to respond
+- **AND** the learner still cannot advance, pause, or complete the session
+
 ### Requirement: Family calendar derives from shared sessions
 
 The family calendar SHALL derive completed and in-progress states from Family Play sessions rather than learner practice attempts.
@@ -79,3 +95,45 @@ The voyage presentation SHALL position its world and vessel from shared Family V
 
 - **WHEN** the device requests reduced motion
 - **THEN** the correct voyage location is shown without animated camera movement
+
+### Requirement: Recoverable adult controller
+
+The system SHALL use a renewable controller lease so that an interrupted Family Play session can recover without giving learners presentation control.
+
+#### Scenario: Controller reconnects
+
+- **WHEN** the controlling adult reconnects to an active session
+- **THEN** the stored segment is restored
+- **AND** the adult's controller lease is renewed
+
+#### Scenario: Parent hands control to another parent
+
+- **WHEN** the controller selects another family owner or adult guide
+- **THEN** control transfers to that adult
+- **AND** the controller change is retained in the session audit history
+
+#### Scenario: Controller abandons the session
+
+- **WHEN** the controller lease expires
+- **THEN** another owner or adult guide may take control
+- **AND** a learner cannot take control
+
+### Requirement: Shared and personal progress comparison
+
+The Family Overview SHALL show shared voyage progress separately from each learner's independent-practice progress.
+
+#### Scenario: Learner practices ahead
+
+- **WHEN** a learner's personal lesson count exceeds the shared voyage day
+- **THEN** both positions are shown independently
+- **AND** the shared position remains unchanged
+
+### Requirement: Family session history and review
+
+Authorized adults SHALL be able to review completed Family Play sessions and replay an earlier lesson together.
+
+#### Scenario: Family completes a review session
+
+- **WHEN** an adult completes a review of an earlier family lesson
+- **THEN** the review appears in session history
+- **AND** the shared calendar and voyage position do not advance

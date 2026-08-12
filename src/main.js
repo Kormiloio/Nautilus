@@ -28,15 +28,20 @@ import { onAuthStateChange, getSession, isConfigured } from './engine/supabase-c
 import {
   acceptFamilyInvitation,
   completeFamilyPlay,
+  claimFamilyPlayController,
   controlFamilyPlay,
   createFamily,
   getFamilyPlayState,
   getFamilyOverview,
+  getFamilyProgressDashboard,
+  handoffFamilyPlayController,
+  heartbeatFamilyPlay,
   inviteFamilyMember,
   inviteLearnerProfile,
   joinFamilyPlay,
   listFamilies,
   startFamilyPlay,
+  startFamilyReview,
   subscribeToFamilyPlay,
 } from './engine/family-service.js';
 
@@ -62,6 +67,7 @@ const state = {
   familyOverview: null,
   familyOverviewLoading: false,
   familyPlayState: null,
+  familyProgress: null,
   activePackId: 'montenegrin-en',
   languagePacks: getAvailableLanguagePacks(),
 
@@ -213,6 +219,7 @@ const actions = {
       const familyId = state.families?.[0]?.family_id;
       state.familyOverview = await getFamilyOverview(familyId);
       state.familyPlayState = await getFamilyPlayState(familyId, state.activePackId);
+      state.familyProgress = await getFamilyProgressDashboard(familyId, state.activePackId);
     } catch (error) {
       state.familyError = error.message;
     } finally {
@@ -250,7 +257,11 @@ const actions = {
     if (!active) return;
     state.familyError = null;
     try {
+      if (state.families?.[0]?.role !== 'learner' && !state.familyOverview) {
+        state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
+      }
       if (state.families?.[0]?.role === 'learner') await joinFamilyPlay(active.id);
+      else if (active.canTakeControl) await claimFamilyPlayController(active.id);
       await loadFamilyPlayState();
       state.activeLesson = VOYAGE_LESSONS.find(lesson => lesson.id === active.lessonId) || VOYAGE_LESSONS[active.voyageDay - 1];
       state.screen = 'family-play';
@@ -258,6 +269,35 @@ const actions = {
       state.familyError = error.message;
     }
     rerender();
+  },
+
+  claimFamilyController: async () => {
+    const sessionId = state.familyPlayState?.activeSession?.id;
+    if (!sessionId) return;
+    try {
+      await claimFamilyPlayController(sessionId);
+      await loadFamilyPlayState();
+    } catch (error) { state.familyError = error.message; }
+    rerender();
+  },
+
+  handoffFamilyController: async (nextAdultId) => {
+    const sessionId = state.familyPlayState?.activeSession?.id;
+    if (!sessionId) return;
+    try {
+      await handoffFamilyPlayController(sessionId, nextAdultId);
+      await loadFamilyPlayState();
+    } catch (error) { state.familyError = error.message; }
+    rerender();
+  },
+
+  reviewFamilySession: async (sourceSessionId) => {
+    const participants = state.familyOverview?.learners?.map(learner => learner.id) || [];
+    try {
+      await startFamilyReview(sourceSessionId, participants);
+      await loadFamilyPlayState();
+      await actions.openFamilySession();
+    } catch (error) { state.familyError = error.message; rerender(); }
   },
 
   controlFamilySession: async (status, segment) => {
@@ -282,6 +322,7 @@ const actions = {
       state.activeLesson = null;
       state.familyNotice = 'Family voyage day completed together.';
       state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
+      state.familyProgress = await getFamilyProgressDashboard(state.families?.[0]?.family_id, state.activePackId);
     } catch (error) {
       state.familyError = error.message;
     }
@@ -480,6 +521,16 @@ async function loadFamilyPlayState() {
   state.familyPlayState = await getFamilyPlayState(familyId, state.activePackId);
 }
 
+let familyHeartbeatTimer = null;
+
+function syncFamilyHeartbeat() {
+  clearInterval(familyHeartbeatTimer);
+  familyHeartbeatTimer = null;
+  const active = state.familyPlayState?.activeSession;
+  if (!active || active.controllingAdult !== state.sessionUser?.id || state.screen !== 'family-play') return;
+  familyHeartbeatTimer = setInterval(() => heartbeatFamilyPlay(active.id).catch(() => {}), 45_000);
+}
+
 function watchFamilyPlay() {
   stopFamilyPlaySubscription?.();
   stopFamilyPlaySubscription = null;
@@ -500,9 +551,12 @@ function rerender() {
   appContainer.innerHTML = '';
 
   if (state.screen === 'family-play') {
+    syncFamilyHeartbeat();
     renderFamilyPlayView(appContainer, state, actions);
     return;
   }
+  clearInterval(familyHeartbeatTimer);
+  familyHeartbeatTimer = null;
 
   if (!state.profile) {
     if (state.screen === 'family-overview') renderFamilyOverview(appContainer, state, actions);

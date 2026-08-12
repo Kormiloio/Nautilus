@@ -34,6 +34,7 @@ export function renderTopicView(container, state, actions) {
         <div>
           <h2 style="font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">${topic.title}</h2>
           <p style="color: var(--text-muted); font-size: 14px;">${topic.subtitle}</p>
+          ${LANGUAGE_PACK.audio?.reviewStatus === 'draft' ? '<span class="audio-review-badge">Voice preview · fluent audio review pending</span>' : ''}
         </div>
         <div>
           ${isCompleted ? `
