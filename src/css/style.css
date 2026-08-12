@@ -572,6 +572,7 @@ button, input, select {
 .family-play-dashboard-banner { margin-bottom: 18px; padding: 16px 18px; display: flex; justify-content: space-between; align-items: center; gap: 16px; border: 1px solid var(--cyan); border-radius: 16px; background: rgba(23,67,82,.65); }
 .family-play-dashboard-banner div { display: grid; gap: 3px; }
 .family-play-dashboard-banner span { color: var(--cyan); font-size: 11px; font-weight: 850; text-transform: uppercase; letter-spacing: .08em; }
+.dashboard-alert { margin-bottom:16px; padding:13px 15px; border:1px solid var(--pink); border-radius:12px; color:#ffd1e8; background:rgba(244,114,182,.09); font-size:13px; line-height:1.5; }
 .family-play-nav small { color: var(--text-muted); }
 .family-play-live { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 850; text-transform: uppercase; letter-spacing: .08em; }
 .family-play-live i { width: 9px; height: 9px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 14px var(--lime); }
