@@ -244,7 +244,7 @@ export async function getFamilyProgressDashboard(familyId, packId) {
 
 export function subscribeToFamilyPlay(familyId, onChange) {
   requireCloud();
-  const channel = supabase
+  const sessionChannel = supabase
     .channel(`family-play:${familyId}`)
     .on('postgres_changes', {
       event: '*',
@@ -253,5 +253,19 @@ export function subscribeToFamilyPlay(familyId, onChange) {
       filter: `family_id=eq.${familyId}`,
     }, onChange)
     .subscribe();
-  return () => { supabase.removeChannel(channel); };
+  // Participant readiness lives in a separate table. It cannot be filtered by
+  // family_id because that table is keyed by session/profile, so RLS limits the
+  // visible events and the state RPC performs the final family-scoped read.
+  const participantChannel = supabase
+    .channel(`family-play-participants:${familyId}`)
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'family_voyage_participants',
+    }, onChange)
+    .subscribe();
+  return () => {
+    supabase.removeChannel(sessionChannel);
+    supabase.removeChannel(participantChannel);
+  };
 }
