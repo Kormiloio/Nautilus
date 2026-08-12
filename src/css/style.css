@@ -1075,7 +1075,7 @@ button, input, select {
 .immersive-lesson__trail { position:relative; height:30px; margin:0 12px 8px; border-top:2px dashed rgba(255,255,255,.38); }
 .immersive-lesson__trail span { position:absolute; left:0; top:-2px; width:var(--lesson-progress); border-top:3px solid var(--cyan); filter:drop-shadow(0 0 7px rgba(125,211,252,.8)); transition:width .8s ease; }
 .immersive-lesson__trail i { position:absolute; left:var(--lesson-progress); top:-18px; transform:translateX(-50%); display:grid; place-items:center; width:34px; height:34px; border-radius:50%; font-style:normal; background:#0b3347; border:2px solid var(--cyan); box-shadow:0 0 18px rgba(125,211,252,.55); transition:left .8s ease; }
-.immersive-lesson__card { max-height:calc(100svh - 205px); overflow:auto; padding:clamp(22px,4vw,36px); border:1px solid rgba(255,255,255,.3); border-radius:24px; background:linear-gradient(145deg,rgba(7,18,29,.92),rgba(20,23,39,.82)); backdrop-filter:blur(18px); box-shadow:0 28px 90px rgba(0,0,0,.5); scrollbar-width:thin; }
+.immersive-lesson__card { max-height:calc(100svh - 205px); overflow:auto; padding:clamp(22px,4vw,36px); border:1px solid rgba(255,255,255,.3); border-radius:24px; background:linear-gradient(145deg,rgba(7,18,29,.76),rgba(20,23,39,.64)); backdrop-filter:blur(14px) saturate(1.08); box-shadow:0 28px 90px rgba(0,0,0,.42); scrollbar-width:thin; }
 .immersive-lesson__card .flashcard-wrapper { max-width:360px !important; }
 .immersive-lesson__card .glass { background:rgba(10,26,38,.84); }
 @keyframes lesson-world-breathe { from { filter:saturate(.95) brightness(.92); } to { filter:saturate(1.06) brightness(1.01); } }
