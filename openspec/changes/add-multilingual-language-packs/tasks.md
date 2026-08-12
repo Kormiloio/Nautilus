@@ -24,6 +24,8 @@
 - [x] 3.5 Expand the draft Albanian pack with high-frequency vocabulary and four practical dialogues.
 - [x] 3.6 Configure the Albanian `sq-AL` device-voice preview and label it as unapproved draft audio.
 - [ ] 3.7 Obtain fluent Albanian review of text, pronunciation, dialogues, and recorded/native audio before publication.
+- [x] 3.8 Prevent incompatible English speech fallback and select the best installed target-language device voice.
+- [ ] 3.9 Replace device-dependent speech with reviewed recorded Montenegrin and Albanian audio.
 
 ## 4. Verify
 
