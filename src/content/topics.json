@@ -111,8 +111,8 @@
         },
         {
           "id": "family-item-005",
-          "targetText": "baka",
-          "supportText": "grandma (also: baba)",
+          "targetText": "baba",
+          "supportText": "grandma",
           "emoji": "👵"
         },
         {
@@ -1956,7 +1956,7 @@
       ],
       "dialogue": {
         "roles": [
-          "Baka",
+          "Baba",
           "You"
         ],
         "lines": [
@@ -1964,11 +1964,11 @@
             "id": "gathering-dialogue-001",
             "targetText": "Sjedi ovdje, dijete. Poslužite se!",
             "supportText": "Sit here, child. Help yourselves!",
-            "role": "Baka"
+            "role": "Baba"
           },
           {
             "id": "gathering-dialogue-002",
-            "targetText": "Hvala, bako! Miriše odlično.",
+            "targetText": "Hvala, baba! Miriše odlično.",
             "supportText": "Thanks, grandma! It smells great.",
             "role": "You"
           },
@@ -1976,7 +1976,7 @@
             "id": "gathering-dialogue-003",
             "targetText": "Živjeli!",
             "supportText": "Cheers!",
-            "role": "Baka"
+            "role": "Baba"
           },
           {
             "id": "gathering-dialogue-004",
