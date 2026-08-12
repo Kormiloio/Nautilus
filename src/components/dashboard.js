@@ -13,6 +13,12 @@ import { isConfigured } from '../engine/supabase-client.js';
 import { getLearningDayCount } from '../engine/learning-days.js';
 import { renderVoyageExperience } from './voyage-map.js';
 
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, character => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;',
+  })[character]);
+}
+
 export function renderDashboard(container, state, actions) {
   const visibleProfiles = state.sessionUser
     ? getProfiles().filter(profile => !String(profile.id).startsWith('local-'))
@@ -47,7 +53,7 @@ export function renderDashboard(container, state, actions) {
   if (isConfigured) {
     if (state.sessionUser) {
       if (navigator.onLine) {
-        syncBadgeHtml = `<div class="badge-pill" style="border-color: var(--teal); color: var(--teal); font-size: 11px; padding: 2px 8px;" title="Signed in with Google; synchronization depends on family workspace setup">☁️ Google Signed In</div>`;
+        syncBadgeHtml = `<div class="badge-pill" style="border-color: var(--teal); color: var(--teal); font-size: 11px; padding: 2px 8px;" title="Signed in as ${escapeHtml(state.sessionUser.email || 'Google user')}">☁️ ${escapeHtml(state.sessionUser.email || 'Google Signed In')}</div>`;
       } else {
         syncBadgeHtml = `<div class="badge-pill" style="border-color: var(--amber); color: var(--amber); font-size: 11px; padding: 2px 8px;" title="Offline: local changes remain on this device until synchronization succeeds">📴 Offline · Local Saved</div>`;
       }
@@ -99,6 +105,7 @@ export function renderDashboard(container, state, actions) {
     </header>
 
     <main class="container">
+      ${state.familyError ? `<p role="alert" class="dashboard-alert">${escapeHtml(state.familyError)}</p>` : ''}
       ${state.familyPlayState?.activeSession ? `
         <section class="family-play-dashboard-banner" aria-label="Active Family Play session">
           <div><span>Family Play is ${state.familyPlayState.activeSession.status}</span><strong>Voyage day ${state.familyPlayState.activeSession.voyageDay} · Join your family</strong></div>

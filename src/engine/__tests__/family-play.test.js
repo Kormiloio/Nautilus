@@ -76,14 +76,18 @@ describe('Family Play cloud service', () => {
     });
   });
 
-  it('subscribes only to shared session changes for the selected family', () => {
+  it('subscribes to both shared session and participant readiness changes', () => {
     const stop = subscribeToFamilyPlay('family-1', vi.fn());
     expect(channel).toHaveBeenCalledWith('family-play:family-1');
     expect(on).toHaveBeenCalledWith('postgres_changes', expect.objectContaining({
       table: 'family_voyage_sessions', filter: 'family_id=eq.family-1',
     }), expect.any(Function));
+    expect(channel).toHaveBeenCalledWith('family-play-participants:family-1');
+    expect(on).toHaveBeenCalledWith('postgres_changes', expect.objectContaining({
+      table: 'family_voyage_participants',
+    }), expect.any(Function));
     stop();
-    expect(removeChannel).toHaveBeenCalled();
+    expect(removeChannel).toHaveBeenCalledTimes(2);
   });
 
   it('supports controller reconnect and historical review without personal progress writes', async () => {

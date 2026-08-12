@@ -257,6 +257,11 @@ const actions = {
     if (!active) return;
     state.familyError = null;
     try {
+      const membershipRole = state.families?.[0]?.role;
+      const selectedParticipant = active.participants?.find(person => person.name === state.profile);
+      if (membershipRole !== 'learner' && selectedParticipant) {
+        throw new Error(`This device is signed in as the adult account ${state.sessionUser?.email || ''}. Sign out, then sign in with ${selectedParticipant.name}'s invited Google account to join as that learner.`);
+      }
       if (state.families?.[0]?.role !== 'learner' && !state.familyOverview) {
         state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
       }
@@ -522,6 +527,8 @@ async function loadFamilyPlayState() {
 }
 
 let familyHeartbeatTimer = null;
+let familyPlayRefreshTimer = null;
+let familyPlayRefreshSessionId = null;
 
 function syncFamilyHeartbeat() {
   clearInterval(familyHeartbeatTimer);
@@ -529,6 +536,27 @@ function syncFamilyHeartbeat() {
   const active = state.familyPlayState?.activeSession;
   if (!active || active.controllingAdult !== state.sessionUser?.id || state.screen !== 'family-play') return;
   familyHeartbeatTimer = setInterval(() => heartbeatFamilyPlay(active.id).catch(() => {}), 45_000);
+}
+
+function syncFamilyPlayRefresh() {
+  const activeSessionId = state.familyPlayState?.activeSession?.id;
+  if (state.screen !== 'family-play' || !activeSessionId) {
+    clearInterval(familyPlayRefreshTimer);
+    familyPlayRefreshTimer = null;
+    familyPlayRefreshSessionId = null;
+    return;
+  }
+  if (familyPlayRefreshTimer && familyPlayRefreshSessionId === activeSessionId) return;
+  clearInterval(familyPlayRefreshTimer);
+  familyPlayRefreshSessionId = activeSessionId;
+  familyPlayRefreshTimer = setInterval(async () => {
+    try {
+      await loadFamilyPlayState();
+      if (state.screen === 'family-play') rerender();
+    } catch {
+      // Realtime remains primary; the poll is recovery for missed events.
+    }
+  }, 5_000);
 }
 
 function watchFamilyPlay() {
@@ -552,11 +580,13 @@ function rerender() {
 
   if (state.screen === 'family-play') {
     syncFamilyHeartbeat();
+    syncFamilyPlayRefresh();
     renderFamilyPlayView(appContainer, state, actions);
     return;
   }
   clearInterval(familyHeartbeatTimer);
   familyHeartbeatTimer = null;
+  syncFamilyPlayRefresh();
 
   if (!state.profile) {
     if (state.screen === 'family-overview') renderFamilyOverview(appContainer, state, actions);
