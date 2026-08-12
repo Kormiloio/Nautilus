@@ -50,7 +50,7 @@ export function renderFamilyPlayView(container, state, actions) {
   const steps = [{ type: 'ready', title: 'Is everyone ready?', subtitle: 'Join on each device before setting sail together.' }, ...lessonSteps];
   const stepIndex = Math.min(cloudSession.currentSegment || 0, steps.length - 1);
   const step = steps[stepIndex];
-  const isAdult = state.families?.[0]?.role === 'owner' || state.families?.[0]?.role === 'adult_guide';
+  const isAdult = !state.linkedLearnerProfileId && (state.families?.[0]?.role === 'owner' || state.families?.[0]?.role === 'adult_guide');
   const isController = isAdult && cloudSession.controllingAdult === state.sessionUser?.id;
   const otherAdults = (state.familyOverview?.members || []).filter(member =>
     (member.role === 'owner' || member.role === 'adult_guide') && member.userId !== state.sessionUser?.id
