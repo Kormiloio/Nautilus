@@ -32,6 +32,9 @@ describe('learner voyage experience', () => {
     });
     expect(html).toContain(`${import.meta.env.BASE_URL}assets/illustrations/nautilus-voyage-map.jpg`);
     expect(html).toContain(`${import.meta.env.BASE_URL}assets/illustrations/friends-of-the-sea.jpg`);
+    expect(html.match(/class="destination-poster /g)).toHaveLength(6);
+    expect(html).toContain('Posters from your voyage');
+    expect(html).toContain('1 of 6 discovered');
   });
 
   it('renders the immersive route with ten accessible ports and a progress-positioned vessel', () => {

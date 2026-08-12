@@ -30,6 +30,15 @@ const VOYAGE_PORTS = [
   { x: 95, y: 32, name: 'Sunrise Kotor', chapter: 'Confident conversation' },
 ];
 
+const DESTINATION_POSTERS = [
+  { port: 1, name: 'Home Harbor', chapter: 'Family', asset: 'poster-family-v1.jpg', unlock: 0 },
+  { port: 2, name: 'Lantern Quay', chapter: 'Greetings', asset: 'poster-greetings-v1.jpg', unlock: 20 },
+  { port: 4, name: 'Color Cove', chapter: 'Colors', asset: 'poster-colors-v1.jpg', unlock: 60 },
+  { port: 5, name: 'Market Island', chapter: 'Food', asset: 'poster-food-v1.jpg', unlock: 80 },
+  { port: 6, name: 'Café Point', chapter: 'Conversation', asset: 'poster-cafe-v1.jpg', unlock: 100 },
+  { port: 7, name: 'Compass Rock', chapter: 'Directions', asset: 'poster-directions-v1.jpg', unlock: 120 },
+];
+
 function getVoyagePosition(percent) {
   const routePosition = Math.max(0, Math.min(99.999, percent)) / 100 * (VOYAGE_PORTS.length - 1);
   const startIndex = Math.floor(routePosition);
@@ -66,6 +75,18 @@ export function renderVoyageExperience(state) {
   const nextCompanion = COMPANIONS.find(companion => completedCount < companion.min);
   const percent = Math.round((completedCount / 200) * 100);
   const activeLanguage = state.languagePacks.find(pack => pack.id === state.activePackId)?.targetLanguage.name || 'Language';
+  const posterCollection = DESTINATION_POSTERS.map(poster => {
+    const unlocked = completedCount >= poster.unlock;
+    const active = completedCount >= poster.unlock && completedCount < poster.unlock + 20;
+    return `<article class="destination-poster ${unlocked ? 'unlocked' : 'charted'} ${active ? 'active' : ''}">
+      <div class="destination-poster__plaque"><span>Nautilus · Port ${poster.port}</span><b>${unlocked ? 'Discovered' : `Charts open day ${poster.unlock}`}</b></div>
+      <div class="destination-poster__art">
+        <img src="${PUBLIC_ASSET_BASE}assets/illustrations/${poster.asset}" alt="Travel-poster illustration of ${poster.name}">
+        ${unlocked ? '<span class="destination-poster__stamp" aria-label="Destination discovered">⚓</span>' : '<span class="destination-poster__lock" aria-hidden="true">✦</span>'}
+      </div>
+      <footer><small>${escapeHtml(poster.chapter)}</small><strong>${escapeHtml(poster.name)}</strong></footer>
+    </article>`;
+  }).join('');
 
   const route = Array.from({ length: 10 }, (_, index) => {
     const end = (index + 1) * 20;
@@ -95,6 +116,14 @@ export function renderVoyageExperience(state) {
         <div class="voyage-route" aria-hidden="true"><span></span></div>
         <ol class="voyage-ports" aria-label="Ten voyage ports">${route}</ol>
       </div>
+    </section>
+
+    <section class="destination-collection" aria-labelledby="destination-collection-title">
+      <div class="destination-collection__header">
+        <div><div class="hero-tag">The destination collection</div><h3 id="destination-collection-title">Posters from your voyage</h3></div>
+        <p>${DESTINATION_POSTERS.filter(poster => completedCount >= poster.unlock).length} of ${DESTINATION_POSTERS.length} discovered</p>
+      </div>
+      <div class="destination-poster-grid">${posterCollection}</div>
     </section>
 
     <section class="captains-quarters" aria-labelledby="quarters-title">

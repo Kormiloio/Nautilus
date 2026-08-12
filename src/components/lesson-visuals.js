@@ -10,17 +10,41 @@ const COLOR_SPECS = [
 const PUBLIC_ASSET_BASE = import.meta.env.BASE_URL;
 
 const IMMERSIVE_LESSON_SCENES = {
+  greetings: {
+    src: 'assets/illustrations/poster-greetings-v1.jpg',
+    place: 'Lantern Quay',
+    prompt: 'Meet at the waterfront and practice the words that begin every conversation.',
+    icon: '👋',
+  },
   colors: {
-    src: 'assets/illustrations/colors-harbor-lesson-v2.jpg',
+    src: 'assets/illustrations/poster-colors-v1.jpg',
     place: 'Color Cove',
     prompt: 'Look around the harbor. The vocabulary is already in the scene.',
     icon: '🎨',
   },
   family: {
-    src: 'assets/illustrations/family-courtyard-lesson-v1.jpg',
+    src: 'assets/illustrations/poster-family-v1.jpg',
     place: 'The Family Courtyard',
     prompt: 'Take a seat at the table and bring the family words to life.',
     icon: '🏡',
+  },
+  food: {
+    src: 'assets/illustrations/poster-food-v1.jpg',
+    place: 'Market Island',
+    prompt: 'Explore the market and name what the family might bring to the table.',
+    icon: '🍅',
+  },
+  cafe: {
+    src: 'assets/illustrations/poster-cafe-v1.jpg',
+    place: 'Café Point',
+    prompt: 'Take a seat by the water and practice ordering together.',
+    icon: '☕',
+  },
+  directions: {
+    src: 'assets/illustrations/poster-directions-v1.jpg',
+    place: 'Compass Rock',
+    prompt: 'Follow the signs, choose a path, and help one another find the way.',
+    icon: '🧭',
   },
 };
 

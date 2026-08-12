@@ -1078,6 +1078,31 @@ button, input, select {
 .immersive-lesson__card { max-height:calc(100svh - 205px); overflow:auto; padding:clamp(22px,4vw,36px); border:1px solid rgba(255,255,255,.3); border-radius:24px; background:linear-gradient(145deg,rgba(7,18,29,.76),rgba(20,23,39,.64)); backdrop-filter:blur(14px) saturate(1.08); box-shadow:0 28px 90px rgba(0,0,0,.42); scrollbar-width:thin; }
 .immersive-lesson__card .flashcard-wrapper { max-width:360px !important; }
 .immersive-lesson__card .glass { background:rgba(10,26,38,.84); }
+
+/* Nautilus destination posters: live labels over a shared travel-poster art system. */
+.destination-collection { margin:32px 0; padding:clamp(22px,4vw,38px); border:1px solid rgba(237,185,92,.28); border-radius:28px; background:linear-gradient(145deg,rgba(25,37,45,.96),rgba(13,22,31,.98)); box-shadow:0 26px 70px rgba(0,0,0,.28); }
+.destination-collection__header { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:22px; }
+.destination-collection__header h3 { margin:5px 0 0; font-size:clamp(25px,4vw,38px); }
+.destination-collection__header p { color:#e9c77f; font-weight:800; }
+.destination-poster-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.destination-poster { min-width:0; overflow:hidden; border:7px solid #e7d4aa; border-radius:3px; color:#132b32; background:#e7d4aa; box-shadow:0 14px 30px rgba(0,0,0,.28); transform:translateY(0) rotate(var(--poster-tilt,0deg)); transition:transform .25s ease,filter .25s ease; }
+.destination-poster:nth-child(3n+1) { --poster-tilt:-.35deg; }
+.destination-poster:nth-child(3n) { --poster-tilt:.35deg; }
+.destination-poster:hover,.destination-poster:focus-within { transform:translateY(-6px) rotate(0deg); }
+.destination-poster__plaque { display:flex; justify-content:space-between; gap:8px; padding:8px 9px 7px; border-bottom:3px solid #173f4a; font-size:9px; font-weight:900; letter-spacing:.1em; text-transform:uppercase; }
+.destination-poster__plaque b { color:#a94b2d; text-align:right; }
+.destination-poster__art { position:relative; aspect-ratio:4/3; overflow:hidden; background:#173f4a; }
+.destination-poster__art img { width:100%; height:100%; object-fit:cover; transform:scale(1.02); transition:transform .7s ease; }
+.destination-poster:hover img { transform:scale(1.08); }
+.destination-poster footer { display:flex; flex-direction:column; padding:10px 10px 12px; border-top:3px solid #173f4a; text-transform:uppercase; }
+.destination-poster footer small { color:#a94b2d; font-size:9px; font-weight:900; letter-spacing:.14em; }
+.destination-poster footer strong { font-size:clamp(16px,2.2vw,23px); line-height:1.05; }
+.destination-poster__stamp,.destination-poster__lock { position:absolute; right:10px; bottom:10px; display:grid; place-items:center; width:42px; height:42px; border:3px solid #f3d589; border-radius:50%; color:#f3d589; background:rgba(16,57,65,.88); font-size:20px; transform:rotate(-8deg); }
+.destination-poster.charted { filter:saturate(.28) brightness(.62); }
+.destination-poster.active { outline:3px solid var(--cyan); outline-offset:4px; }
+
+@media (max-width:900px) { .destination-poster-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:560px) { .destination-collection__header { align-items:start; flex-direction:column; } .destination-poster-grid { grid-template-columns:1fr; } }
 @keyframes lesson-world-breathe { from { filter:saturate(.95) brightness(.92); } to { filter:saturate(1.06) brightness(1.01); } }
 @keyframes lesson-leaves { from { transform:rotate(-1deg) translateY(0); } to { transform:rotate(2deg) translateY(8px); } }
 
