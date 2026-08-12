@@ -198,6 +198,50 @@ export async function completeFamilyPlay(sessionId) {
   return data;
 }
 
+export async function claimFamilyPlayController(sessionId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('claim_family_play_controller', { target_session: sessionId });
+  if (error) throw error;
+  return data;
+}
+
+export async function handoffFamilyPlayController(sessionId, nextAdultId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('handoff_family_play_controller', {
+    target_session: sessionId,
+    next_adult: nextAdultId,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function heartbeatFamilyPlay(sessionId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('heartbeat_family_play', { target_session: sessionId });
+  if (error) throw error;
+  return data;
+}
+
+export async function startFamilyReview(sourceSessionId, participantProfileIds) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('start_family_review', {
+    source_session: sourceSessionId,
+    participant_profiles: participantProfileIds,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function getFamilyProgressDashboard(familyId, packId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('get_family_progress_dashboard', {
+    target_family: familyId,
+    target_pack_id: packId,
+  });
+  if (error) throw error;
+  return data || { shared: { completedDays: 0, reviewSessions: 0 }, learners: [], history: [] };
+}
+
 export function subscribeToFamilyPlay(familyId, onChange) {
   requireCloud();
   const channel = supabase

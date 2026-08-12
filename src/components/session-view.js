@@ -1,5 +1,5 @@
 import { generateSession, getTopic, buildMatch, buildQuiz, shuffle, LANGUAGE_PACK } from '../engine/learning-engine.js';
-import { colorTileStyle, renderColorField, renderColorsIntro } from './lesson-visuals.js';
+import { colorTileStyle, getImmersiveLessonScene, renderColorField } from './lesson-visuals.js';
 
 export function renderSessionView(container, state, actions) {
   const lesson = state.activeLesson;
@@ -20,6 +20,8 @@ export function renderSessionView(container, state, actions) {
 
   const s = state.session;
   const currentStep = s.steps[s.stepIdx];
+  const immersiveScene = getImmersiveLessonScene(lesson.topicId);
+  const lessonPercent = Math.round(((s.stepIdx + 1) / s.steps.length) * 100);
 
   // Renders navigation and top progress bar
   container.innerHTML = `
@@ -34,15 +36,21 @@ export function renderSessionView(container, state, actions) {
       </div>
     </header>
 
-    <main class="container" style="max-width: 640px;">
-      <!-- Steps Progress Bar -->
-      <div class="session-steps-bar" role="progressbar" aria-label="Lesson progress" aria-valuenow="${s.stepIdx + 1}" aria-valuemin="1" aria-valuemax="${s.steps.length}">
-        ${s.steps.map((_, idx) => `
-          <div class="session-step-segment ${idx <= s.stepIdx ? 'active' : ''}"></div>
-        `).join('')}
+    <main class="${immersiveScene ? 'immersive-lesson' : 'container'}" ${immersiveScene ? `style="--lesson-progress:${lessonPercent}%;--lesson-shift:${Math.min(4, s.stepIdx) * -0.35}%"` : 'style="max-width:640px;"'}>
+      ${immersiveScene ? `<img class="immersive-lesson__world" src="${immersiveScene.src}" alt="${immersiveScene.place}, an illustrated setting for this lesson">
+        <div class="immersive-lesson__light" aria-hidden="true"></div>
+        <div class="immersive-lesson__leaves" aria-hidden="true"></div>
+        <aside class="immersive-lesson__location"><span>${immersiveScene.icon}</span><div><small>Learning at</small><strong>${immersiveScene.place}</strong><p>${immersiveScene.prompt}</p></div></aside>` : ''}
+      <div class="${immersiveScene ? 'immersive-lesson__workspace' : ''}">
+        <!-- Steps Progress Bar -->
+        <div class="session-steps-bar" role="progressbar" aria-label="Lesson progress" aria-valuenow="${s.stepIdx + 1}" aria-valuemin="1" aria-valuemax="${s.steps.length}">
+          ${s.steps.map((sessionStep, idx) => `
+            <div class="session-step-segment ${idx <= s.stepIdx ? 'active' : ''}" title="${sessionStep.title || sessionStep.type}"></div>
+          `).join('')}
+        </div>
+        ${immersiveScene ? `<div class="immersive-lesson__trail" aria-hidden="true"><span></span><i>${immersiveScene.icon}</i></div>` : ''}
+        <div id="session-step-mount" class="${immersiveScene ? 'immersive-lesson__card' : ''}"></div>
       </div>
-
-      <div id="session-step-mount"></div>
     </main>
   `;
 
@@ -121,7 +129,6 @@ function renderDiscoverStep(mount, step, state, actions) {
       <h3 style="font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 4px;">${step.title}</h3>
       <p style="color: var(--text-muted); font-size: 14px; text-align: center; margin-bottom: 8px;">${step.subtitle}</p>
 
-      ${f.idx === 0 ? renderColorsIntro(state.activeLesson.topicId) : ''}
       <div class="flashcard-hint" style="font-weight: 700;">Word ${f.idx + 1} of ${step.items.length}</div>
 
       <button type="button" class="flashcard-wrapper" id="discover-card-wrapper" style="height: 240px; max-width: 400px;" aria-label="Learning card, tap to flip">

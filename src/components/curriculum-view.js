@@ -98,6 +98,16 @@ export function renderCurriculum(container, state, actions) {
   // Attach event handlers
   container.querySelector('#logo-btn').addEventListener('click', actions.goDashboard);
   container.querySelector('#back-btn').addEventListener('click', actions.goDashboard);
+  const voyage = container.querySelector('.immersive-voyage');
+  voyage?.addEventListener('pointermove', event => {
+    const bounds = voyage.getBoundingClientRect();
+    voyage.style.setProperty('--look-x', `${((event.clientX - bounds.left) / bounds.width - .5) * 1.5}%`);
+    voyage.style.setProperty('--look-y', `${((event.clientY - bounds.top) / bounds.height - .5) * 1.2}%`);
+  });
+  voyage?.addEventListener('pointerleave', () => {
+    voyage.style.setProperty('--look-x', '0%');
+    voyage.style.setProperty('--look-y', '0%');
+  });
 
   // Click on a week
   container.querySelectorAll('[data-week]').forEach(el => {
