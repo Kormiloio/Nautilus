@@ -115,6 +115,7 @@ export function renderFamilyOverview(container, state, actions) {
                     return `<div><strong>${escapeHtml(PACK_NAMES[pack.id] || pack.targetLanguage.name)}</strong>: ${progress.completedLessons}/200 lessons · ${progress.activeDays} active days · ${progress.stars} stars</div>`;
                   }).join('')}
                 </div>
+                <button class="btn btn-secondary" data-repair-learner="${escapeHtml(learner.id)}" data-learner-name="${escapeHtml(learner.name)}" style="margin-top:12px;">Link or repair Google sign-in</button>
               </article>`;
             }).join('') || '<p>No learners have been added yet.</p>'}
           </div>
@@ -139,5 +140,11 @@ export function renderFamilyOverview(container, state, actions) {
   container.querySelector('#continue-family-play-btn')?.addEventListener('click', actions.openFamilySession);
   container.querySelectorAll('[data-review-session]').forEach(button => {
     button.addEventListener('click', () => actions.reviewFamilySession(button.dataset.reviewSession));
+  });
+  container.querySelectorAll('[data-repair-learner]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const email = prompt(`Enter the Google email for ${button.dataset.learnerName}:`);
+      if (email?.trim()) await actions.repairLearnerSignIn(button.dataset.repairLearner, button.dataset.learnerName, email.trim());
+    });
   });
 }
