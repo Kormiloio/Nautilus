@@ -39,6 +39,7 @@ import {
   inviteFamilyMember,
   inviteLearnerProfile,
   joinFamilyPlay,
+  linkFamilyLearnerAccount,
   listFamilies,
   startFamilyPlay,
   startFamilyReview,
@@ -68,6 +69,7 @@ const state = {
   familyOverviewLoading: false,
   familyPlayState: null,
   familyProgress: null,
+  linkedLearnerProfileId: null,
   activePackId: 'montenegrin-en',
   languagePacks: getAvailableLanguagePacks(),
 
@@ -188,6 +190,20 @@ const actions = {
     rerender();
   },
 
+  repairLearnerSignIn: async (profileId, learnerName, email) => {
+    state.familyError = null;
+    state.familyNotice = null;
+    try {
+      await linkFamilyLearnerAccount(profileId, email);
+      state.familyNotice = `${learnerName} is now linked to ${email} as a learner.`;
+      state.families = await listFamilies();
+      state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
+    } catch (error) {
+      state.familyError = error.message;
+    }
+    rerender();
+  },
+
   goDashboard: () => {
     state.screen = 'dashboard';
     cleanupSessionState();
@@ -257,15 +273,11 @@ const actions = {
     if (!active) return;
     state.familyError = null;
     try {
-      const membershipRole = state.families?.[0]?.role;
-      const selectedParticipant = active.participants?.find(person => person.name === state.profile);
-      if (membershipRole !== 'learner' && selectedParticipant) {
-        throw new Error(`This device is signed in as the adult account ${state.sessionUser?.email || ''}. Sign out, then sign in with ${selectedParticipant.name}'s invited Google account to join as that learner.`);
-      }
-      if (state.families?.[0]?.role !== 'learner' && !state.familyOverview) {
+      const isLinkedLearner = Boolean(state.linkedLearnerProfileId);
+      if (!isLinkedLearner && state.families?.[0]?.role !== 'learner' && !state.familyOverview) {
         state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
       }
-      if (state.families?.[0]?.role === 'learner') await joinFamilyPlay(active.id);
+      if (isLinkedLearner || state.families?.[0]?.role === 'learner') await joinFamilyPlay(active.id);
       else if (active.canTakeControl) await claimFamilyPlayController(active.id);
       await loadFamilyPlayState();
       state.activeLesson = VOYAGE_LESSONS.find(lesson => lesson.id === active.lessonId) || VOYAGE_LESSONS[active.voyageDay - 1];
@@ -508,10 +520,10 @@ function activatePackForProfile(profileName, requestedPackId = null) {
 }
 
 function selectLinkedLearnerProfile() {
-  if (state.families?.[0]?.role !== 'learner') return;
   const linkedProfiles = getProfiles().filter(
     profile => profile.linkedUserId === state.sessionUser?.id
   );
+  state.linkedLearnerProfileId = linkedProfiles.length === 1 ? linkedProfiles[0].id : null;
   if (linkedProfiles.length === 1) setActiveProfile(linkedProfiles[0].name);
 }
 
@@ -655,6 +667,7 @@ async function init() {
       } else {
         state.families = null;
         state.familyPlayState = null;
+        state.linkedLearnerProfileId = null;
         stopFamilyPlaySubscription?.();
         stopFamilyPlaySubscription = null;
         setActiveProfile(null);
