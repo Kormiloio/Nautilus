@@ -37,6 +37,30 @@ const definitions = [
   ['alphabet', 'Albanian Alphabet', 'Distinctive Albanian letters', [['ë','ë — a central vowel'],['ç','ç — like ch in chair'],['dh','dh — like th in this'],['gj','gj — a soft palatal sound'],['ll','ll — a strong l sound']]],
 ];
 
+// Expansion set for the highest-frequency family and travel topics. These are
+// intentionally still draft records until a fluent reviewer signs off.
+const supplements = {
+  family: [['gjyshja','grandmother'],['gjyshi','grandfather'],['tezja','aunt'],['kushëriri','male cousin']],
+  greetings: [['Mirë se vini!','Welcome!'],['Si quhesh?','What is your name?'],['Gëzohem që të njoh.','Nice to meet you.'],['Natën e mirë!','Good night!']],
+  numbers: [['gjashtë','six'],['shtatë','seven'],['tetë','eight'],['nëntë','nine'],['dhjetë','ten']],
+  colors: [['i bardhë','white'],['portokalli','orange'],['vjollcë','purple'],['rozë','pink']],
+  food: [['vezë','egg'],['pulë','chicken'],['oriz','rice'],['supë','soup']],
+  cafe: [['Dua një ujë.','I would like a water.'],['Me qumësht, ju lutem.','With milk, please.'],['A mund të porosis?','May I order?'],['Faleminderit.','Thank you.']],
+  aboutme: [['Jam nga Amerika.','I am from America.'],['Kam dy vëllezër.','I have two brothers.'],['Flas pak shqip.','I speak a little Albanian.'],['Nuk flas mirë ende.','I do not speak well yet.']],
+  outabout: [['Mund ta përsërisni?','Can you repeat that?'],['Më ngadalë, ju lutem.','More slowly, please.'],['Ku jemi?','Where are we?'],['Jam humbur.','I am lost.']],
+  directions: [['Ku është qendra?','Where is the center?'],['Kthehu majtas.','Turn left.'],['Kthehu djathtas.','Turn right.'],['Është këtu afër.','It is nearby.']],
+  travel: [['Nisja','departure'],['Mbërritja','arrival'],['Ku është porta?','Where is the gate?'],['Kam një rezervim.','I have a reservation.']],
+  restaurant: [['Menuja, ju lutem.','The menu, please.'],['Jam vegjetarian.','I am vegetarian.'],['Pa gluten, ju lutem.','Gluten-free, please.'],['Ushqimi ishte shumë i mirë.','The food was very good.']],
+  gathering: [['Na keni munguar.','We missed you.'],['Hajde të hamë.','Let us eat.'],['Si keni qenë?','How have you been?'],['Shihemi së shpejti.','See you soon.']],
+};
+
+const dialogues = {
+  greetings: { roles:['Learner','Friend'], lines:[['Learner','Përshëndetje! Si quhesh?','Hello! What is your name?'],['Friend','Unë quhem Arta. Po ti?','My name is Arta. And you?'],['Learner','Unë quhem Lena. Gëzohem që të njoh.','My name is Lena. Nice to meet you.'],['Friend','Edhe unë. Mirupafshim!','Me too. Goodbye!']] },
+  cafe: { roles:['Guest','Server'], lines:[['Guest','Përshëndetje. A mund të porosis?','Hello. May I order?'],['Server','Po, sigurisht.','Yes, of course.'],['Guest','Një kafe me qumësht, ju lutem.','A coffee with milk, please.'],['Server','Patjetër.','Certainly.']] },
+  directions: { roles:['Traveler','Local'], lines:[['Traveler','Më falni, ku është qendra?','Excuse me, where is the center?'],['Local','Shko drejt dhe kthehu majtas.','Go straight and turn left.'],['Traveler','Është larg?','Is it far?'],['Local','Jo, është këtu afër.','No, it is nearby.']] },
+  gathering: { roles:['Host','Guest'], lines:[['Host','Mirë se erdhët! Na keni munguar.','Welcome! We missed you.'],['Guest','Faleminderit. Si keni qenë?','Thank you. How have you been?'],['Host','Shumë mirë. Hajde të hamë.','Very well. Let us eat.'],['Guest','Gëzuar!','Cheers!']] },
+};
+
 const curriculum = {
   months: [
     ['family', 'greetings', 'numbers'],
@@ -58,8 +82,9 @@ const monthById = new Map(
 );
 const colors = ['#7dd3fc', '#f472b6', '#a3e635'];
 
-const allTopics = definitions.map(([id, title, subtitle, items]) => {
+const allTopics = definitions.map(([id, title, subtitle, baseItems]) => {
   const month = monthById.get(id) || 10;
+  const items = [...baseItems, ...(supplements[id] || [])];
   return {
     id,
     month,
@@ -75,6 +100,13 @@ const allTopics = definitions.map(([id, title, subtitle, items]) => {
       supportText,
       reviewStatus: 'draft',
     })),
+    ...(dialogues[id] ? { dialogue: {
+      roles: dialogues[id].roles,
+      lines: dialogues[id].lines.map(([role,targetText,supportText], index) => ({
+        id: `${id}-dialogue-sq-${String(index + 1).padStart(3,'0')}`,
+        role, targetText, supportText, reviewStatus:'draft',
+      })),
+    } } : {}),
   };
 });
 
@@ -85,6 +117,12 @@ export default {
     supportLanguage: { code: 'en', name: 'English' },
     version: '0.1.0',
     status: 'review',
+    audio: {
+      locale: 'sq-AL',
+      delivery: 'speech-synthesis-draft',
+      reviewStatus: 'draft',
+      note: 'Device voice is a temporary listening aid until a fluent Albanian reviewer approves recorded audio.',
+    },
   },
   curriculum,
   topics: allTopics.filter(topic => topic.id !== 'alphabet'),

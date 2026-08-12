@@ -55,6 +55,35 @@ export function renderFamilyOverview(container, state, actions) {
             <button class="btn btn-primary" id="start-family-play-btn" ${overview.learners.length ? '' : 'disabled'}>Start Family Session →</button>`}
         </section>
 
+        ${state.familyProgress ? `<section class="family-progress-dashboard" aria-labelledby="family-progress-title">
+          <div class="family-progress-heading">
+            <div><div class="hero-tag">Shared and personal progress</div><h2 id="family-progress-title">Family voyage dashboard</h2></div>
+            <div class="shared-day-medallion"><strong>${state.familyProgress.shared.completedDays}</strong><span>of 200 family days</span></div>
+          </div>
+          <div class="family-progress-comparison">
+            ${state.familyProgress.learners.map(learner => {
+              const personalPercent = Math.min(100, Math.round((learner.completedLessons / 200) * 100));
+              const sharedPercent = Math.min(100, Math.round((state.familyProgress.shared.completedDays / 200) * 100));
+              return `<article class="family-progress-row">
+                <div><strong>${escapeHtml(learner.name)}</strong><span>${learner.completedLessons} personal lessons · joined ${learner.familyParticipations} family days</span></div>
+                <div class="dual-progress"><i style="--progress:${sharedPercent}%" title="Family ${sharedPercent}%"></i><b style="--progress:${personalPercent}%" title="Personal ${personalPercent}%"></b></div>
+                <small>Family ${sharedPercent}% · Personal ${personalPercent}% · ${learner.stars} stars</small>
+              </article>`;
+            }).join('')}
+          </div>
+        </section>
+
+        <section class="family-history" aria-labelledby="family-history-title">
+          <div class="family-progress-heading"><div><div class="hero-tag">Captain's log</div><h2 id="family-history-title">Family session history</h2></div><span>${state.familyProgress.shared.reviewSessions} review sessions</span></div>
+          <div class="family-history-list">
+            ${state.familyProgress.history.map(entry => `<article class="family-history-item">
+              <div class="history-day"><strong>${entry.voyageDay}</strong><span>${entry.isReview ? 'Review' : 'Voyage day'}</span></div>
+              <div><strong>${escapeHtml(entry.lessonId)}</strong><span>${new Date(entry.completedAt).toLocaleDateString()} · ${escapeHtml((entry.participants || []).join(', '))} · led by ${escapeHtml(entry.controllerName)}</span></div>
+              ${entry.isReview ? '<span class="history-review-badge">Reviewed</span>' : `<button class="btn btn-secondary" data-review-session="${entry.id}">Review together</button>`}
+            </article>`).join('') || '<p>No completed family sessions yet.</p>'}
+          </div>
+        </section>` : ''}
+
         <section style="margin-bottom: 32px;">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;">
             <h2 class="section-title" style="margin:0;">Parents & Members</h2>
@@ -108,4 +137,7 @@ export function renderFamilyOverview(container, state, actions) {
     await actions.startFamilySession(participantIds);
   });
   container.querySelector('#continue-family-play-btn')?.addEventListener('click', actions.openFamilySession);
+  container.querySelectorAll('[data-review-session]').forEach(button => {
+    button.addEventListener('click', () => actions.reviewFamilySession(button.dataset.reviewSession));
+  });
 }

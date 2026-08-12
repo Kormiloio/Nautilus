@@ -9,6 +9,26 @@ const COLOR_SPECS = [
 
 const PUBLIC_ASSET_BASE = import.meta.env.BASE_URL;
 
+const IMMERSIVE_LESSON_SCENES = {
+  colors: {
+    src: 'assets/illustrations/colors-harbor-lesson-v2.jpg',
+    place: 'Color Cove',
+    prompt: 'Look around the harbor. The vocabulary is already in the scene.',
+    icon: '🎨',
+  },
+  family: {
+    src: 'assets/illustrations/family-courtyard-lesson-v1.jpg',
+    place: 'The Family Courtyard',
+    prompt: 'Take a seat at the table and bring the family words to life.',
+    icon: '🏡',
+  },
+};
+
+export function getImmersiveLessonScene(topicId) {
+  const scene = IMMERSIVE_LESSON_SCENES[topicId];
+  return scene ? { ...scene, src: `${PUBLIC_ASSET_BASE}${scene.src}` } : null;
+}
+
 export function getColorSpec(value) {
   const normalized = String(value || '').trim().toLocaleLowerCase();
   return COLOR_SPECS.find(spec => spec.terms.includes(normalized)) || null;

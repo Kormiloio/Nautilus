@@ -3,7 +3,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(23);
+select extensions.plan(28);
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
@@ -178,6 +178,12 @@ select extensions.is(
   'controlling adult advances the shared segment'
 );
 
+select public.claim_family_play_controller(:'family_session');
+select extensions.ok(
+  exists(select 1 from public.family_controller_events where session_id=:'family_session' and reason='reconnect'),
+  'controlling adult can recover the controller lease after reconnecting'
+);
+
 select public.complete_family_play(:'family_session');
 select extensions.is(
   (public.get_family_play_state(:'family_a', 'montenegrin-en') ->> 'completedDays')::integer,
@@ -193,6 +199,29 @@ select extensions.ok(
       and status = 'credited'
   ),
   'participants receive shared-session credit without replacing independent attempts'
+);
+
+select extensions.is(
+  (public.get_family_progress_dashboard(:'family_a','montenegrin-en')->'shared'->>'completedDays')::integer,
+  1,
+  'family dashboard reports shared progress separately from learner attempts'
+);
+
+select public.start_family_review(:'family_session',array[:'kid_profile'::uuid]) as review_session \gset
+select extensions.ok(
+  exists(select 1 from public.family_voyage_sessions where id=:'review_session' and is_review and status='live'),
+  'adult can reopen a completed family lesson as a review session'
+);
+select public.complete_family_play(:'review_session');
+select extensions.is(
+  (public.get_family_play_state(:'family_a','montenegrin-en')->>'completedDays')::integer,
+  1,
+  'completing a review session does not advance the family voyage'
+);
+select extensions.is(
+  jsonb_array_length(public.get_family_progress_dashboard(:'family_a','montenegrin-en')->'history'),
+  2,
+  'family history contains the voyage session and its later review'
 );
 
 insert into public.learner_profiles (family_id, display_name, created_by)

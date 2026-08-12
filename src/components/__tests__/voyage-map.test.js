@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getEarnedCompanions, getVoyageStage, renderVoyageExperience } from '../voyage-map.js';
+import { getEarnedCompanions, getVoyageStage, renderImmersiveVoyageHero, renderVoyageExperience } from '../voyage-map.js';
 import { buildDayPassport } from '../../engine/learning-days.js';
 
 describe('learner voyage experience', () => {
@@ -32,5 +32,16 @@ describe('learner voyage experience', () => {
     });
     expect(html).toContain(`${import.meta.env.BASE_URL}assets/illustrations/nautilus-voyage-map.jpg`);
     expect(html).toContain(`${import.meta.env.BASE_URL}assets/illustrations/friends-of-the-sea.jpg`);
+  });
+
+  it('renders the immersive route with ten accessible ports and a progress-positioned vessel', () => {
+    const html = renderImmersiveVoyageHero({
+      activityDates: [], familyPlayState: { completedDays: 42 },
+    });
+    expect(html).toContain('nautilus-voyage-panorama-v2.jpg');
+    expect(html.match(/class="voyage-landmark /g)).toHaveLength(10);
+    expect(html).toContain('Port 3: Echo Arch');
+    expect(html).toContain('--voyage-progress:21%');
+    expect(html).toContain('class="immersive-voyage__vessel"');
   });
 });

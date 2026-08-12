@@ -21,6 +21,9 @@
 - [ ] 3.2 Complete fluent review of the authored `albanian-en@0.1.0` starter pack; the selectable pack remains visibly marked Review until approval.
 - [ ] 3.3 Identify fluent owners and author separate Spanish, French, and Greek packs.
 - [ ] 3.4 Create script, pronunciation, audio, and voyage-readiness rules for every pack.
+- [x] 3.5 Expand the draft Albanian pack with high-frequency vocabulary and four practical dialogues.
+- [x] 3.6 Configure the Albanian `sq-AL` device-voice preview and label it as unapproved draft audio.
+- [ ] 3.7 Obtain fluent Albanian review of text, pronunciation, dialogues, and recorded/native audio before publication.
 
 ## 4. Verify
 

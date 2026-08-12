@@ -14,7 +14,8 @@
 - [x] Prevent more than one completed family voyage day per family, language, and local date.
 - [x] Add adult create/control/complete service methods.
 - [x] Add learner join and reconnect service methods.
-- [x] Add Realtime session subscription; stale-session recovery remains part of the interface rollout.
+- [x] Add Realtime session subscription and renewable controller leases for reconnect recovery.
+- [x] Add explicit adult handoff, expired-lease takeover, and controller-event history.
 
 ## Family Play interface
 
@@ -24,13 +25,18 @@
 - [x] Show Independent Practice as a separate learner action.
 - [x] Preserve the complete shared lesson when a participant has already completed the same material independently.
 - [x] Require an explicit adult Complete for Family action after the final segment.
+- [x] Add shared-versus-personal progress comparison to Family Overview.
+- [x] Add completed-session history and non-advancing family lesson review.
+- [x] Add a live readiness lobby, persistent crew status, and rotating turn prompts.
 
 ## Immersive voyage
 
 - [x] Add a viewport-sized progress-positioned voyage camera to the plan page.
 - [x] Add purpose-composed horizontal and vertical voyage worlds for wide and narrow screens.
-- [ ] Break the world into layered scene chapters with foreground motion and port transitions.
-- [ ] Add accessible reduced-motion and low-bandwidth variants.
+- [x] Add atmospheric foreground, cloud, sparkle, vessel, and camera motion layers.
+- [x] Add reusable immersive lesson-stage templates for Colors and Family.
+- [x] Add an accessible reduced-motion variant.
+- [ ] Add low-bandwidth scene assets and richer port-to-port chapter transitions.
 
 ## Verification
 
