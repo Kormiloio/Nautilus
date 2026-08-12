@@ -25,6 +25,7 @@ import {
   VOYAGE_LESSONS,
 } from './engine/learning-engine.js';
 import { onAuthStateChange, getSession, isConfigured } from './engine/supabase-client.js';
+import { speakWithBestDeviceVoice } from './engine/speech-engine.js';
 import {
   acceptFamilyInvitation,
   completeFamilyPlay,
@@ -102,14 +103,35 @@ const state = {
 const appContainer = document.getElementById('app');
 
 // Speech synthesis handler
+function showAudioDeviceNotice(message) {
+  let notice = document.getElementById('audio-device-notice');
+  if (!notice) {
+    notice = document.createElement('div');
+    notice.id = 'audio-device-notice';
+    notice.className = 'audio-device-notice';
+    notice.setAttribute('role', 'status');
+    document.body.appendChild(notice);
+  }
+  notice.textContent = message;
+  notice.classList.add('visible');
+  clearTimeout(showAudioDeviceNotice.timer);
+  showAudioDeviceNotice.timer = setTimeout(() => notice.classList.remove('visible'), 9000);
+}
+
 function speak(text) {
-  if (!('speechSynthesis' in window)) return;
-  const lang = LANGUAGE_PACK.targetLanguage.code === 'sq' ? 'sq-AL' : 'hr-HR';
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = lang;
-  u.rate = 0.85;
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(u);
+  if (!('speechSynthesis' in window)) {
+    showAudioDeviceNotice('Speech playback is not supported by this browser.');
+    return;
+  }
+  const languageCode = LANGUAGE_PACK.targetLanguage.code;
+  const result = speakWithBestDeviceVoice(text, languageCode, window.speechSynthesis, window.SpeechSynthesisUtterance);
+  if (!result.spoken && result.reason === 'voice-missing') {
+    const language = languageCode === 'sq' ? 'Albanian' : 'Croatian';
+    const deviceHelp = /iPad|iPhone|iPod/.test(navigator.userAgent)
+      ? `On this iPhone or iPad, open Settings → Accessibility → Read & Speak → Voices and download a ${language} voice.`
+      : `Install or enable a ${language} speech voice in this device's accessibility or speech settings.`;
+    showAudioDeviceNotice(`Nautilus stopped an incorrect English pronunciation. ${deviceHelp}`);
+  }
 }
 
 // Router actions
@@ -639,6 +661,8 @@ function rerender() {
 
 // App Initialization
 async function init() {
+  // Safari and some mobile browsers populate their voice list asynchronously.
+  window.speechSynthesis?.getVoices();
   // Listen for online status to flush pending offline transactions
   window.addEventListener('online', () => {
     triggerSync();

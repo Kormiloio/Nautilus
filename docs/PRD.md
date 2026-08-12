@@ -125,7 +125,7 @@ Nautilus distinguishes shared curriculum movement from individual practice:
 
 ### 7.4 Audio
 
-Every publishable word or phrase intended for listening practice should have approved audio or a clearly communicated fallback. Playback must be replayable and interruptible. If speech synthesis is used, voice availability and pronunciation must be checked on supported devices. Microphone use, if enabled for repetition, must be optional and recordings must not be retained by default.
+Every publishable word or phrase intended for listening practice should have approved audio or a clearly communicated fallback. Playback must be replayable and interruptible. If speech synthesis is used, voice availability and pronunciation must be checked on supported devices. The application must select a compatible target-language voice and must not silently pronounce target text with an English fallback; a missing compatible voice produces device-install guidance instead. Microphone use, if enabled for repetition, must be optional and recordings must not be retained by default.
 
 ### 7.5 Scripts and language display
 
