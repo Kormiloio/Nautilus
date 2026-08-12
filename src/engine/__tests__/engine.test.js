@@ -127,6 +127,9 @@ describe('Learning Engine', () => {
       expect(VOYAGE_LESSONS).toHaveLength(200);
       expect(getTopics()).toHaveLength(33);
       expect(getTopic('greetings').items[0].targetText).toBe('Përshëndetje!');
+      expect(getTopic('greetings').items.length).toBeGreaterThanOrEqual(9);
+      expect(getTopic('greetings').dialogue.lines).toHaveLength(4);
+      expect(LANGUAGE_PACK.audio).toMatchObject({ locale: 'sq-AL', reviewStatus: 'draft' });
     } finally {
       setActiveLanguagePack('montenegrin-en');
     }

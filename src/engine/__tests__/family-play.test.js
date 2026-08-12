@@ -22,9 +22,12 @@ vi.mock('../supabase-client.js', () => ({
 
 import {
   completeFamilyPlay,
+  claimFamilyPlayController,
   controlFamilyPlay,
+  getFamilyProgressDashboard,
   getFamilyPlayState,
   startFamilyPlay,
+  startFamilyReview,
   subscribeToFamilyPlay,
 } from '../family-service.js';
 
@@ -81,5 +84,18 @@ describe('Family Play cloud service', () => {
     }), expect.any(Function));
     stop();
     expect(removeChannel).toHaveBeenCalled();
+  });
+
+  it('supports controller reconnect and historical review without personal progress writes', async () => {
+    await claimFamilyPlayController('session-1');
+    await startFamilyReview('completed-session-1', ['mia']);
+    await getFamilyProgressDashboard('family-1', 'montenegrin-en');
+    expect(rpc).toHaveBeenNthCalledWith(1, 'claim_family_play_controller', { target_session: 'session-1' });
+    expect(rpc).toHaveBeenNthCalledWith(2, 'start_family_review', {
+      source_session: 'completed-session-1', participant_profiles: ['mia'],
+    });
+    expect(rpc).toHaveBeenNthCalledWith(3, 'get_family_progress_dashboard', {
+      target_family: 'family-1', target_pack_id: 'montenegrin-en',
+    });
   });
 });

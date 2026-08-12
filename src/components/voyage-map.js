@@ -17,6 +17,31 @@ const COMPANIONS = [
   { min: 150, icon: '🐋', name: 'Great Voyager', note: '150 voyage days completed' },
 ];
 
+const VOYAGE_PORTS = [
+  { x: 7, y: 66, name: 'Home Harbor', chapter: 'Family & greetings' },
+  { x: 17, y: 57, name: 'Lantern Quay', chapter: 'Names & introductions' },
+  { x: 28, y: 63, name: 'Echo Arch', chapter: 'Numbers & sounds' },
+  { x: 39, y: 51, name: 'Color Cove', chapter: 'Colors & descriptions' },
+  { x: 49, y: 58, name: 'Market Island', chapter: 'Food & shopping' },
+  { x: 59, y: 44, name: 'Café Point', chapter: 'Ordering & conversation' },
+  { x: 69, y: 52, name: 'Compass Rock', chapter: 'Directions & travel' },
+  { x: 79, y: 39, name: 'Story Bay', chapter: 'Sentences & stories' },
+  { x: 88, y: 47, name: 'Family Coast', chapter: 'Visits & gatherings' },
+  { x: 95, y: 32, name: 'Sunrise Kotor', chapter: 'Confident conversation' },
+];
+
+function getVoyagePosition(percent) {
+  const routePosition = Math.max(0, Math.min(99.999, percent)) / 100 * (VOYAGE_PORTS.length - 1);
+  const startIndex = Math.floor(routePosition);
+  const amount = routePosition - startIndex;
+  const start = VOYAGE_PORTS[startIndex];
+  const end = VOYAGE_PORTS[Math.min(startIndex + 1, VOYAGE_PORTS.length - 1)];
+  return {
+    x: start.x + ((end.x - start.x) * amount),
+    y: start.y + ((end.y - start.y) * amount),
+  };
+}
+
 export function getVoyageStage(completedCount) {
   const safeCount = Math.max(0, Math.min(200, Number(completedCount) || 0));
   return [...VOYAGE_STAGES].reverse().find(stage => safeCount >= stage.min);
@@ -111,25 +136,43 @@ export function renderImmersiveVoyageHero(state) {
   const port = Math.min(10, Math.floor(completedDays / 20) + 1);
   const daysToNextPort = Math.max(0, Math.min(20, port * 20 - completedDays));
   const cameraPosition = Math.max(0, Math.min(100, percent));
+  const vessel = getVoyagePosition(percent);
+  const routePoints = VOYAGE_PORTS.map(item => `${item.x},${item.y}`).join(' ');
+  const portMarkers = VOYAGE_PORTS.map((item, index) => {
+    const status = index + 1 < port ? 'reached' : (index + 1 === port ? 'current' : 'charted');
+    return `<button class="voyage-landmark ${status}" style="--port-x:${item.x}%;--port-y:${item.y}%" aria-label="Port ${index + 1}: ${item.name}, ${item.chapter}" data-port="${index + 1}">
+      <span class="voyage-landmark__beacon">${status === 'reached' ? '✓' : index + 1}</span>
+      <span class="voyage-landmark__label"><strong>${item.name}</strong><small>${item.chapter}</small></span>
+    </button>`;
+  }).join('');
+  const currentPort = VOYAGE_PORTS[port - 1];
 
-  return `<section class="immersive-voyage" style="--voyage-camera:${cameraPosition}%;--voyage-progress:${percent}%" aria-labelledby="immersive-voyage-title">
+  return `<section class="immersive-voyage" style="--voyage-camera:${cameraPosition}%;--voyage-progress:${percent}%;--voyage-x:${vessel.x}%;--voyage-y:${vessel.y}%" aria-labelledby="immersive-voyage-title">
     <picture class="immersive-voyage__world-frame">
-      <source media="(min-width: 700px)" srcset="${PUBLIC_ASSET_BASE}assets/illustrations/nautilus-journey-world-wide.jpg">
-      <img class="immersive-voyage__world" src="${PUBLIC_ASSET_BASE}assets/illustrations/nautilus-journey-world.jpg" alt="A winding Adriatic learning route from a moonlit family harbor through coastal villages to a bright mountain lookout">
+      <img class="immersive-voyage__world" src="${PUBLIC_ASSET_BASE}assets/illustrations/nautilus-voyage-panorama-v2.jpg" alt="An Adriatic learning voyage from a moonlit family harbor through islands toward a sunlit Montenegrin mountain town">
     </picture>
     <div class="immersive-voyage__veil" aria-hidden="true"></div>
+    <div class="immersive-voyage__clouds" aria-hidden="true"></div>
+    <div class="immersive-voyage__sparkles" aria-hidden="true"></div>
+    <div class="immersive-voyage__foreground" aria-hidden="true"></div>
+    <div class="immersive-voyage__birds" aria-hidden="true">⌁　⌁　⌁</div>
+    <svg class="immersive-voyage__route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <polyline class="immersive-voyage__route-shadow" points="${routePoints}"></polyline>
+      <polyline class="immersive-voyage__route-progress" pathLength="100" points="${routePoints}"></polyline>
+    </svg>
+    <div class="immersive-voyage__landmarks">${portMarkers}</div>
     <div class="immersive-voyage__masthead">
       <span class="immersive-voyage__eyebrow">The 200-day family voyage</span>
       <span>Port ${port} of 10</span>
     </div>
     <div class="immersive-voyage__hud">
-      <div class="hero-tag">Together on the same route</div>
-      <h1 id="immersive-voyage-title">${stage.icon} ${stage.label}</h1>
-      <p>${completedDays} family learning days complete · ${daysToNextPort} to the next port</p>
+      <div class="hero-tag">Now sailing · Port ${port}</div>
+      <h1 id="immersive-voyage-title">${currentPort.name}</h1>
+      <p><strong>${stage.icon} ${stage.label}</strong> · ${currentPort.chapter}<br>${completedDays} family days complete · ${daysToNextPort} to the next port</p>
       <div class="immersive-voyage__meter" aria-label="${percent}% of family voyage complete"><span></span></div>
       <a class="btn btn-primary" href="#voyage-plan">Explore the route plan ↓</a>
     </div>
-    <div class="immersive-voyage__vessel" aria-hidden="true"><span>⛵</span><i></i></div>
-    <div class="immersive-voyage__hint">The world climbs from moonlit harbor to mountain sunrise as your family learns together.</div>
+    <div class="immersive-voyage__vessel" aria-hidden="true"><span>⛵</span><i></i><b></b></div>
+    <div class="immersive-voyage__hint">Choose a port to preview each chapter · move your pointer to look across the water</div>
   </section>`;
 }
