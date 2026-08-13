@@ -29,6 +29,7 @@ import {
   startFamilyPlay,
   startFamilyReview,
   subscribeToFamilyPlay,
+  touchFamilyPlay,
 } from '../family-service.js';
 
 describe('Family Play cloud service', () => {
@@ -101,5 +102,11 @@ describe('Family Play cloud service', () => {
     expect(rpc).toHaveBeenNthCalledWith(3, 'get_family_progress_dashboard', {
       target_family: 'family-1', target_pack_id: 'montenegrin-en',
     });
+  });
+
+  it('renews learner presence using the active session identity', async () => {
+    rpc.mockResolvedValueOnce({ data: 'mia-profile', error: null });
+    await expect(touchFamilyPlay('session-1')).resolves.toBe('mia-profile');
+    expect(rpc).toHaveBeenCalledWith('touch_family_play', { target_session: 'session-1' });
   });
 });

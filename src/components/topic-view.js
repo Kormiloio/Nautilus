@@ -18,7 +18,7 @@ export function renderTopicView(container, state, actions) {
 
   container.innerHTML = `
     <!-- Top Nav bar -->
-    <header class="navbar">
+    <header class="navbar topic-navbar">
       <button class="logo" id="logo-btn" aria-label="Go to Dashboard">
         <div class="logo-icon">${LANGUAGE_PACK.targetLanguage.code.toUpperCase()}</div>
         <div class="logo-title">Learn ${LANGUAGE_PACK.targetLanguage.name}</div>
@@ -28,9 +28,9 @@ export function renderTopicView(container, state, actions) {
       </div>
     </header>
 
-    <main class="container" style="max-width: 720px;">
+    <main class="container topic-activity-page" style="max-width: 720px;">
       <!-- Header info -->
-      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px;">
+      <div class="topic-activity-heading">
         <div>
           <h2 style="font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">${topic.title}</h2>
           <p style="color: var(--text-muted); font-size: 14px;">${topic.subtitle}</p>
@@ -57,7 +57,7 @@ export function renderTopicView(container, state, actions) {
       ${renderColorsIntro(topic.id)}
 
       <!-- Activities Tabs -->
-      <div style="display: flex; gap: 8px; margin: 16px 0 24px; flex-wrap: wrap;" role="tablist" aria-label="Topic Activities">
+      <div class="topic-activity-tabs" role="tablist" aria-label="Topic Activities">
         ${tabDefs.map(tab => `
           <button class="btn btn-secondary btn-pill ${state.activity === tab.id ? 'btn-active' : ''}" role="tab" aria-selected="${state.activity === tab.id}" data-tab="${tab.id}">${tab.label}</button>
         `).join('')}
@@ -133,12 +133,13 @@ function renderFlashcards(mount, topic, state, actions) {
         </div>
       </button>
 
-      <button class="btn btn-primary" id="speak-btn">► Say it out loud</button>
-
-      <div style="display: flex; gap: 12px;">
-        <button class="btn btn-secondary" id="prev-card-btn">← Prev</button>
-        <button class="btn btn-secondary" id="shuffle-btn">Shuffle</button>
-        <button class="btn btn-secondary" id="next-card-btn">Next →</button>
+      <div class="flashcard-action-dock" aria-label="Flashcard controls">
+        <button class="btn btn-primary" id="speak-btn">► Say it out loud</button>
+        <div class="flashcard-nav">
+          <button class="btn btn-secondary" id="prev-card-btn">← Prev</button>
+          <button class="btn btn-secondary" id="shuffle-btn">Shuffle</button>
+          <button class="btn btn-secondary" id="next-card-btn">Next →</button>
+        </div>
       </div>
     </div>
   `;

@@ -3,7 +3,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(28);
+select extensions.plan(30);
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
@@ -170,6 +170,25 @@ select extensions.is(
   0,
   'independent lesson completion does not move family progress'
 );
+
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '10000000-0000-0000-0000-000000000002', true);
+select set_config('request.jwt.claims', '{"sub":"10000000-0000-0000-0000-000000000002","email":"kid-a@example.com","role":"authenticated"}', true);
+select public.touch_family_play(:'family_session');
+select extensions.ok(
+  exists(select 1 from public.family_voyage_participants where session_id=:'family_session' and profile_id=:'kid_profile' and status='joined' and last_seen_at is not null),
+  'linked learner joins and records live device presence'
+);
+select extensions.ok(
+  (public.get_family_play_state(:'family_a','montenegrin-en')->'activeSession'->'participants'->0->>'isCurrentUser')::boolean,
+  'shared state identifies the learner attached to the current Google account'
+);
+
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '10000000-0000-0000-0000-000000000001', true);
+select set_config('request.jwt.claims', '{"sub":"10000000-0000-0000-0000-000000000001","email":"parent-a@example.com","role":"authenticated"}', true);
 
 select public.control_family_play(:'family_session', 'live', 3);
 select extensions.is(

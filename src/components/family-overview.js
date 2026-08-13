@@ -1,3 +1,5 @@
+import { getFamilyPlayPreflight } from '../engine/family-play-readiness.js';
+
 const PACK_NAMES = {
   'montenegrin-en': 'Montenegrin',
   'albanian-en': 'Albanian',
@@ -45,14 +47,23 @@ export function renderFamilyOverview(container, state, actions) {
               <span>${escapeHtml(state.familyPlayState.activeSession.status)} · Part ${(state.familyPlayState.activeSession.currentSegment || 0) + 1}</span>
               <button class="btn btn-primary" id="continue-family-play-btn">Continue Family Play →</button>
             </div>` : `
-            <fieldset class="family-play-roster">
-              <legend>Who is learning together?</legend>
-              ${overview.learners.map(learner => `<label>
-                <input type="checkbox" name="family-participant" value="${escapeHtml(learner.id)}" checked>
-                <span>${escapeHtml(learner.name)}</span>
-              </label>`).join('') || '<p>Add a learner before starting Family Play.</p>'}
-            </fieldset>
-            <button class="btn btn-primary" id="start-family-play-btn" ${overview.learners.length ? '' : 'disabled'}>Start Family Session →</button>`}
+            <div class="family-session-setup">
+              <div class="family-setup-diagnostics" aria-label="Family Play preflight checks">
+                <div class="setup-check ok"><span>✓</span><div><strong>Family cloud</strong><small>Connected as ${escapeHtml(state.sessionUser?.email || 'parent')}</small></div></div>
+                <div class="setup-check ok"><span>✓</span><div><strong>Learning language</strong><small>${escapeHtml(PACK_NAMES[state.activePackId] || 'Selected language')} · voyage day ${(state.familyPlayState?.completedDays || 0) + 1}</small></div></div>
+                <div class="setup-check" id="learner-link-check"><span>•</span><div><strong>Learner sign-ins</strong><small>Select your crew to run the check.</small></div></div>
+              </div>
+              <fieldset class="family-play-roster">
+                <legend>Who is learning together?</legend>
+                ${overview.learners.map(learner => `<label class="family-roster-person ${learner.linked ? 'linked' : 'unlinked'}">
+                  <input type="checkbox" name="family-participant" value="${escapeHtml(learner.id)}" ${learner.linked ? 'checked' : ''}>
+                  <span><strong>${escapeHtml(learner.name)}</strong><small>${learner.linked ? 'Google sign-in linked' : 'Sign-in must be linked first'}</small></span>
+                  <i>${learner.linked ? '✓' : '!'}</i>
+                </label>`).join('') || '<p>Add a learner before starting Family Play.</p>'}
+              </fieldset>
+              <p class="family-setup-note">After you start, each selected learner opens Nautilus on their device and chooses <strong>Open Shared Lesson</strong>. The live lobby will confirm their connection.</p>
+              <button class="btn btn-primary" id="start-family-play-btn" disabled>Start Family Session →</button>
+            </div>`}
         </section>
 
         ${state.familyProgress ? `<section class="family-progress-dashboard" aria-labelledby="family-progress-title">
@@ -137,6 +148,20 @@ export function renderFamilyOverview(container, state, actions) {
     }
     await actions.startFamilySession(participantIds);
   });
+  const updatePreflight = () => {
+    const selectedIds = [...container.querySelectorAll('input[name="family-participant"]:checked')].map(input => input.value);
+    const preflight = getFamilyPlayPreflight(overview?.learners || [], selectedIds);
+    const check = container.querySelector('#learner-link-check');
+    const button = container.querySelector('#start-family-play-btn');
+    if (!check || !button) return;
+    check.className = `setup-check ${preflight.canStart ? 'ok' : 'warning'}`;
+    check.innerHTML = preflight.canStart
+      ? `<span>✓</span><div><strong>Learner sign-ins</strong><small>${preflight.linkedCount} selected learner${preflight.linkedCount === 1 ? '' : 's'} ready to connect</small></div>`
+      : `<span>!</span><div><strong>Learner sign-ins</strong><small>${preflight.unlinkedNames.length ? `Link ${escapeHtml(preflight.unlinkedNames.join(', '))} or remove from this session.` : 'Select at least one learner.'}</small></div>`;
+    button.disabled = !preflight.canStart;
+  };
+  container.querySelectorAll('input[name="family-participant"]').forEach(input => input.addEventListener('change', updatePreflight));
+  updatePreflight();
   container.querySelector('#continue-family-play-btn')?.addEventListener('click', actions.openFamilySession);
   container.querySelectorAll('[data-review-session]').forEach(button => {
     button.addEventListener('click', () => actions.reviewFamilySession(button.dataset.reviewSession));

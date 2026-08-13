@@ -45,6 +45,7 @@ import {
   startFamilyPlay,
   startFamilyReview,
   subscribeToFamilyPlay,
+  touchFamilyPlay,
 } from './engine/family-service.js';
 
 // Import views
@@ -310,6 +311,15 @@ const actions = {
     rerender();
   },
 
+  refreshFamilySession: async () => {
+    try {
+      await maintainLearnerPresence();
+      await loadFamilyPlayState();
+      state.familyNotice = 'Connection status refreshed.';
+    } catch (error) { state.familyError = error.message; }
+    rerender();
+  },
+
   claimFamilyController: async () => {
     const sessionId = state.familyPlayState?.activeSession?.id;
     if (!sessionId) return;
@@ -561,6 +571,8 @@ async function loadFamilyPlayState() {
 }
 
 let familyHeartbeatTimer = null;
+let learnerPresenceTimer = null;
+let learnerPresenceSessionId = null;
 let familyPlayRefreshTimer = null;
 let familyPlayRefreshSessionId = null;
 
@@ -570,6 +582,32 @@ function syncFamilyHeartbeat() {
   const active = state.familyPlayState?.activeSession;
   if (!active || active.controllingAdult !== state.sessionUser?.id || state.screen !== 'family-play') return;
   familyHeartbeatTimer = setInterval(() => heartbeatFamilyPlay(active.id).catch(() => {}), 45_000);
+}
+
+async function maintainLearnerPresence() {
+  const active = state.familyPlayState?.activeSession;
+  const isLearner = Boolean(state.linkedLearnerProfileId) || state.families?.[0]?.role === 'learner';
+  if (!active || !isLearner || state.screen !== 'family-play') return;
+  await touchFamilyPlay(active.id);
+}
+
+function syncLearnerPresence() {
+  const active = state.familyPlayState?.activeSession;
+  const isLearner = Boolean(state.linkedLearnerProfileId) || state.families?.[0]?.role === 'learner';
+  if (!active || !isLearner || state.screen !== 'family-play') {
+    clearInterval(learnerPresenceTimer);
+    learnerPresenceTimer = null;
+    learnerPresenceSessionId = null;
+    return;
+  }
+  if (learnerPresenceTimer && learnerPresenceSessionId === active.id) return;
+  clearInterval(learnerPresenceTimer);
+  learnerPresenceSessionId = active.id;
+  maintainLearnerPresence().then(loadFamilyPlayState).then(rerender).catch(error => {
+    state.familyError = `Reconnecting to Family Play: ${error.message}`;
+    rerender();
+  });
+  learnerPresenceTimer = setInterval(() => maintainLearnerPresence().catch(() => {}), 20_000);
 }
 
 function syncFamilyPlayRefresh() {
@@ -614,12 +652,14 @@ function rerender() {
 
   if (state.screen === 'family-play') {
     syncFamilyHeartbeat();
+    syncLearnerPresence();
     syncFamilyPlayRefresh();
     renderFamilyPlayView(appContainer, state, actions);
     return;
   }
   clearInterval(familyHeartbeatTimer);
   familyHeartbeatTimer = null;
+  syncLearnerPresence();
   syncFamilyPlayRefresh();
 
   if (!state.profile) {

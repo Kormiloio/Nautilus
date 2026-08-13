@@ -201,6 +201,13 @@ export async function joinFamilyPlay(sessionId) {
   return data;
 }
 
+export async function touchFamilyPlay(sessionId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('touch_family_play', { target_session: sessionId });
+  if (error) throw error;
+  return data;
+}
+
 export async function completeFamilyPlay(sessionId) {
   requireCloud();
   const { data, error } = await supabase.rpc('complete_family_play', {
