@@ -3,7 +3,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(30);
+select extensions.plan(34);
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
@@ -184,11 +184,35 @@ select extensions.ok(
   (public.get_family_play_state(:'family_a','montenegrin-en')->'activeSession'->'participants'->0->>'isCurrentUser')::boolean,
   'shared state identifies the learner attached to the current Google account'
 );
+select public.submit_family_quiz_answer(:'family_session', 0, 'learner-answer');
+select extensions.is(
+  (select count(*) from public.family_quiz_answers where session_id=:'family_session' and segment=0),
+  1::bigint,
+  'learner locks one durable quiz answer'
+);
+select public.submit_family_quiz_answer(:'family_session', 0, 'changed-answer');
+select extensions.is(
+  (select answer_id from public.family_quiz_answers where session_id=:'family_session' and segment=0 and user_id=auth.uid()),
+  'learner-answer',
+  'a locked quiz answer cannot be changed by repeated taps'
+);
 
 reset role;
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '10000000-0000-0000-0000-000000000001', true);
 select set_config('request.jwt.claims', '{"sub":"10000000-0000-0000-0000-000000000001","email":"parent-a@example.com","role":"authenticated"}', true);
+
+select public.submit_family_quiz_answer(:'family_session', 0, 'parent-answer');
+select extensions.is(
+  (select current_segment from public.family_voyage_sessions where id=:'family_session'),
+  1,
+  'the last required answer advances the shared quiz atomically'
+);
+select extensions.is(
+  jsonb_array_length(public.get_family_play_state(:'family_a','montenegrin-en')->'activeSession'->'quizAnswers'),
+  0,
+  'the next segment starts with a clean answer roster'
+);
 
 select public.control_family_play(:'family_session', 'live', 3);
 select extensions.is(

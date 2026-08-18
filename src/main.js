@@ -44,6 +44,7 @@ import {
   listFamilies,
   startFamilyPlay,
   startFamilyReview,
+  submitFamilyQuizAnswer,
   subscribeToFamilyPlay,
   touchFamilyPlay,
 } from './engine/family-service.js';
@@ -354,6 +355,18 @@ const actions = {
     if (!sessionId) return;
     try {
       await controlFamilyPlay(sessionId, status, segment);
+      await loadFamilyPlayState();
+    } catch (error) {
+      state.familyError = error.message;
+    }
+    rerender();
+  },
+
+  answerFamilyQuiz: async (answerId, segment) => {
+    const sessionId = state.familyPlayState?.activeSession?.id;
+    if (!sessionId) return;
+    try {
+      await submitFamilyQuizAnswer(sessionId, segment, answerId);
       await loadFamilyPlayState();
     } catch (error) {
       state.familyError = error.message;

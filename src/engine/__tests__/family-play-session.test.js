@@ -10,7 +10,7 @@ describe('full Family Play session', () => {
     expect(steps.map(step => step.type)).toEqual(expect.arrayContaining([
       'ready', 'family-flashcards', 'family-match', 'family-quiz', 'family-conversation', 'family-reflection',
     ]));
-    expect(steps.length).toBeGreaterThanOrEqual(12);
+    expect(steps.length).toBeGreaterThanOrEqual(16);
     expect(steps.at(-1).items.length).toBeGreaterThan(0);
   });
 

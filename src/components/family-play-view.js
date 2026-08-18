@@ -9,27 +9,44 @@ function escapeHtml(value) {
   })[char]);
 }
 
-function renderSharedContent(step, turnPerson) {
+function buildConversationScript(step, leader, participants = []) {
+  const first = leader?.name || 'Learner 1';
+  const partner = participants.find(person => person.profileId !== leader?.profileId)?.name || 'Learner 2';
+  const target = step.item.targetText;
+  const support = step.item.supportText;
+  return [
+    { person: first, label: 'Say the new word', target, support },
+    { person: partner, label: `Ask ${first}`, target: `What does “${target}” mean?`, support: 'Ask this in English for now.' },
+    { person: first, label: `Answer ${partner}`, target: `“${target}” means “${support}.”`, support: `Say the Montenegrin word clearly: ${target}.` },
+    { person: 'Everyone', label: 'Say it together', target, support: `Everyone repeats “${target}” once.` },
+  ];
+}
+
+function renderSharedContent(step, turnPerson, quizState = null, participants = [], familyPeople = []) {
   if (step.type === 'ready') {
     return `<div class="family-ready-call"><span aria-hidden="true">⚓</span><div><strong>Gather your crew</strong><p>Open Family Play on each learner's device. When everyone shows Ready, the parent can begin.</p></div></div>`;
   }
   const turnPrompt = turnPerson ? `<div class="family-turn-prompt"><span>${escapeHtml(turnPerson.name).slice(0, 1)}</span><div><small>It’s your turn</small><strong>${escapeHtml(turnPerson.name)}, lead this round—then everyone joins in.</strong></div></div>` : '';
   if (step.type === 'family-flashcards') {
-    return `<div class="family-activity-instructions"><strong>How to play</strong><span>The highlighted learner says each word first. Everyone repeats it, then the parent taps the audio button if help is needed.</span></div>
-      <div class="family-vocabulary-grid">${step.items.map((item, index) => `<article><span>${item.emoji || '✦'}</span><div><strong>${escapeHtml(item.targetText)}</strong><small>${escapeHtml(item.supportText)}</small></div><button class="dialogue-play-btn" data-family-audio="${index}" aria-label="Play ${escapeHtml(item.targetText)}">►</button></article>`).join('')}</div>`;
+    return `<div class="family-activity-instructions"><strong>How to play</strong><span>Everyone taps each card on their own screen, says the word, then reveals its meaning. The parent moves on when the family is ready.</span></div>
+      <div class="family-vocabulary-grid">${step.items.map((item, index) => `<article><span>${item.emoji || '✦'}</span><button class="family-vocab-reveal" data-family-reveal><strong>${escapeHtml(item.targetText)}</strong><small>${escapeHtml(item.supportText)}</small><em>Tap to reveal</em></button><button class="dialogue-play-btn" data-family-audio="${index}" aria-label="Play ${escapeHtml(item.targetText)}">►</button></article>`).join('')}</div>`;
   }
   if (step.type === 'family-match') {
-    return `${turnPrompt}<div class="family-activity-instructions"><strong>Oral matching round</strong><span>One learner chooses a word. The other finds its numbered meaning. Say the pair aloud before moving to the next.</span></div>
-      <div class="family-match-board"><div>${step.items.map((item, index) => `<span><b>${index + 1}</b>${escapeHtml(item.targetText)}</span>`).join('')}</div><div>${[...step.items].reverse().map((item, index) => `<span><b>${String.fromCharCode(65 + index)}</b>${escapeHtml(item.supportText)}</span>`).join('')}</div></div>`;
+    return `${turnPrompt}<div class="family-activity-instructions"><strong>Touch-and-match round</strong><span>On each device, tap one word and then its meaning. Say the pair aloud. Matched choices stay highlighted while the parent keeps the family together.</span></div>
+      <div class="family-match-board"><div>${step.items.map((item, index) => `<button data-family-match="${escapeHtml(item.id)}"><b>${index + 1}</b>${escapeHtml(item.targetText)}</button>`).join('')}</div><div>${[...step.items].reverse().map((item, index) => `<button data-family-match="${escapeHtml(item.id)}"><b>${String.fromCharCode(65 + index)}</b>${escapeHtml(item.supportText)}</button>`).join('')}</div></div>`;
   }
   if (step.type === 'family-quiz') {
-    return `${turnPrompt}<div class="family-quiz-card"><small>What is the best translation?</small><strong>${escapeHtml(step.item.supportText)}</strong><div>${step.options.map(option => `<button type="button" class="family-answer" data-family-answer="${escapeHtml(option.id)}" data-correct="${option.id === step.item.id}">${escapeHtml(option.targetText)}</button>`).join('')}</div><p class="family-answer-feedback" aria-live="polite">Choose together, then check your answer.</p></div>`;
+    const lockedAnswer = quizState?.currentAnswer?.answerId;
+    const status = quizState?.answers || [];
+    return `${turnPrompt}<div class="family-quiz-card"><small>What is the best translation?</small><strong>${escapeHtml(step.item.supportText)}</strong><div>${step.options.map(option => `<button type="button" class="family-answer ${lockedAnswer === option.id ? 'locked' : ''}" data-family-answer="${escapeHtml(option.id)}" ${lockedAnswer ? 'disabled' : ''}>${escapeHtml(option.targetText)}${lockedAnswer === option.id ? '<span>✓ Locked in</span>' : ''}</button>`).join('')}</div><div class="family-answer-status">${status.map(answer => `<span class="locked">✓ ${escapeHtml(answer.name)}</span>`).join('')}${Array.from({ length: Math.max(0, (quizState?.expected || 0) - status.length) }, () => '<span>Waiting…</span>').join('')}</div><p class="family-answer-feedback" aria-live="polite">${lockedAnswer ? `Answer locked. Waiting for ${Math.max(0, (quizState?.expected || 0) - status.length)} more…` : 'Choose once to lock in your answer.'}</p></div>`;
   }
   if (step.type === 'family-conversation') {
-    return `<div class="family-conversation-card">${turnPrompt}<div class="family-conversation-phrase"><small>Phrase for this round</small><strong>${escapeHtml(step.item.targetText)}</strong><span>${escapeHtml(step.item.supportText)}</span></div><ol><li><strong>Ask:</strong> Use the word in a question for another learner.</li><li><strong>Answer:</strong> Reply with the word or a short sentence.</li><li><strong>Ask a parent:</strong> “When would our family say this?”</li><li><strong>Switch roles:</strong> The listener asks the next question.</li></ol></div>`;
+    const script = buildConversationScript(step, turnPerson, participants);
+    return `<div class="family-conversation-card">${turnPrompt}<div class="family-conversation-phrase"><small>Word for this round</small><strong>${escapeHtml(step.item.targetText)}</strong><span>${escapeHtml(step.item.supportText)}</span></div><div class="family-conversation-script"><strong>Follow this script</strong>${script.map((line, index) => `<article><b>${index + 1}</b><div><small>${escapeHtml(line.person)} · ${escapeHtml(line.label)}</small><strong>${escapeHtml(line.target)}</strong><span>${escapeHtml(line.support)}</span></div></article>`).join('')}</div><p class="family-conversation-tip"><strong>Parent:</strong> Help with pronunciation or explain a family wording such as <em>dida</em> versus standard Montenegrin <em>deda</em>. Then tap Next.</p></div>`;
   }
   if (step.type === 'family-reflection') {
-    return `<div class="family-reflection-card"><strong>One final phrase from everyone</strong><p>Each person chooses one phrase, says what it means, and uses it in a family example.</p><div>${step.items.map(item => `<button class="dialogue-play-btn family-reflection-phrase" data-reflection-audio="${escapeHtml(item.targetText)}">${escapeHtml(item.targetText)} <small>${escapeHtml(item.supportText)}</small></button>`).join('')}</div><span>When everyone has spoken, the parent completes this family day.</span></div>`;
+    const people = familyPeople.length ? familyPeople : [{ name: 'Everyone' }];
+    return `<div class="family-reflection-card"><strong>Final family challenge</strong><p>Each person has one assigned word. Tap your card after completing all three actions.</p><div class="family-reflection-grid">${people.map((person, index) => { const item = step.items[index % step.items.length]; return `<button class="family-reflection-assignment" data-reflection-toggle><small>${escapeHtml(person.name)}’s word</small><strong>${escapeHtml(item.targetText)}</strong><span>${escapeHtml(item.supportText)}</span><em>1. Say it · 2. Translate it · 3. Use it in a family example</em><b>Tap when finished</b></button>`; }).join('')}</div><span>When every card is marked finished, the parent completes this family day.</span></div>`;
   }
   const items = step.items || step.dialogue?.lines || [];
   if (items.length) {
@@ -82,6 +99,13 @@ export function renderFamilyPlayView(container, state, actions) {
     : cloudSession.participants[(stepIndex - 1) % cloudSession.participants.length];
   const scene = getImmersiveLessonScene(lesson.topicId);
   const sceneSrc = scene?.src || `${import.meta.env.BASE_URL}assets/illustrations/nautilus-voyage-panorama-v3.jpg`;
+  const familyPeople = [...cloudSession.participants, { name: cloudSession.controllerName || 'Parent' }];
+  const quizAnswers = cloudSession.quizAnswers || [];
+  const quizState = step.type === 'family-quiz' ? {
+    answers: quizAnswers,
+    expected: cloudSession.participants.length + 1,
+    currentAnswer: quizAnswers.find(answer => answer.isCurrentUser),
+  } : null;
 
   container.innerHTML = `
     <header class="navbar family-play-nav">
@@ -117,14 +141,16 @@ export function renderFamilyPlayView(container, state, actions) {
         <p class="hero-tag">${isController ? 'You are leading' : `Following ${escapeHtml(cloudSession.controllerName || 'the family guide')}`}</p>
         <h1 id="family-play-title">${escapeHtml(step.title)}</h1>
         <p class="family-play-subtitle">${escapeHtml(step.subtitle)}</p>
-        ${renderSharedContent(step, turnPerson)}
+        ${renderSharedContent(step, turnPerson, quizState, cloudSession.participants, familyPeople)}
         ${isController ? `<div class="family-play-controls">
           <button class="btn btn-secondary" id="family-play-prev" ${stepIndex === 0 ? 'disabled' : ''}>← Back</button>
           <button class="btn btn-secondary" id="family-play-audio">► Play all</button>
           <button class="btn btn-secondary" id="family-play-pause">${cloudSession.status === 'paused' ? 'Resume' : 'Pause'}</button>
           ${isLast
             ? '<button class="btn btn-primary family-complete-btn" id="family-play-complete">✓ Complete for Family</button>'
-            : `<button class="btn btn-primary" id="family-play-next" ${step.type === 'ready' && !everyoneReady ? 'disabled aria-describedby="family-ready-help"' : ''}>${step.type === 'ready' ? 'Start Together →' : 'Next →'}</button>`}
+            : step.type === 'family-quiz'
+              ? '<span class="family-quiz-auto-note">Advances when everyone locks in</span>'
+              : `<button class="btn btn-primary" id="family-play-next" ${step.type === 'ready' && !everyoneReady ? 'disabled aria-describedby="family-ready-help"' : ''}>${step.type === 'ready' ? 'Start Together →' : 'Next →'}</button>`}
           ${otherAdults.length ? `<label class="family-handoff">Hand off to
             <select id="family-handoff-select"><option value="">Choose adult…</option>${otherAdults.map(member => `<option value="${member.userId}">${escapeHtml(member.name)}</option>`).join('')}</select>
           </label>` : ''}
@@ -141,10 +167,46 @@ export function renderFamilyPlayView(container, state, actions) {
     });
   });
   container.querySelectorAll('[data-reflection-audio]').forEach(button => button.addEventListener('click', () => actions.speak(button.dataset.reflectionAudio)));
+  container.querySelectorAll('[data-family-reveal]').forEach(button => button.addEventListener('click', () => button.classList.toggle('revealed')));
+  let selectedMatch = null;
+  container.querySelectorAll('[data-family-match]').forEach(button => button.addEventListener('click', () => {
+    if (button.classList.contains('matched')) return;
+    if (!selectedMatch) {
+      selectedMatch = button;
+      button.classList.add('selected');
+      return;
+    }
+    if (selectedMatch === button) {
+      button.classList.remove('selected');
+      selectedMatch = null;
+      return;
+    }
+    if (selectedMatch.dataset.familyMatch === button.dataset.familyMatch) {
+      selectedMatch.classList.remove('selected');
+      selectedMatch.classList.add('matched');
+      button.classList.add('matched');
+    } else {
+      const previous = selectedMatch;
+      previous.classList.add('incorrect');
+      button.classList.add('incorrect');
+      setTimeout(() => {
+        previous.classList.remove('selected', 'incorrect');
+        button.classList.remove('incorrect');
+      }, 550);
+    }
+    selectedMatch = null;
+  }));
+  container.querySelectorAll('[data-reflection-toggle]').forEach(button => button.addEventListener('click', () => {
+    button.classList.toggle('finished');
+    button.querySelector('b').textContent = button.classList.contains('finished') ? '✓ Finished' : 'Tap when finished';
+  }));
   container.querySelectorAll('[data-family-answer]').forEach(button => button.addEventListener('click', () => {
     const card = button.closest('.family-quiz-card');
-    card.querySelectorAll('.family-answer').forEach(answer => answer.classList.toggle('correct', answer.dataset.correct === 'true'));
-    card.querySelector('.family-answer-feedback').textContent = button.dataset.correct === 'true' ? 'Correct! Everyone say the answer aloud.' : 'Good try. Find the highlighted answer and say it together.';
+    card.querySelectorAll('.family-answer').forEach(answer => { answer.disabled = true; });
+    button.classList.add('locked');
+    button.insertAdjacentHTML('beforeend', '<span>✓ Locking in…</span>');
+    card.querySelector('.family-answer-feedback').textContent = 'Locking in your answer…';
+    actions.answerFamilyQuiz(button.dataset.familyAnswer, stepIndex);
   }));
   container.querySelector('#family-play-audio')?.addEventListener('click', () => {
     const target = items.map(item => item.targetText || item.target || item.text || item.line).filter(Boolean).join('. ');

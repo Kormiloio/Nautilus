@@ -6,9 +6,9 @@ function takeItems(items, count, random) {
 
 export function buildFamilyPlaySteps(lesson, topic, sessionId) {
   const random = createSeededRandom(`${sessionId}:${lesson.id}:family-full-session`);
-  const practiceItems = takeItems(topic?.items || [], 8, random);
-  const quizItems = takeItems(topic?.items || [], 4, random);
-  const conversationItems = takeItems(topic?.items || [], 4, random);
+  const practiceItems = takeItems(topic?.items || [], 10, random);
+  const quizItems = takeItems(topic?.items || [], 6, random);
+  const conversationItems = takeItems(topic?.items || [], 6, random);
 
   const steps = [
     { type: 'ready', title: 'Is everyone ready?', subtitle: 'Join on each device before setting sail together.' },
@@ -23,7 +23,7 @@ export function buildFamilyPlaySteps(lesson, topic, sessionId) {
       type: 'family-conversation', title: `Talk Together · Round ${index + 1}`,
       subtitle: 'Ask, answer, and make the phrase your own', item,
     })),
-    { type: 'family-reflection', title: 'Bring It Home', subtitle: 'Finish with one phrase each', items: conversationItems.slice(0, 3) },
+    { type: 'family-reflection', title: 'Bring It Home', subtitle: 'Everyone completes one final speaking challenge', items: conversationItems },
   ];
   return steps;
 }

@@ -208,6 +208,17 @@ export async function touchFamilyPlay(sessionId) {
   return data;
 }
 
+export async function submitFamilyQuizAnswer(sessionId, segment, answerId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('submit_family_quiz_answer', {
+    target_session: sessionId,
+    target_segment: segment,
+    selected_answer: answerId,
+  });
+  if (error) throw error;
+  return data;
+}
+
 export async function completeFamilyPlay(sessionId) {
   requireCloud();
   const { data, error } = await supabase.rpc('complete_family_play', {
@@ -283,8 +294,17 @@ export function subscribeToFamilyPlay(familyId, onChange) {
       table: 'family_voyage_participants',
     }, onChange)
     .subscribe();
+  const answerChannel = supabase
+    .channel(`family-play-answers:${familyId}`)
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'family_quiz_answers',
+    }, onChange)
+    .subscribe();
   return () => {
     supabase.removeChannel(sessionChannel);
     supabase.removeChannel(participantChannel);
+    supabase.removeChannel(answerChannel);
   };
 }

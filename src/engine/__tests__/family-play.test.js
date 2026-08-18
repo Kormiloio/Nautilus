@@ -30,6 +30,7 @@ import {
   startFamilyReview,
   subscribeToFamilyPlay,
   touchFamilyPlay,
+  submitFamilyQuizAnswer,
 } from '../family-service.js';
 
 describe('Family Play cloud service', () => {
@@ -77,7 +78,7 @@ describe('Family Play cloud service', () => {
     });
   });
 
-  it('subscribes to both shared session and participant readiness changes', () => {
+  it('subscribes to session, participant, and quiz answer changes', () => {
     const stop = subscribeToFamilyPlay('family-1', vi.fn());
     expect(channel).toHaveBeenCalledWith('family-play:family-1');
     expect(on).toHaveBeenCalledWith('postgres_changes', expect.objectContaining({
@@ -87,8 +88,12 @@ describe('Family Play cloud service', () => {
     expect(on).toHaveBeenCalledWith('postgres_changes', expect.objectContaining({
       table: 'family_voyage_participants',
     }), expect.any(Function));
+    expect(channel).toHaveBeenCalledWith('family-play-answers:family-1');
+    expect(on).toHaveBeenCalledWith('postgres_changes', expect.objectContaining({
+      table: 'family_quiz_answers',
+    }), expect.any(Function));
     stop();
-    expect(removeChannel).toHaveBeenCalledTimes(2);
+    expect(removeChannel).toHaveBeenCalledTimes(3);
   });
 
   it('supports controller reconnect and historical review without personal progress writes', async () => {
@@ -108,5 +113,13 @@ describe('Family Play cloud service', () => {
     rpc.mockResolvedValueOnce({ data: 'mia-profile', error: null });
     await expect(touchFamilyPlay('session-1')).resolves.toBe('mia-profile');
     expect(rpc).toHaveBeenCalledWith('touch_family_play', { target_session: 'session-1' });
+  });
+});
+
+it('locks a shared quiz answer through the family RPC', async () => {
+  rpc.mockResolvedValueOnce({ data: { locked: true, received: 2, expected: 3, advanced: false }, error: null });
+  await submitFamilyQuizAnswer('session-1', 5, 'parents');
+  expect(rpc).toHaveBeenCalledWith('submit_family_quiz_answer', {
+    target_session: 'session-1', target_segment: 5, selected_answer: 'parents',
   });
 });
