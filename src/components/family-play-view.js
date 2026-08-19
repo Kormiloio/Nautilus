@@ -32,8 +32,10 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
       <div class="family-vocabulary-grid">${step.items.map((item, index) => `<article><span>${item.emoji || '✦'}</span><button class="family-vocab-reveal" data-family-reveal><strong>${escapeHtml(item.targetText)}</strong><small>${escapeHtml(item.supportText)}</small><em>Tap to reveal</em></button><button class="dialogue-play-btn" data-family-audio="${index}" aria-label="Play ${escapeHtml(item.targetText)}">►</button></article>`).join('')}</div>`;
   }
   if (step.type === 'family-match') {
+    const targets = step.targetItems || step.items;
+    const supports = step.supportItems || [...step.items].reverse();
     return `${turnPrompt}<div class="family-activity-instructions"><strong>Touch-and-match round</strong><span>On each device, tap one word and then its meaning. Say the pair aloud. Matched choices stay highlighted while the parent keeps the family together.</span></div>
-      <div class="family-match-board"><div>${step.items.map((item, index) => `<button data-family-match="${escapeHtml(item.id)}"><b>${index + 1}</b>${escapeHtml(item.targetText)}</button>`).join('')}</div><div>${[...step.items].reverse().map((item, index) => `<button data-family-match="${escapeHtml(item.id)}"><b>${String.fromCharCode(65 + index)}</b>${escapeHtml(item.supportText)}</button>`).join('')}</div></div>`;
+      <div class="family-match-board"><div>${targets.map((item, index) => `<button data-family-match="${escapeHtml(item.id)}"><b>${index + 1}</b>${escapeHtml(item.targetText)}</button>`).join('')}</div><div>${supports.map((item, index) => `<button data-family-match="${escapeHtml(item.id)}"><b>${String.fromCharCode(65 + index)}</b>${escapeHtml(item.supportText)}</button>`).join('')}</div></div>`;
   }
   if (step.type === 'family-quiz') {
     const lockedAnswer = quizState?.currentAnswer?.answerId;
@@ -46,7 +48,8 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
   }
   if (step.type === 'family-reflection') {
     const people = familyPeople.length ? familyPeople : [{ name: 'Everyone' }];
-    return `<div class="family-reflection-card"><strong>Final family challenge</strong><p>Each person has one assigned word. Tap your card after completing all three actions.</p><div class="family-reflection-grid">${people.map((person, index) => { const item = step.items[index % step.items.length]; return `<button class="family-reflection-assignment" data-reflection-toggle><small>${escapeHtml(person.name)}’s word</small><strong>${escapeHtml(item.targetText)}</strong><span>${escapeHtml(item.supportText)}</span><em>1. Say it · 2. Translate it · 3. Use it in a family example</em><b>Tap when finished</b></button>`; }).join('')}</div><span>When every card is marked finished, the parent completes this family day.</span></div>`;
+    const locks = quizState?.answers || [];
+    return `<div class="family-reflection-card"><strong>Final family challenge</strong><p>Complete your three actions, then lock in your own card. The family day finishes automatically when everyone is done.</p><div class="family-reflection-grid">${people.map((person, index) => { const item = step.items[index % step.items.length]; const lock = locks.find(answer => person.profileId ? answer.profileId === person.profileId : !answer.profileId); const isMine = Boolean(person.isCurrentUser); return `<button class="family-reflection-assignment ${lock ? 'finished' : ''}" data-final-lock ${isMine && !lock ? '' : 'disabled'}><small>${escapeHtml(person.name)}’s word</small><strong>${escapeHtml(item.targetText)}</strong><span>${escapeHtml(item.supportText)}</span><em>1. Say it · 2. Translate it · 3. Use it in a family example</em><b>${lock ? '✓ Locked in' : isMine ? 'Tap to lock in' : 'Waiting…'}</b></button>`; }).join('')}</div><span>${locks.length} of ${people.length} people locked in</span></div>`;
   }
   const items = step.items || step.dialogue?.lines || [];
   if (items.length) {
@@ -99,9 +102,12 @@ export function renderFamilyPlayView(container, state, actions) {
     : cloudSession.participants[(stepIndex - 1) % cloudSession.participants.length];
   const scene = getImmersiveLessonScene(lesson.topicId);
   const sceneSrc = scene?.src || `${import.meta.env.BASE_URL}assets/illustrations/nautilus-voyage-panorama-v3.jpg`;
-  const familyPeople = [...cloudSession.participants, { name: cloudSession.controllerName || 'Parent' }];
+  const familyPeople = [...cloudSession.participants, {
+    name: cloudSession.controllerName || 'Parent',
+    isCurrentUser: cloudSession.controllingAdult === state.sessionUser?.id,
+  }];
   const quizAnswers = cloudSession.quizAnswers || [];
-  const quizState = step.type === 'family-quiz' ? {
+  const quizState = step.type === 'family-quiz' || step.type === 'family-reflection' ? {
     answers: quizAnswers,
     expected: cloudSession.participants.length + 1,
     currentAnswer: quizAnswers.find(answer => answer.isCurrentUser),
@@ -147,7 +153,7 @@ export function renderFamilyPlayView(container, state, actions) {
           <button class="btn btn-secondary" id="family-play-audio">► Play all</button>
           <button class="btn btn-secondary" id="family-play-pause">${cloudSession.status === 'paused' ? 'Resume' : 'Pause'}</button>
           ${isLast
-            ? '<button class="btn btn-primary family-complete-btn" id="family-play-complete">✓ Complete for Family</button>'
+            ? '<span class="family-quiz-auto-note">Completes when everyone locks in</span>'
             : step.type === 'family-quiz'
               ? '<span class="family-quiz-auto-note">Advances when everyone locks in</span>'
               : `<button class="btn btn-primary" id="family-play-next" ${step.type === 'ready' && !everyoneReady ? 'disabled aria-describedby="family-ready-help"' : ''}>${step.type === 'ready' ? 'Start Together →' : 'Next →'}</button>`}
@@ -196,9 +202,11 @@ export function renderFamilyPlayView(container, state, actions) {
     }
     selectedMatch = null;
   }));
-  container.querySelectorAll('[data-reflection-toggle]').forEach(button => button.addEventListener('click', () => {
-    button.classList.toggle('finished');
-    button.querySelector('b').textContent = button.classList.contains('finished') ? '✓ Finished' : 'Tap when finished';
+  container.querySelectorAll('[data-final-lock]').forEach(button => button.addEventListener('click', () => {
+    button.disabled = true;
+    button.classList.add('finished');
+    button.querySelector('b').textContent = 'Locking in…';
+    actions.finishFamilyChallenge(stepIndex);
   }));
   container.querySelectorAll('[data-family-answer]').forEach(button => button.addEventListener('click', () => {
     const card = button.closest('.family-quiz-card');

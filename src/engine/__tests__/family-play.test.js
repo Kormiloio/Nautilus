@@ -26,6 +26,7 @@ import {
   controlFamilyPlay,
   getFamilyProgressDashboard,
   getFamilyPlayState,
+  lockFamilyFinalChallenge,
   startFamilyPlay,
   startFamilyReview,
   subscribeToFamilyPlay,
@@ -113,6 +114,14 @@ describe('Family Play cloud service', () => {
     rpc.mockResolvedValueOnce({ data: 'mia-profile', error: null });
     await expect(touchFamilyPlay('session-1')).resolves.toBe('mia-profile');
     expect(rpc).toHaveBeenCalledWith('touch_family_play', { target_session: 'session-1' });
+  });
+
+  it('locks the final challenge without requiring a separate parent completion click', async () => {
+    rpc.mockResolvedValueOnce({ data: { locked: true, received: 3, expected: 3, completed: true }, error: null });
+    await expect(lockFamilyFinalChallenge('session-1', 15)).resolves.toMatchObject({ completed: true });
+    expect(rpc).toHaveBeenCalledWith('lock_family_final_challenge', {
+      target_session: 'session-1', target_segment: 15,
+    });
   });
 });
 

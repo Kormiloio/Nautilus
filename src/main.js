@@ -41,6 +41,7 @@ import {
   inviteLearnerProfile,
   joinFamilyPlay,
   linkFamilyLearnerAccount,
+  lockFamilyFinalChallenge,
   listFamilies,
   startFamilyPlay,
   startFamilyReview,
@@ -374,6 +375,25 @@ const actions = {
     rerender();
   },
 
+  finishFamilyChallenge: async (segment) => {
+    const sessionId = state.familyPlayState?.activeSession?.id;
+    if (!sessionId) return;
+    try {
+      const result = await lockFamilyFinalChallenge(sessionId, segment);
+      await loadFamilyPlayState();
+      if (result?.completed) {
+        state.screen = 'family-overview';
+        state.activeLesson = null;
+        state.familyNotice = 'Everyone finished—the family voyage day is complete.';
+        state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
+        state.familyProgress = await getFamilyProgressDashboard(state.families?.[0]?.family_id, state.activePackId);
+      }
+    } catch (error) {
+      state.familyError = error.message;
+    }
+    rerender();
+  },
+
   completeFamilySession: async () => {
     const sessionId = state.familyPlayState?.activeSession?.id;
     if (!sessionId) return;
@@ -588,6 +608,7 @@ let learnerPresenceTimer = null;
 let learnerPresenceSessionId = null;
 let familyPlayRefreshTimer = null;
 let familyPlayRefreshSessionId = null;
+let lastRenderedFamilyStage = null;
 
 function syncFamilyHeartbeat() {
   clearInterval(familyHeartbeatTimer);
@@ -661,6 +682,11 @@ function watchFamilyPlay() {
 
 // Global Rerender Controller
 function rerender() {
+  const activeBeforeRender = state.familyPlayState?.activeSession;
+  const nextFamilyStage = activeBeforeRender ? `${activeBeforeRender.id}:${activeBeforeRender.currentSegment}` : null;
+  const existingFamilyPanel = appContainer.querySelector('.family-play-panel');
+  const preservedPanelScroll = existingFamilyPanel?.scrollTop || 0;
+  const preserveFamilyPosition = state.screen === 'family-play' && nextFamilyStage === lastRenderedFamilyStage;
   appContainer.innerHTML = '';
 
   if (state.screen === 'family-play') {
@@ -668,8 +694,12 @@ function rerender() {
     syncLearnerPresence();
     syncFamilyPlayRefresh();
     renderFamilyPlayView(appContainer, state, actions);
+    const renderedPanel = appContainer.querySelector('.family-play-panel');
+    if (renderedPanel) renderedPanel.scrollTop = preserveFamilyPosition ? preservedPanelScroll : 0;
+    lastRenderedFamilyStage = nextFamilyStage;
     return;
   }
+  lastRenderedFamilyStage = null;
   clearInterval(familyHeartbeatTimer);
   familyHeartbeatTimer = null;
   syncLearnerPresence();

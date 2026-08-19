@@ -219,6 +219,16 @@ export async function submitFamilyQuizAnswer(sessionId, segment, answerId) {
   return data;
 }
 
+export async function lockFamilyFinalChallenge(sessionId, segment) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('lock_family_final_challenge', {
+    target_session: sessionId,
+    target_segment: segment,
+  });
+  if (error) throw error;
+  return data;
+}
+
 export async function completeFamilyPlay(sessionId) {
   requireCloud();
   const { data, error } = await supabase.rpc('complete_family_play', {

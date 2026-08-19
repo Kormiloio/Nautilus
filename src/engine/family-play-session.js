@@ -13,7 +13,15 @@ export function buildFamilyPlaySteps(lesson, topic, sessionId) {
   const steps = [
     { type: 'ready', title: 'Is everyone ready?', subtitle: 'Join on each device before setting sail together.' },
     { type: 'family-flashcards', title: 'Discover Together', subtitle: `Learn ${practiceItems.length} words as a family`, items: practiceItems },
-    { type: 'family-match', title: 'Match as a Crew', subtitle: 'Take turns connecting each word to its meaning', items: practiceItems.slice(0, 6) },
+    (() => {
+      const matchItems = practiceItems.slice(0, 6);
+      return {
+        type: 'family-match', title: 'Match as a Crew', subtitle: 'Take turns connecting each word to its meaning',
+        items: matchItems,
+        targetItems: shuffle(matchItems, random),
+        supportItems: shuffle(matchItems, random),
+      };
+    })(),
     ...quizItems.map((item, index) => ({
       type: 'family-quiz', title: `Family Quiz · ${index + 1} of ${quizItems.length}`,
       subtitle: 'Choose an answer together, then reveal it', item,
