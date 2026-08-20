@@ -31,12 +31,17 @@ const VOYAGE_PORTS = [
 ];
 
 const DESTINATION_POSTERS = [
-  { port: 1, name: 'Home Harbor', chapter: 'Family', asset: 'poster-family-v1.jpg', unlock: 0 },
-  { port: 2, name: 'Lantern Quay', chapter: 'Greetings', asset: 'poster-greetings-v1.jpg', unlock: 20 },
-  { port: 4, name: 'Color Cove', chapter: 'Colors', asset: 'poster-colors-v1.jpg', unlock: 60 },
-  { port: 5, name: 'Market Island', chapter: 'Food', asset: 'poster-food-v1.jpg', unlock: 80 },
-  { port: 6, name: 'Café Point', chapter: 'Conversation', asset: 'poster-cafe-v1.jpg', unlock: 100 },
-  { port: 7, name: 'Compass Rock', chapter: 'Directions', asset: 'poster-directions-v1.jpg', unlock: 120 },
+  { label: 'Port 1', name: 'Home Harbor', chapter: 'Family', asset: 'poster-family-v1.jpg', unlock: 0 },
+  { label: 'Port 2', name: 'Lantern Quay', chapter: 'Greetings', asset: 'poster-greetings-v1.jpg', unlock: 20 },
+  { label: 'Port 3', name: 'Echo Arch', chapter: 'Numbers & sounds', asset: 'poster-echo-arch-v1.jpg', unlock: 40 },
+  { label: 'Port 4', name: 'Color Cove', chapter: 'Colors', asset: 'poster-colors-v1.jpg', unlock: 60 },
+  { label: 'Port 5', name: 'Market Island', chapter: 'Food', asset: 'poster-food-v1.jpg', unlock: 80 },
+  { label: 'Port 6', name: 'Café Point', chapter: 'Conversation', asset: 'poster-cafe-v1.jpg', unlock: 100 },
+  { label: 'Port 7', name: 'Compass Rock', chapter: 'Directions', asset: 'poster-directions-v1.jpg', unlock: 120 },
+  { label: 'Port 8', name: 'Story Bay', chapter: 'Sentences & stories', asset: 'poster-story-bay-v1.jpg', unlock: 140 },
+  { label: 'Port 9', name: 'Family Coast', chapter: 'Visits & gatherings', asset: 'poster-family-coast-v1.jpg', unlock: 160 },
+  { label: 'Port 10', name: 'Sunrise Kotor', chapter: 'Confident conversation', asset: 'poster-sunrise-kotor-v1.jpg', unlock: 180 },
+  { label: 'Voyage finale', name: 'Homecoming Harbor', chapter: 'The 200-day voyage', asset: 'poster-homecoming-v1.jpg', unlock: 200 },
 ];
 
 function getVoyagePosition(percent) {
@@ -79,7 +84,7 @@ export function renderVoyageExperience(state) {
     const unlocked = completedCount >= poster.unlock;
     const active = completedCount >= poster.unlock && completedCount < poster.unlock + 20;
     return `<article class="destination-poster ${unlocked ? 'unlocked' : 'charted'} ${active ? 'active' : ''}">
-      <div class="destination-poster__plaque"><span>Nautilus · Port ${poster.port}</span><b>${unlocked ? 'Discovered' : `Charts open day ${poster.unlock}`}</b></div>
+      <div class="destination-poster__plaque"><span>Nautilus · ${poster.label}</span><b>${unlocked ? 'Discovered' : `Charts open day ${poster.unlock}`}</b></div>
       <div class="destination-poster__art">
         <img src="${PUBLIC_ASSET_BASE}assets/illustrations/${poster.asset}" alt="Travel-poster illustration of ${poster.name}">
         ${unlocked ? '<span class="destination-poster__stamp" aria-label="Destination discovered">⚓</span>' : '<span class="destination-poster__lock" aria-hidden="true">✦</span>'}

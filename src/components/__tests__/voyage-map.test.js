@@ -32,9 +32,21 @@ describe('learner voyage experience', () => {
     });
     expect(html).toContain(`${import.meta.env.BASE_URL}assets/illustrations/nautilus-voyage-panorama-v3.jpg`);
     expect(html).toContain(`${import.meta.env.BASE_URL}assets/illustrations/friends-of-the-sea.jpg`);
-    expect(html.match(/class="destination-poster /g)).toHaveLength(6);
+    expect(html.match(/class="destination-poster /g)).toHaveLength(11);
     expect(html).toContain('Posters from your voyage');
-    expect(html).toContain('1 of 6 discovered');
+    expect(html).toContain('1 of 11 discovered');
+    expect(html).toContain('poster-echo-arch-v1.jpg');
+    expect(html).toContain('Charts open day 200');
+  });
+
+  it('unlocks a destination poster every 20 completed family lessons', () => {
+    const html = renderVoyageExperience({
+      activityDates: [], familyPlayState: { completedDays: 200 },
+      languagePacks: [], activePackId: 'montenegrin-en', profile: 'Lena', streakDays: 0, stars: 0,
+    });
+    expect(html).toContain('11 of 11 discovered');
+    expect(html).toContain('Homecoming Harbor');
+    expect(html).not.toContain('Charts open day');
   });
 
   it('renders the immersive route with ten accessible ports and a progress-positioned vessel', () => {
