@@ -392,12 +392,13 @@ const actions = {
     const sessionId = state.familyPlayState?.activeSession?.id;
     if (!sessionId) return;
     try {
+      state.familyError = null;
       const result = await lockFamilyFinalChallenge(sessionId, segment);
       await loadFamilyPlayState();
       if (result?.completed) {
         state.screen = 'family-overview';
         state.activeLesson = null;
-        state.familyNotice = 'Everyone finished—the family voyage day is complete.';
+        state.familyNotice = 'Everyone finished—the family voyage lesson is complete.';
         state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
         state.familyProgress = await getFamilyProgressDashboard(state.families?.[0]?.family_id, state.activePackId);
       }

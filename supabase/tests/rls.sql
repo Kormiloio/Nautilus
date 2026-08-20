@@ -3,7 +3,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(34);
+select extensions.plan(35);
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
@@ -243,6 +243,19 @@ select extensions.ok(
   ),
   'participants receive shared-session credit without replacing independent attempts'
 );
+
+savepoint multiple_lessons_same_date;
+select public.start_family_play(
+  :'family_a','montenegrin-en','0.1.0','voyage-2',2,
+  '2026-08-10','America/New_York',array[:'kid_profile'::uuid]
+) as second_same_day_session \gset
+select public.complete_family_play(:'second_same_day_session');
+select extensions.is(
+  (public.get_family_play_state(:'family_a','montenegrin-en')->>'completedDays')::integer,
+  2,
+  'multiple completed family lessons on one calendar date each advance the voyage'
+);
+rollback to savepoint multiple_lessons_same_date;
 
 select extensions.is(
   (public.get_family_progress_dashboard(:'family_a','montenegrin-en')->'shared'->>'completedDays')::integer,

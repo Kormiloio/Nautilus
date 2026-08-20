@@ -145,6 +145,7 @@ export function renderFamilyPlayView(container, state, actions) {
           ${steps.map((_, index) => `<div class="session-step-segment ${index <= stepIndex ? 'active' : ''}"></div>`).join('')}
         </div>
         <p class="hero-tag">${isController ? 'You are leading' : `Following ${escapeHtml(cloudSession.controllerName || 'the family guide')}`}</p>
+        ${state.familyError ? `<div class="family-play-error" role="alert"><strong>Couldn’t save that action</strong><span>${escapeHtml(state.familyError)}</span></div>` : ''}
         <h1 id="family-play-title">${escapeHtml(step.title)}</h1>
         <p class="family-play-subtitle">${escapeHtml(step.subtitle)}</p>
         ${renderSharedContent(step, turnPerson, quizState, cloudSession.participants, familyPeople)}
