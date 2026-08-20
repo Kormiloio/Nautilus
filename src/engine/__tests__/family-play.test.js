@@ -27,6 +27,7 @@ import {
   getFamilyProgressDashboard,
   getFamilyPlayState,
   lockFamilyFinalChallenge,
+  reconcileFamilyQuizRound,
   startFamilyPlay,
   startFamilyReview,
   subscribeToFamilyPlay,
@@ -121,6 +122,14 @@ describe('Family Play cloud service', () => {
     await expect(lockFamilyFinalChallenge('session-1', 15)).resolves.toMatchObject({ completed: true });
     expect(rpc).toHaveBeenCalledWith('lock_family_final_challenge', {
       target_session: 'session-1', target_segment: 15,
+    });
+  });
+
+  it('reconciles a fully answered quiz after a pause or missed realtime event', async () => {
+    rpc.mockResolvedValueOnce({ data: { advanced: true, currentSegment: 7 }, error: null });
+    await expect(reconcileFamilyQuizRound('session-1', 6)).resolves.toMatchObject({ advanced: true });
+    expect(rpc).toHaveBeenCalledWith('reconcile_family_quiz_round', {
+      target_session: 'session-1', target_segment: 6,
     });
   });
 });

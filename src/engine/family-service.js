@@ -229,6 +229,16 @@ export async function lockFamilyFinalChallenge(sessionId, segment) {
   return data;
 }
 
+export async function reconcileFamilyQuizRound(sessionId, segment) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('reconcile_family_quiz_round', {
+    target_session: sessionId,
+    target_segment: segment,
+  });
+  if (error) throw error;
+  return data;
+}
+
 export async function completeFamilyPlay(sessionId) {
   requireCloud();
   const { data, error } = await supabase.rpc('complete_family_play', {

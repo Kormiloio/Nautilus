@@ -42,6 +42,7 @@ import {
   joinFamilyPlay,
   linkFamilyLearnerAccount,
   lockFamilyFinalChallenge,
+  reconcileFamilyQuizRound,
   listFamilies,
   startFamilyPlay,
   startFamilyReview,
@@ -368,6 +369,18 @@ const actions = {
     if (!sessionId) return;
     try {
       await submitFamilyQuizAnswer(sessionId, segment, answerId);
+      await loadFamilyPlayState();
+    } catch (error) {
+      state.familyError = error.message;
+    }
+    rerender();
+  },
+
+  reconcileFamilyQuiz: async (segment) => {
+    const sessionId = state.familyPlayState?.activeSession?.id;
+    if (!sessionId) return;
+    try {
+      await reconcileFamilyQuizRound(sessionId, segment);
       await loadFamilyPlayState();
     } catch (error) {
       state.familyError = error.message;

@@ -229,4 +229,7 @@ export function renderFamilyPlayView(container, state, actions) {
   container.querySelector('#family-handoff-select')?.addEventListener('change', event => {
     if (event.target.value) actions.handoffFamilyController(event.target.value);
   });
+  if (step.type === 'family-quiz' && quizState.answers.length >= quizState.expected) {
+    setTimeout(() => actions.reconcileFamilyQuiz(stepIndex), 0);
+  }
 }
