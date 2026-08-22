@@ -3,7 +3,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(35);
+select extensions.plan(36);
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
@@ -205,13 +205,19 @@ select set_config('request.jwt.claims', '{"sub":"10000000-0000-0000-0000-0000000
 select public.submit_family_quiz_answer(:'family_session', 0, 'parent-answer');
 select extensions.is(
   (select current_segment from public.family_voyage_sessions where id=:'family_session'),
-  1,
-  'the last required answer advances the shared quiz atomically'
+  0,
+  'the fully answered quiz remains visible for result feedback'
 );
 select extensions.is(
   jsonb_array_length(public.get_family_play_state(:'family_a','montenegrin-en')->'activeSession'->'quizAnswers'),
-  0,
-  'the next segment starts with a clean answer roster'
+  2,
+  'the result phase exposes every locked answer'
+);
+select public.reconcile_family_quiz_round(:'family_session',0);
+select extensions.is(
+  (select current_segment from public.family_voyage_sessions where id=:'family_session'),
+  1,
+  'the quiz advances after the result phase is reconciled'
 );
 
 select public.control_family_play(:'family_session', 'live', 3);

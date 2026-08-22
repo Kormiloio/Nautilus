@@ -3,6 +3,41 @@ import { buildFamilyPlaySteps } from '../engine/family-play-session.js';
 import { getImmersiveLessonScene } from './lesson-visuals.js';
 import { getParticipantConnectionState } from '../engine/family-play-readiness.js';
 
+const familyMatchProgress = new Map();
+const quizAdvanceTimers = new Map();
+
+function readMatchedPairs(key) {
+  if (familyMatchProgress.has(key)) return familyMatchProgress.get(key);
+  let stored = [];
+  try { stored = JSON.parse(globalThis.sessionStorage?.getItem(key) || '[]'); } catch { stored = []; }
+  const pairs = new Set(Array.isArray(stored) ? stored : []);
+  familyMatchProgress.set(key, pairs);
+  return pairs;
+}
+
+function saveMatchedPairs(key, pairs) {
+  familyMatchProgress.set(key, pairs);
+  try { globalThis.sessionStorage?.setItem(key, JSON.stringify([...pairs])); } catch { /* in-memory state still persists across renders */ }
+}
+
+export function getFamilyQuizFeedback(step, quizState) {
+  const answers = quizState?.answers || [];
+  const expected = quizState?.expected || 0;
+  const currentAnswer = quizState?.currentAnswer?.answerId;
+  const allLocked = expected > 0 && answers.length >= expected;
+  return {
+    allLocked,
+    currentAnswer,
+    currentCorrect: allLocked && currentAnswer === step.item.id,
+    correctAnswer: step.item.targetText,
+  };
+}
+
+export function getFamilyMatchColor(pairIndex) {
+  const colors = ['lime', 'teal', 'blue', 'purple', 'pink', 'amber'];
+  return colors[Math.max(0, Number(pairIndex) || 0) % colors.length];
+}
+
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>'"]/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;',
@@ -22,7 +57,7 @@ function buildConversationScript(step, leader, participants = []) {
   ];
 }
 
-function renderSharedContent(step, turnPerson, quizState = null, participants = [], familyPeople = []) {
+function renderSharedContent(step, turnPerson, quizState = null, participants = [], familyPeople = [], matchState = null) {
   if (step.type === 'ready') {
     return `<div class="family-ready-call"><span aria-hidden="true">⚓</span><div><strong>Gather your crew</strong><p>Open Family Play on each learner's device. When everyone shows Ready, the parent can begin.</p></div></div>`;
   }
@@ -34,13 +69,34 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
   if (step.type === 'family-match') {
     const targets = step.targetItems || step.items;
     const supports = step.supportItems || [...step.items].reverse();
+    const matched = matchState?.matched || new Set();
+    const matchButton = (item, label, text, side) => {
+      const isMatched = matched.has(item.id);
+      const pairNumber = step.items.findIndex(candidate => candidate.id === item.id) + 1;
+      return `<button class="${isMatched ? 'matched' : ''}" data-family-match="${escapeHtml(item.id)}" data-family-match-side="${side}" data-family-match-number="${pairNumber}" data-match-color="${getFamilyMatchColor(pairNumber - 1)}" ${isMatched ? 'disabled' : ''} aria-pressed="${isMatched}"><b>${label}</b>${escapeHtml(text)}${isMatched ? `<span>✓ Pair ${pairNumber}</span>` : ''}</button>`;
+    };
     return `${turnPrompt}<div class="family-activity-instructions"><strong>Touch-and-match round</strong><span>On each device, tap one word and then its meaning. Say the pair aloud. Matched choices stay highlighted while the parent keeps the family together.</span></div>
-      <div class="family-match-board"><div>${targets.map((item, index) => `<button data-family-match="${escapeHtml(item.id)}"><b>${index + 1}</b>${escapeHtml(item.targetText)}</button>`).join('')}</div><div>${supports.map((item, index) => `<button data-family-match="${escapeHtml(item.id)}"><b>${String.fromCharCode(65 + index)}</b>${escapeHtml(item.supportText)}</button>`).join('')}</div></div>`;
+      <div class="family-match-board"><div>${targets.map((item, index) => matchButton(item, index + 1, item.targetText, 'target')).join('')}</div><div>${supports.map((item, index) => matchButton(item, String.fromCharCode(65 + index), item.supportText, 'support')).join('')}</div></div>
+      <p class="family-match-status" aria-live="polite"><strong>${matched.size} of ${step.items.length}</strong> pairs complete${matched.size === step.items.length ? ' · Great work!' : ''}</p>`;
   }
   if (step.type === 'family-quiz') {
     const lockedAnswer = quizState?.currentAnswer?.answerId;
     const status = quizState?.answers || [];
-    return `${turnPrompt}<div class="family-quiz-card"><small>What is the best translation?</small><strong>${escapeHtml(step.item.supportText)}</strong><div>${step.options.map(option => `<button type="button" class="family-answer ${lockedAnswer === option.id ? 'locked' : ''}" data-family-answer="${escapeHtml(option.id)}" ${lockedAnswer ? 'disabled' : ''}>${escapeHtml(option.targetText)}${lockedAnswer === option.id ? '<span>✓ Locked in</span>' : ''}</button>`).join('')}</div><div class="family-answer-status">${status.map(answer => `<span class="locked">✓ ${escapeHtml(answer.name)}</span>`).join('')}${Array.from({ length: Math.max(0, (quizState?.expected || 0) - status.length) }, () => '<span>Waiting…</span>').join('')}</div><p class="family-answer-feedback" aria-live="polite">${lockedAnswer ? `Answer locked. Waiting for ${Math.max(0, (quizState?.expected || 0) - status.length)} more…` : 'Choose once to lock in your answer.'}</p></div>`;
+    const feedback = getFamilyQuizFeedback(step, quizState);
+    const waiting = Math.max(0, (quizState?.expected || 0) - status.length);
+    const feedbackText = feedback.allLocked
+      ? feedback.currentCorrect
+        ? `✓ Correct! ${feedback.correctAnswer} is the answer. Moving to the next question…`
+        : `Not quite. The correct answer is ${feedback.correctAnswer}. Moving to the next question…`
+      : lockedAnswer ? `Answer locked. Waiting for ${waiting} more…` : 'Choose once to lock in your answer.';
+    return `${turnPrompt}<div class="family-quiz-card"><small>What is the best translation?</small><strong>${escapeHtml(step.item.supportText)}</strong><div>${step.options.map(option => {
+      const resultClass = feedback.allLocked && option.id === step.item.id ? 'correct' : feedback.allLocked && lockedAnswer === option.id ? 'incorrect' : '';
+      return `<button type="button" class="family-answer ${lockedAnswer === option.id ? 'locked' : ''} ${resultClass}" data-family-answer="${escapeHtml(option.id)}" ${lockedAnswer ? 'disabled' : ''}>${escapeHtml(option.targetText)}${lockedAnswer === option.id ? `<span>${feedback.allLocked ? (feedback.currentCorrect ? '✓ Correct' : '✕ Your answer') : '✓ Locked in'}</span>` : ''}</button>`;
+    }).join('')}</div><div class="family-answer-status">${status.map(answer => {
+      const resultClass = feedback.allLocked ? (answer.answerId === step.item.id ? 'correct' : 'incorrect') : 'locked';
+      const icon = feedback.allLocked ? (answer.answerId === step.item.id ? '✓' : '✕') : '✓';
+      return `<span class="${resultClass}">${icon} ${escapeHtml(answer.name)}</span>`;
+    }).join('')}${Array.from({ length: waiting }, () => '<span>Waiting…</span>').join('')}</div><p class="family-answer-feedback ${feedback.allLocked ? (feedback.currentCorrect ? 'correct' : 'incorrect') : ''}" aria-live="polite">${escapeHtml(feedbackText)}</p></div>`;
   }
   if (step.type === 'family-conversation') {
     const script = buildConversationScript(step, turnPerson, participants);
@@ -112,6 +168,8 @@ export function renderFamilyPlayView(container, state, actions) {
     expected: cloudSession.participants.length + 1,
     currentAnswer: quizAnswers.find(answer => answer.isCurrentUser),
   } : null;
+  const matchKey = `nautilus:family-match:${cloudSession.id}:${stepIndex}`;
+  const matchState = step.type === 'family-match' ? { key: matchKey, matched: readMatchedPairs(matchKey) } : null;
 
   container.innerHTML = `
     <header class="navbar family-play-nav">
@@ -148,7 +206,7 @@ export function renderFamilyPlayView(container, state, actions) {
         ${state.familyError ? `<div class="family-play-error" role="alert"><strong>Couldn’t save that action</strong><span>${escapeHtml(state.familyError)}</span></div>` : ''}
         <h1 id="family-play-title">${escapeHtml(step.title)}</h1>
         <p class="family-play-subtitle">${escapeHtml(step.subtitle)}</p>
-        ${renderSharedContent(step, turnPerson, quizState, cloudSession.participants, familyPeople)}
+        ${renderSharedContent(step, turnPerson, quizState, cloudSession.participants, familyPeople, matchState)}
         ${isController ? `<div class="family-play-controls">
           <button class="btn btn-secondary" id="family-play-prev" ${stepIndex === 0 ? 'disabled' : ''}>← Back</button>
           <button class="btn btn-secondary" id="family-play-audio">► Play all</button>
@@ -188,10 +246,27 @@ export function renderFamilyPlayView(container, state, actions) {
       selectedMatch = null;
       return;
     }
+    if (selectedMatch.dataset.familyMatchSide === button.dataset.familyMatchSide) {
+      selectedMatch.classList.remove('selected');
+      selectedMatch = button;
+      button.classList.add('selected');
+      return;
+    }
     if (selectedMatch.dataset.familyMatch === button.dataset.familyMatch) {
       selectedMatch.classList.remove('selected');
       selectedMatch.classList.add('matched');
       button.classList.add('matched');
+      selectedMatch.disabled = true;
+      button.disabled = true;
+      selectedMatch.setAttribute('aria-pressed', 'true');
+      button.setAttribute('aria-pressed', 'true');
+      const pairNumber = button.dataset.familyMatchNumber;
+      selectedMatch.insertAdjacentHTML('beforeend', `<span>✓ Pair ${pairNumber}</span>`);
+      button.insertAdjacentHTML('beforeend', `<span>✓ Pair ${pairNumber}</span>`);
+      matchState.matched.add(button.dataset.familyMatch);
+      saveMatchedPairs(matchState.key, matchState.matched);
+      const status = container.querySelector('.family-match-status');
+      if (status) status.innerHTML = `<strong>${matchState.matched.size} of ${step.items.length}</strong> pairs complete${matchState.matched.size === step.items.length ? ' · Great work!' : ''}`;
     } else {
       const previous = selectedMatch;
       previous.classList.add('incorrect');
@@ -231,6 +306,11 @@ export function renderFamilyPlayView(container, state, actions) {
     if (event.target.value) actions.handoffFamilyController(event.target.value);
   });
   if (step.type === 'family-quiz' && quizState.answers.length >= quizState.expected) {
-    setTimeout(() => actions.reconcileFamilyQuiz(stepIndex), 0);
+    const timerKey = `${cloudSession.id}:${stepIndex}`;
+    if (!quizAdvanceTimers.has(timerKey)) {
+      quizAdvanceTimers.set(timerKey, setTimeout(async () => {
+        try { await actions.reconcileFamilyQuiz(stepIndex); } finally { quizAdvanceTimers.delete(timerKey); }
+      }, 2600));
+    }
   }
 }
