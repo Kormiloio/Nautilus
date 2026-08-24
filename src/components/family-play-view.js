@@ -28,7 +28,8 @@ export function getFamilyQuizFeedback(step, quizState) {
   return {
     allLocked,
     currentAnswer,
-    currentCorrect: allLocked && currentAnswer === step.item.id,
+    hasCurrentAnswer: Boolean(currentAnswer),
+    currentCorrect: Boolean(currentAnswer) && currentAnswer === step.item.id,
     correctAnswer: step.item.targetText,
   };
 }
@@ -84,19 +85,20 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
     const status = quizState?.answers || [];
     const feedback = getFamilyQuizFeedback(step, quizState);
     const waiting = Math.max(0, (quizState?.expected || 0) - status.length);
-    const feedbackText = feedback.allLocked
+    const nextAction = feedback.allLocked ? 'Moving to the next question…' : `Waiting for ${waiting} more…`;
+    const feedbackText = feedback.hasCurrentAnswer
       ? feedback.currentCorrect
-        ? `✓ Correct! ${feedback.correctAnswer} is the answer. Moving to the next question…`
-        : `Not quite. The correct answer is ${feedback.correctAnswer}. Moving to the next question…`
-      : lockedAnswer ? `Answer locked. Waiting for ${waiting} more…` : 'Choose once to lock in your answer.';
+        ? `✓ Correct! ${feedback.correctAnswer} is the answer. ${nextAction}`
+        : `Not quite. The correct answer is ${feedback.correctAnswer}. ${nextAction}`
+      : 'Choose once to lock in your answer.';
     return `${turnPrompt}<div class="family-quiz-card"><small>What is the best translation?</small><strong>${escapeHtml(step.item.supportText)}</strong><div>${step.options.map(option => {
-      const resultClass = feedback.allLocked && option.id === step.item.id ? 'correct' : feedback.allLocked && lockedAnswer === option.id ? 'incorrect' : '';
-      return `<button type="button" class="family-answer ${lockedAnswer === option.id ? 'locked' : ''} ${resultClass}" data-family-answer="${escapeHtml(option.id)}" ${lockedAnswer ? 'disabled' : ''}>${escapeHtml(option.targetText)}${lockedAnswer === option.id ? `<span>${feedback.allLocked ? (feedback.currentCorrect ? '✓ Correct' : '✕ Your answer') : '✓ Locked in'}</span>` : ''}</button>`;
+      const resultClass = feedback.hasCurrentAnswer && option.id === step.item.id ? 'correct' : feedback.hasCurrentAnswer && lockedAnswer === option.id ? 'incorrect' : '';
+      return `<button type="button" class="family-answer ${lockedAnswer === option.id ? 'locked' : ''} ${resultClass}" data-family-answer="${escapeHtml(option.id)}" ${lockedAnswer ? 'disabled' : ''}>${escapeHtml(option.targetText)}${lockedAnswer === option.id ? `<span>${feedback.currentCorrect ? '✓ Correct' : '✕ Your answer'}</span>` : ''}</button>`;
     }).join('')}</div><div class="family-answer-status">${status.map(answer => {
       const resultClass = feedback.allLocked ? (answer.answerId === step.item.id ? 'correct' : 'incorrect') : 'locked';
       const icon = feedback.allLocked ? (answer.answerId === step.item.id ? '✓' : '✕') : '✓';
       return `<span class="${resultClass}">${icon} ${escapeHtml(answer.name)}</span>`;
-    }).join('')}${Array.from({ length: waiting }, () => '<span>Waiting…</span>').join('')}</div><p class="family-answer-feedback ${feedback.allLocked ? (feedback.currentCorrect ? 'correct' : 'incorrect') : ''}" aria-live="polite">${escapeHtml(feedbackText)}</p></div>`;
+    }).join('')}${Array.from({ length: waiting }, () => '<span>Waiting…</span>').join('')}</div><p class="family-answer-feedback ${feedback.hasCurrentAnswer ? (feedback.currentCorrect ? 'correct' : 'incorrect') : ''}" aria-live="polite">${escapeHtml(feedbackText)}</p></div>`;
   }
   if (step.type === 'family-conversation') {
     const script = buildConversationScript(step, turnPerson, participants);

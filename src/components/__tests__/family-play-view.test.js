@@ -6,12 +6,20 @@ const step = {
 };
 
 describe('Family Play quiz feedback', () => {
-  it('does not reveal correctness before everyone locks in', () => {
+  it('reveals the current learner’s incorrect answer immediately', () => {
     expect(getFamilyQuizFeedback(step, {
       expected: 3,
       answers: [{ answerId: 'ne' }, { answerId: 'hvala' }],
       currentAnswer: { answerId: 'hvala' },
-    })).toMatchObject({ allLocked: false, currentCorrect: false, correctAnswer: 'Ne' });
+    })).toMatchObject({ allLocked: false, hasCurrentAnswer: true, currentCorrect: false, correctAnswer: 'Ne' });
+  });
+
+  it('reveals the current learner’s correct answer immediately', () => {
+    expect(getFamilyQuizFeedback(step, {
+      expected: 3,
+      answers: [{ answerId: 'ne' }],
+      currentAnswer: { answerId: 'ne' },
+    })).toMatchObject({ allLocked: false, hasCurrentAnswer: true, currentCorrect: true, correctAnswer: 'Ne' });
   });
 
   it('reveals an incorrect current answer after everyone locks in', () => {
