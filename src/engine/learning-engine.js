@@ -1,9 +1,11 @@
 import montenegrin from '../content/topics.json';
 import albanian from '../content/albanian.js';
+import iraqiArabic from '../content/iraqi-arabic.js';
 
 export const LANGUAGE_PACKS = new Map([
   [montenegrin.languagePack.id, montenegrin],
   [albanian.languagePack.id, albanian],
+  [iraqiArabic.languagePack.id, iraqiArabic],
 ]);
 
 let content = montenegrin;
@@ -186,7 +188,10 @@ export function buildMatch(items, pairsCount = 6, random = Math.random) {
   const chosen = shuffle(items, random).slice(0, n);
   const tiles = [];
   chosen.forEach((it, i) => {
-    tiles.push({ id: `target-${i}`, pairId: i, text: it.targetText, kind: 'target' });
+    tiles.push({
+      id: `target-${i}`, pairId: i, text: it.targetText, kind: 'target',
+      languageTag: it.languageTag, script: it.script, direction: it.direction,
+    });
     tiles.push({ id: `support-${i}`, pairId: i, text: it.supportText, kind: 'support' });
   });
   return { tiles: shuffle(tiles, random), selectedIds: [], matchedIds: [] };
@@ -203,6 +208,7 @@ export function buildQuiz(items, quizLength = 8, random = Math.random) {
       promptText: correct.supportText,
       correctAnswer: correct.targetText,
       options,
+      correctItem: correct,
     };
   });
   return { questions, qIdx: 0, score: 0, selected: null, answered: false };

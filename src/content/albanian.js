@@ -117,6 +117,9 @@ export default {
     supportLanguage: { code: 'en', name: 'English' },
     version: '0.1.0',
     status: 'review',
+    direction: 'ltr',
+    defaultScript: 'Latn',
+    locale: 'sq-AL',
     audio: {
       locale: 'sq-AL',
       delivery: 'speech-synthesis-draft',

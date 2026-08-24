@@ -2,6 +2,7 @@ import { getTopic, LANGUAGE_PACK } from '../engine/learning-engine.js';
 import { buildFamilyPlaySteps } from '../engine/family-play-session.js';
 import { getImmersiveLessonScene } from './lesson-visuals.js';
 import { getParticipantConnectionState } from '../engine/family-play-readiness.js';
+import { renderLanguageRun } from '../engine/language-runs.js';
 
 const familyMatchProgress = new Map();
 const quizAdvanceTimers = new Map();
@@ -65,7 +66,7 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
   const turnPrompt = turnPerson ? `<div class="family-turn-prompt"><span>${escapeHtml(turnPerson.name).slice(0, 1)}</span><div><small>It’s your turn</small><strong>${escapeHtml(turnPerson.name)}, lead this round—then everyone joins in.</strong></div></div>` : '';
   if (step.type === 'family-flashcards') {
     return `<div class="family-activity-instructions"><strong>How to play</strong><span>Everyone taps each card on their own screen, says the word, then reveals its meaning. The parent moves on when the family is ready.</span></div>
-      <div class="family-vocabulary-grid">${step.items.map((item, index) => `<article><span>${item.emoji || '✦'}</span><button class="family-vocab-reveal" data-family-reveal><strong>${escapeHtml(item.targetText)}</strong><small>${escapeHtml(item.supportText)}</small><em>Tap to reveal</em></button><button class="dialogue-play-btn" data-family-audio="${index}" aria-label="Play ${escapeHtml(item.targetText)}">►</button></article>`).join('')}</div>`;
+      <div class="family-vocabulary-grid">${step.items.map((item, index) => `<article><span>${item.emoji || '✦'}</span><button class="family-vocab-reveal" data-family-reveal><strong>${renderLanguageRun(item.targetText, 'target', LANGUAGE_PACK, item)}</strong><small>${renderLanguageRun(item.supportText, 'support', LANGUAGE_PACK, item)}</small><em>Tap to reveal</em></button><button class="dialogue-play-btn" data-family-audio="${index}" aria-label="Play ${escapeHtml(item.targetText)}">►</button></article>`).join('')}</div>`;
   }
   if (step.type === 'family-match') {
     const targets = step.targetItems || step.items;
@@ -74,7 +75,7 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
     const matchButton = (item, label, text, side) => {
       const isMatched = matched.has(item.id);
       const pairNumber = step.items.findIndex(candidate => candidate.id === item.id) + 1;
-      return `<button class="${isMatched ? 'matched' : ''}" data-family-match="${escapeHtml(item.id)}" data-family-match-side="${side}" data-family-match-number="${pairNumber}" data-match-color="${getFamilyMatchColor(pairNumber - 1)}" ${isMatched ? 'disabled' : ''} aria-pressed="${isMatched}"><b>${label}</b>${escapeHtml(text)}${isMatched ? `<span>✓ Pair ${pairNumber}</span>` : ''}</button>`;
+      return `<button class="${isMatched ? 'matched' : ''}" data-family-match="${escapeHtml(item.id)}" data-family-match-side="${side}" data-family-match-number="${pairNumber}" data-match-color="${getFamilyMatchColor(pairNumber - 1)}" ${isMatched ? 'disabled' : ''} aria-pressed="${isMatched}"><b>${label}</b>${renderLanguageRun(text, side, LANGUAGE_PACK, item)}${isMatched ? `<span>✓ Pair ${pairNumber}</span>` : ''}</button>`;
     };
     return `${turnPrompt}<div class="family-activity-instructions"><strong>Touch-and-match round</strong><span>On each device, tap one word and then its meaning. Say the pair aloud. Matched choices stay highlighted while the parent keeps the family together.</span></div>
       <div class="family-match-board"><div>${targets.map((item, index) => matchButton(item, index + 1, item.targetText, 'target')).join('')}</div><div>${supports.map((item, index) => matchButton(item, String.fromCharCode(65 + index), item.supportText, 'support')).join('')}</div></div>
@@ -91,9 +92,9 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
         ? `✓ Correct! ${feedback.correctAnswer} is the answer. ${nextAction}`
         : `Not quite. The correct answer is ${feedback.correctAnswer}. ${nextAction}`
       : 'Choose once to lock in your answer.';
-    return `${turnPrompt}<div class="family-quiz-card"><small>What is the best translation?</small><strong>${escapeHtml(step.item.supportText)}</strong><div>${step.options.map(option => {
+    return `${turnPrompt}<div class="family-quiz-card"><small>What is the best translation?</small><strong>${renderLanguageRun(step.item.supportText, 'support', LANGUAGE_PACK, step.item)}</strong><div>${step.options.map(option => {
       const resultClass = feedback.hasCurrentAnswer && option.id === step.item.id ? 'correct' : feedback.hasCurrentAnswer && lockedAnswer === option.id ? 'incorrect' : '';
-      return `<button type="button" class="family-answer ${lockedAnswer === option.id ? 'locked' : ''} ${resultClass}" data-family-answer="${escapeHtml(option.id)}" ${lockedAnswer ? 'disabled' : ''}>${escapeHtml(option.targetText)}${lockedAnswer === option.id ? `<span>${feedback.currentCorrect ? '✓ Correct' : '✕ Your answer'}</span>` : ''}</button>`;
+      return `<button type="button" class="family-answer ${lockedAnswer === option.id ? 'locked' : ''} ${resultClass}" data-family-answer="${escapeHtml(option.id)}" ${lockedAnswer ? 'disabled' : ''}>${renderLanguageRun(option.targetText, 'target', LANGUAGE_PACK, option)}${lockedAnswer === option.id ? `<span>${feedback.currentCorrect ? '✓ Correct' : '✕ Your answer'}</span>` : ''}</button>`;
     }).join('')}</div><div class="family-answer-status">${status.map(answer => {
       const resultClass = feedback.allLocked ? (answer.answerId === step.item.id ? 'correct' : 'incorrect') : 'locked';
       const icon = feedback.allLocked ? (answer.answerId === step.item.id ? '✓' : '✕') : '✓';
@@ -102,12 +103,12 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
   }
   if (step.type === 'family-conversation') {
     const script = buildConversationScript(step, turnPerson, participants);
-    return `<div class="family-conversation-card">${turnPrompt}<div class="family-conversation-phrase"><small>Word for this round</small><strong>${escapeHtml(step.item.targetText)}</strong><span>${escapeHtml(step.item.supportText)}</span></div><div class="family-conversation-script"><strong>Follow this script</strong>${script.map((line, index) => `<article><b>${index + 1}</b><div><small>${escapeHtml(line.person)} · ${escapeHtml(line.label)}</small><strong>${escapeHtml(line.target)}</strong><span>${escapeHtml(line.support)}</span></div></article>`).join('')}</div><p class="family-conversation-tip"><strong>Parent:</strong> Help with pronunciation or explain a family wording such as <em>dida</em> versus standard Montenegrin <em>deda</em>. Then tap Next.</p></div>`;
+    return `<div class="family-conversation-card">${turnPrompt}<div class="family-conversation-phrase"><small>Word for this round</small><strong>${renderLanguageRun(step.item.targetText, 'target', LANGUAGE_PACK, step.item)}</strong><span>${renderLanguageRun(step.item.supportText, 'support', LANGUAGE_PACK, step.item)}</span></div><div class="family-conversation-script"><strong>Follow this script</strong>${script.map((line, index) => `<article><b>${index + 1}</b><div><small>${escapeHtml(line.person)} · ${escapeHtml(line.label)}</small><strong>${index === 0 || index === 3 ? renderLanguageRun(line.target, 'target', LANGUAGE_PACK, step.item) : renderLanguageRun(line.target, 'support', LANGUAGE_PACK)}</strong><span>${renderLanguageRun(line.support, 'support', LANGUAGE_PACK)}</span></div></article>`).join('')}</div><p class="family-conversation-tip"><strong>Parent:</strong> Help with pronunciation or explain family wording, then tap Next.</p></div>`;
   }
   if (step.type === 'family-reflection') {
     const people = familyPeople.length ? familyPeople : [{ name: 'Everyone' }];
     const locks = quizState?.answers || [];
-    return `<div class="family-reflection-card"><strong>Final family challenge</strong><p>Complete your three actions, then lock in your own card. The family day finishes automatically when everyone is done.</p><div class="family-reflection-grid">${people.map((person, index) => { const item = step.items[index % step.items.length]; const lock = locks.find(answer => person.profileId ? answer.profileId === person.profileId : !answer.profileId); const isMine = Boolean(person.isCurrentUser); return `<button class="family-reflection-assignment ${lock ? 'finished' : ''}" data-final-lock ${isMine && !lock ? '' : 'disabled'}><small>${escapeHtml(person.name)}’s word</small><strong>${escapeHtml(item.targetText)}</strong><span>${escapeHtml(item.supportText)}</span><em>1. Say it · 2. Translate it · 3. Use it in a family example</em><b>${lock ? '✓ Locked in' : isMine ? 'Tap to lock in' : 'Waiting…'}</b></button>`; }).join('')}</div><span>${locks.length} of ${people.length} people locked in</span></div>`;
+    return `<div class="family-reflection-card"><strong>Final family challenge</strong><p>Complete your three actions, then lock in your own card. The family day finishes automatically when everyone is done.</p><div class="family-reflection-grid">${people.map((person, index) => { const item = step.items[index % step.items.length]; const lock = locks.find(answer => person.profileId ? answer.profileId === person.profileId : !answer.profileId); const isMine = Boolean(person.isCurrentUser); return `<button class="family-reflection-assignment ${lock ? 'finished' : ''}" data-final-lock ${isMine && !lock ? '' : 'disabled'}><small>${escapeHtml(person.name)}’s word</small><strong>${renderLanguageRun(item.targetText, 'target', LANGUAGE_PACK, item)}</strong><span>${renderLanguageRun(item.supportText, 'support', LANGUAGE_PACK, item)}</span><em>1. Say it · 2. Translate it · 3. Use it in a family example</em><b>${lock ? '✓ Locked in' : isMine ? 'Tap to lock in' : 'Waiting…'}</b></button>`; }).join('')}</div><span>${locks.length} of ${people.length} people locked in</span></div>`;
   }
   const items = step.items || step.dialogue?.lines || [];
   if (items.length) {
@@ -116,7 +117,7 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
         const target = item.targetText || item.target || item.text || item.line || '';
         const support = item.supportText || item.support || item.translation || '';
         return `<article class="family-play-phrase">
-          <div><strong>${escapeHtml(target)}</strong>${support ? `<small>${escapeHtml(support)}</small>` : ''}</div>
+          <div><strong>${renderLanguageRun(target, 'target', LANGUAGE_PACK, item)}</strong>${support ? `<small>${renderLanguageRun(support, 'support', LANGUAGE_PACK, item)}</small>` : ''}</div>
           ${target ? `<button class="dialogue-play-btn" data-family-audio="${index}" aria-label="Play ${escapeHtml(target)}">►</button>` : ''}
         </article>`;
       }).join('')}

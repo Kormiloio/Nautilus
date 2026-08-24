@@ -79,7 +79,7 @@ export function renderDashboard(container, state, actions) {
           Language
           <select id="language-select" class="badge-pill" aria-label="Learning language" style="color: var(--text-main); min-height: 44px;">
             ${state.languagePacks.map(pack => `
-              <option value="${pack.id}" ${pack.id === state.activePackId ? 'selected' : ''}>${pack.targetLanguage.name}${pack.status === 'review' ? ' · Review' : ''}</option>
+              <option value="${pack.id}" ${pack.id === state.activePackId ? 'selected' : ''}>${pack.targetLanguage.name}${pack.status === 'pilot' ? ' · Pilot' : pack.status === 'review' ? ' · Review' : ''}</option>
             `).join('')}
           </select>
         </label>
@@ -106,6 +106,11 @@ export function renderDashboard(container, state, actions) {
 
     <main class="container">
       ${state.familyError ? `<p role="alert" class="dashboard-alert">${escapeHtml(state.familyError)}</p>` : ''}
+      ${LANGUAGE_PACK.status === 'pilot' ? `
+        <section class="pilot-pack-banner" role="status">
+          <div><strong>${escapeHtml(LANGUAGE_PACK.targetLanguage.name)} family pilot</strong><span>Draft wording and pronunciation need community review. Please treat this as a course we are improving together.</span></div>
+          <span>Version ${escapeHtml(LANGUAGE_PACK.version)}</span>
+        </section>` : ''}
       ${state.familyPlayState?.activeSession ? `
         <section class="family-play-dashboard-banner" aria-label="Active Family Play session">
           <div><span>Family Play is ${state.familyPlayState.activeSession.status}</span><strong>Voyage day ${state.familyPlayState.activeSession.voyageDay} · Join your family</strong></div>

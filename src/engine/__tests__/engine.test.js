@@ -134,6 +134,31 @@ describe('Learning Engine', () => {
       setActiveLanguagePack('montenegrin-en');
     }
   });
+
+  it('should expose an explicitly gated RTL Iraqi Arabic pilot', () => {
+    setActiveLanguagePack('iraqi-arabic-en');
+    try {
+      expect(LANGUAGE_PACK).toMatchObject({
+        status: 'pilot',
+        direction: 'rtl',
+        defaultScript: 'Arab',
+        locale: 'ar-IQ',
+      });
+      expect(VOYAGE_LESSONS).toHaveLength(200);
+      expect(getTopics()).toHaveLength(30);
+      expect(getExtraTopics()).toHaveLength(3);
+      expect(getTopic('greetings').items[0]).toMatchObject({
+        targetText: 'مرحبا',
+        direction: 'rtl',
+        script: 'Arab',
+        reviewStatus: 'draft',
+      });
+      expect(getTopic('greetings').items[0].transliteration).toBeTruthy();
+      expect(LANGUAGE_PACK.audio).toMatchObject({ locale: 'ar-IQ', reviewStatus: 'draft' });
+    } finally {
+      setActiveLanguagePack('montenegrin-en');
+    }
+  });
 });
 
 describe('Progress Store', () => {

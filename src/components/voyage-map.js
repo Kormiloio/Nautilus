@@ -80,6 +80,9 @@ export function renderVoyageExperience(state) {
   const nextCompanion = COMPANIONS.find(companion => completedCount < companion.min);
   const percent = Math.round((completedCount / 200) * 100);
   const activeLanguage = state.languagePacks.find(pack => pack.id === state.activePackId)?.targetLanguage.name || 'Language';
+  if (state.activePackId === 'iraqi-arabic-en') {
+    return renderPilotRiverVoyage({ completedCount, percent, stage, activeLanguage, state });
+  }
   const posterCollection = DESTINATION_POSTERS.map(poster => {
     const unlocked = completedCount >= poster.unlock;
     const active = completedCount >= poster.unlock && completedCount < poster.unlock + 20;
@@ -163,10 +166,54 @@ export function renderVoyageExperience(state) {
     </section>`;
 }
 
+function renderPilotRiverVoyage({ completedCount, percent, stage, activeLanguage, state }) {
+  const stops = ['Family Landing', 'Greeting Bridge', 'Number Reeds', 'Color Garden', 'Market Bank', 'Tea Courtyard', 'Compass Bend', 'Story Boat', 'Gathering Place', 'Home Waters'];
+  const activeStop = Math.min(9, Math.floor(completedCount / 20));
+  return `
+    <section class="voyage-map-card river-pilot-card" aria-labelledby="voyage-map-title">
+      <div class="voyage-map__header">
+        <div>
+          <div class="hero-tag">Rivers of Mesopotamia · visual pilot</div>
+          <h3 id="voyage-map-title">${stage.icon} ${stage.label}</h3>
+          <p>${completedCount} of 200 Iraqi Arabic voyage days complete · ${percent}% along the river</p>
+        </div>
+        <button class="btn btn-secondary btn-pill" id="view-voyage-btn">View voyage plan →</button>
+      </div>
+      <div class="river-pilot-map" style="--voyage-progress:${percent}%">
+        <div class="river-pilot-sun" aria-hidden="true"></div>
+        <div class="river-pilot-reeds" aria-hidden="true">⌇⌇⌇　⌇⌇　⌇⌇⌇</div>
+        <div class="river-pilot-route" aria-hidden="true"><span></span></div>
+        <ol aria-label="Ten river journey stops">
+          ${stops.map((stop, index) => `<li class="${index < activeStop ? 'reached' : index === activeStop ? 'current' : ''}"><span>${index < activeStop ? '✓' : index + 1}</span><small>${escapeHtml(stop)}</small></li>`).join('')}
+        </ol>
+        <p>This neutral river map prevents the Iraqi Arabic pilot from inheriting another language pack's imagery. Community-reviewed illustrated scenes will replace it in the next visual phase.</p>
+      </div>
+    </section>
+    <section class="captains-quarters river-pilot-log" aria-labelledby="quarters-title">
+      <div class="quarters-profile">
+        <div class="quarters-avatar" aria-hidden="true">🛶</div>
+        <div><div class="hero-tag">Family pilot log</div><h3 id="quarters-title">${escapeHtml(state.profile)}'s river journal</h3><p>${escapeHtml(activeLanguage)} · ${state.streakDays} day streak · ${state.stars} stars</p></div>
+      </div>
+    </section>`;
+}
+
 export function renderImmersiveVoyageHero(state) {
   const completedDays = state.familyPlayState?.completedDays ?? getLearningDayCount(state.activityDates);
   const percent = Math.round((completedDays / 200) * 100);
   const stage = getVoyageStage(completedDays);
+  if (state.activePackId === 'iraqi-arabic-en') {
+    return `<section class="immersive-voyage river-immersive-pilot" aria-labelledby="immersive-voyage-title">
+      <div class="river-pilot-sun" aria-hidden="true"></div>
+      <div class="immersive-voyage__hud">
+        <div class="hero-tag">Rivers of Mesopotamia · visual pilot</div>
+        <h1 id="immersive-voyage-title">Family River Journey</h1>
+        <p><strong>${stage.icon} ${stage.label}</strong><br>${completedDays} Iraqi Arabic family days complete · ${percent}% along the river</p>
+        <div class="immersive-voyage__meter" aria-label="${percent}% of family voyage complete"><span style="width:${percent}%"></span></div>
+        <a class="btn btn-primary" href="#voyage-plan">Explore the route plan ↓</a>
+      </div>
+      <p class="river-visual-review-note">Illustrated river scenes are intentionally withheld until community cultural review.</p>
+    </section>`;
+  }
   const port = Math.min(10, Math.floor(completedDays / 20) + 1);
   const daysToNextPort = Math.max(0, Math.min(20, port * 20 - completedDays));
   const cameraPosition = Math.max(0, Math.min(100, percent));

@@ -1,6 +1,8 @@
 const VOICE_PRIORITIES = {
   cnr: ['hr-HR', 'hr', 'sr-RS', 'sr', 'bs-BA', 'bs'],
   sq: ['sq-AL', 'sq-XK', 'sq'],
+  // The Iraqi pilot may preview only a voice explicitly tagged for Iraq.
+  ar: ['ar-IQ'],
 };
 
 function normalizeLocale(locale) {

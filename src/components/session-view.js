@@ -1,4 +1,5 @@
 import { generateSession, getTopic, buildMatch, buildQuiz, shuffle, LANGUAGE_PACK } from '../engine/learning-engine.js';
+import { escapeHtml, renderLanguageRun } from '../engine/language-runs.js';
 import { colorTileStyle, getImmersiveLessonScene, renderColorField } from './lesson-visuals.js';
 
 export function renderSessionView(container, state, actions) {
@@ -135,11 +136,12 @@ function renderDiscoverStep(mount, step, state, actions) {
         <div class="flashcard ${f.flipped ? 'flipped' : ''}">
           <div class="flashcard-face flashcard-front">
             ${renderColorField(state.activeLesson.topicId, currentItem)}
-            <div class="flashcard-text-mn" style="font-size: 28px;">${currentItem.targetText}</div>
+            <div class="flashcard-text-mn" style="font-size: 28px;">${renderLanguageRun(currentItem.targetText, 'target', LANGUAGE_PACK, currentItem)}</div>
+            ${currentItem.transliteration ? `<div class="transliteration-text">${renderLanguageRun(currentItem.transliteration, 'transliteration', LANGUAGE_PACK, currentItem)}</div>` : ''}
             <div class="flashcard-hint">Tap to flip</div>
           </div>
           <div class="flashcard-face flashcard-back">
-            <div class="flashcard-text-en" style="font-size: 18px;">${currentItem.supportText}</div>
+            <div class="flashcard-text-en" style="font-size: 18px;">${renderLanguageRun(currentItem.supportText, 'support', LANGUAGE_PACK, currentItem)}</div>
             <div class="flashcard-hint" style="color: var(--pink);">Tap to flip back</div>
           </div>
         </div>
@@ -210,11 +212,12 @@ function renderRecallFlashStep(mount, step, state, actions) {
           <div class="flashcard-face flashcard-front">
             <div class="flashcard-hint" style="margin-bottom: 16px; color: var(--cyan);">Can you recall the translation?</div>
             ${renderColorField(state.activeLesson.topicId, currentItem)}
-            <div class="flashcard-text-mn" style="font-size: 28px;">${currentItem.targetText}</div>
+            <div class="flashcard-text-mn" style="font-size: 28px;">${renderLanguageRun(currentItem.targetText, 'target', LANGUAGE_PACK, currentItem)}</div>
+            ${currentItem.transliteration ? `<div class="transliteration-text">${renderLanguageRun(currentItem.transliteration, 'transliteration', LANGUAGE_PACK, currentItem)}</div>` : ''}
             <div class="flashcard-hint">Tap to check meaning</div>
           </div>
           <div class="flashcard-face flashcard-back">
-            <div class="flashcard-text-en" style="font-size: 18px;">${currentItem.supportText}</div>
+            <div class="flashcard-text-en" style="font-size: 18px;">${renderLanguageRun(currentItem.supportText, 'support', LANGUAGE_PACK, currentItem)}</div>
             <div class="flashcard-hint" style="color: var(--pink);">Tap to flip back</div>
           </div>
         </div>
@@ -318,7 +321,7 @@ function renderQuizStep(mount, step, state, actions) {
 
       <div class="quiz-prompt">
         Translate to ${LANGUAGE_PACK.targetLanguage.name}:<br>
-        <span style="font-family: var(--font-display); font-size: 24px; color: var(--cyan); font-weight: 800;">"${currentQ.promptText}"</span>
+        <span style="font-family: var(--font-display); font-size: 24px; color: var(--cyan); font-weight: 800;">${renderLanguageRun(currentQ.promptText, 'support', LANGUAGE_PACK)}</span>
       </div>
 
       <div class="quiz-options">
@@ -330,8 +333,8 @@ function renderQuizStep(mount, step, state, actions) {
             else optionClass += ' disabled';
           }
           return `
-            <button class="${optionClass}" data-option="${opt}" ${q.answered ? 'disabled' : ''}>
-              ${opt}
+            <button class="${optionClass}" data-option="${escapeHtml(opt)}" ${q.answered ? 'disabled' : ''}>
+              ${renderLanguageRun(opt, 'target', LANGUAGE_PACK)}
             </button>
           `;
         }).join('')}
@@ -411,7 +414,7 @@ function renderMatchStep(mount, step, state, actions) {
 
             return `
               <button class="${classes}" data-tile-id="${tile.id}"${colorTileStyle(tile.text)} ${isMatched ? 'disabled' : ''}>
-                ${tile.text}
+                ${renderLanguageRun(tile.text, tile.kind, LANGUAGE_PACK, tile)}
               </button>
             `;
           }).join('')}
@@ -500,8 +503,8 @@ function renderDialogueStep(mount, step, state, actions) {
                 <span>${line.role}</span>
                 <button class="dialogue-play-btn" data-play-line="${idx}">►</button>
               </div>
-              <div style="font-size: 17px; font-weight: 600; margin-top: 4px; color: var(--text-main);">${line.targetText}</div>
-              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">"${line.supportText}"</div>
+              <div style="font-size: 17px; font-weight: 600; margin-top: 4px; color: var(--text-main);">${renderLanguageRun(line.targetText, 'target', LANGUAGE_PACK, line)}</div>
+              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">${renderLanguageRun(line.supportText, 'support', LANGUAGE_PACK, line)}</div>
             </div>
           `;
         }).join('')}
@@ -550,13 +553,14 @@ function renderListenStep(mount, step, state, actions) {
       </div>
 
       <div style="font-family: var(--font-display); font-weight: 800; font-size: 28px; text-align: center;">
-        ${currentItem.targetText}
+        ${renderLanguageRun(currentItem.targetText, 'target', LANGUAGE_PACK, currentItem)}
+        ${currentItem.transliteration ? `<div class="transliteration-text">${renderLanguageRun(currentItem.transliteration, 'transliteration', LANGUAGE_PACK, currentItem)}</div>` : ''}
       </div>
 
       <button class="btn btn-primary" id="play-audio-btn">► Play Pronunciation</button>
 
       <div style="font-size: 15px; color: var(--text-muted); text-align: center; margin: 4px 0;">
-        Meaning: <span style="color: var(--cyan); font-weight: 600;">"${currentItem.supportText}"</span>
+        Meaning: <span style="color: var(--cyan); font-weight: 600;">${renderLanguageRun(currentItem.supportText, 'support', LANGUAGE_PACK, currentItem)}</span>
       </div>
 
       <div style="display: flex; gap: 12px; margin-top: 12px;">

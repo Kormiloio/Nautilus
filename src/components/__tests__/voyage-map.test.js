@@ -49,6 +49,20 @@ describe('learner voyage experience', () => {
     expect(html).not.toContain('Charts open day');
   });
 
+  it('does not reuse Montenegrin imagery for the Iraqi Arabic pilot', () => {
+    const state = {
+      activityDates: [], activePackId: 'iraqi-arabic-en', profile: 'Lena',
+      streakDays: 0, stars: 0,
+      languagePacks: [{ id: 'iraqi-arabic-en', targetLanguage: { name: 'Iraqi Arabic' } }],
+    };
+    const dashboard = renderVoyageExperience(state);
+    const curriculum = renderImmersiveVoyageHero(state);
+    expect(dashboard).toContain('Rivers of Mesopotamia');
+    expect(curriculum).toContain('Family River Journey');
+    expect(dashboard).not.toContain('Montenegro');
+    expect(curriculum).not.toContain('nautilus-voyage-panorama');
+  });
+
   it('renders the immersive route with ten accessible ports and a progress-positioned vessel', () => {
     const html = renderImmersiveVoyageHero({
       activityDates: [], familyPlayState: { completedDays: 42 },

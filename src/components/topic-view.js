@@ -1,5 +1,6 @@
 import { getTopic, shuffle, buildMatch, buildQuiz, LANGUAGE_PACK } from '../engine/learning-engine.js';
 import { colorTileStyle, renderColorField, renderColorsIntro } from './lesson-visuals.js';
+import { escapeHtml, renderLanguageRun } from '../engine/language-runs.js';
 
 export function renderTopicView(container, state, actions) {
   const topic = getTopic(state.topicId);
@@ -35,6 +36,7 @@ export function renderTopicView(container, state, actions) {
           <h2 style="font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">${topic.title}</h2>
           <p style="color: var(--text-muted); font-size: 14px;">${topic.subtitle}</p>
           ${LANGUAGE_PACK.audio?.reviewStatus === 'draft' ? '<span class="audio-review-badge">Voice preview · fluent audio review pending</span>' : ''}
+          ${LANGUAGE_PACK.status === 'pilot' ? '<span class="audio-review-badge pilot">Pilot wording · community review pending</span>' : ''}
         </div>
         <div>
           ${isCompleted ? `
@@ -123,11 +125,12 @@ function renderFlashcards(mount, topic, state, actions) {
         <div class="flashcard ${f.flipped ? 'flipped' : ''}">
           <div class="flashcard-face flashcard-front">
             ${renderColorField(topic.id, currentItem)}
-            <div class="flashcard-text-mn">${currentItem.targetText}</div>
+            <div class="flashcard-text-mn">${renderLanguageRun(currentItem.targetText, 'target', LANGUAGE_PACK, currentItem)}</div>
+            ${currentItem.transliteration ? `<div class="transliteration-text">${renderLanguageRun(currentItem.transliteration, 'transliteration', LANGUAGE_PACK, currentItem)}</div>` : ''}
             <div class="flashcard-hint">Tap to reveal translation</div>
           </div>
           <div class="flashcard-face flashcard-back">
-            <div class="flashcard-text-en">${currentItem.supportText}</div>
+            <div class="flashcard-text-en">${renderLanguageRun(currentItem.supportText, 'support', LANGUAGE_PACK, currentItem)}</div>
             <div class="flashcard-hint" style="margin-top: 24px; color: var(--pink);">Tap to flip back</div>
           </div>
         </div>
@@ -212,7 +215,7 @@ function renderMatch(mount, topic, state, actions) {
 
             return `
               <button class="${classes}" data-tile-id="${tile.id}"${colorTileStyle(tile.text)} ${isMatched ? 'disabled' : ''}>
-                ${tile.text}
+                ${renderLanguageRun(tile.text, tile.kind, LANGUAGE_PACK, tile)}
               </button>
             `;
           }).join('')}
@@ -311,7 +314,7 @@ function renderQuiz(mount, topic, state, actions) {
 
       <div class="quiz-prompt">
         Translate to ${LANGUAGE_PACK.targetLanguage.name}:<br>
-        <span style="font-family: var(--font-display); font-size: 24px; color: var(--cyan); font-weight: 800;">"${currentQ.promptText}"</span>
+        <span style="font-family: var(--font-display); font-size: 24px; color: var(--cyan); font-weight: 800;">${renderLanguageRun(currentQ.promptText, 'support', LANGUAGE_PACK)}</span>
       </div>
 
       <div class="quiz-options">
@@ -323,8 +326,8 @@ function renderQuiz(mount, topic, state, actions) {
             else optionClass += ' disabled';
           }
           return `
-            <button class="${optionClass}" data-option="${opt}" ${quiz.answered ? 'disabled' : ''}>
-              ${opt}
+            <button class="${optionClass}" data-option="${escapeHtml(opt)}" ${quiz.answered ? 'disabled' : ''}>
+              ${renderLanguageRun(opt, 'target', LANGUAGE_PACK)}
             </button>
           `;
         }).join('')}
@@ -382,7 +385,8 @@ function renderListen(mount, topic, state, actions) {
       </div>
 
       <div style="font-family: var(--font-display); font-weight: 800; font-size: 32px; text-align: center;">
-        ${currentItem.targetText}
+        ${renderLanguageRun(currentItem.targetText, 'target', LANGUAGE_PACK, currentItem)}
+        ${currentItem.transliteration ? `<div class="transliteration-text">${renderLanguageRun(currentItem.transliteration, 'transliteration', LANGUAGE_PACK, currentItem)}</div>` : ''}
       </div>
 
       <button class="btn btn-primary" id="play-audio-btn">► Play pronunciation</button>
@@ -397,7 +401,7 @@ function renderListen(mount, topic, state, actions) {
 
       ${l.revealed ? `
         <div style="font-size: 18px; color: var(--cyan); font-weight: 600; text-align: center; animation: fadeIn 0.2s;">
-          "${currentItem.supportText}"
+          ${renderLanguageRun(currentItem.supportText, 'support', LANGUAGE_PACK, currentItem)}
         </div>
       ` : ''}
 
@@ -532,9 +536,9 @@ function renderDialogue(mount, topic, state, actions) {
                 <span>${line.role}</span>
                 <button class="dialogue-play-btn" data-play-line="${idx}">►</button>
               </div>
-              <div style="font-size: 17px; font-weight: 600; margin-top: 4px; color: var(--text-main);">${line.targetText}</div>
+              <div style="font-size: 17px; font-weight: 600; margin-top: 4px; color: var(--text-main);">${renderLanguageRun(line.targetText, 'target', LANGUAGE_PACK, line)}</div>
               ${d.showEn ? `
-                <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">"${line.supportText}"</div>
+                <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">${renderLanguageRun(line.supportText, 'support', LANGUAGE_PACK, line)}</div>
               ` : ''}
             </div>
           `;

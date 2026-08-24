@@ -23,4 +23,13 @@ describe('device speech voice selection', () => {
     expect(result).toMatchObject({ spoken: false, reason: 'voice-missing' });
     expect(synthesis.speak).not.toHaveBeenCalled();
   });
+
+  it('uses an Iraqi Arabic voice but rejects a generic Arabic substitute', () => {
+    const arabicVoices = [
+      { name: 'Generic Arabic', lang: 'ar-SA' },
+      { name: 'Iraqi Arabic', lang: 'ar-IQ' },
+    ];
+    expect(selectBestVoice(arabicVoices, 'ar').name).toBe('Iraqi Arabic');
+    expect(selectBestVoice([arabicVoices[0]], 'ar')).toBeNull();
+  });
 });

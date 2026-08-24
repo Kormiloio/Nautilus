@@ -26,6 +26,7 @@ import {
 } from './engine/learning-engine.js';
 import { onAuthStateChange, getSession, isConfigured } from './engine/supabase-client.js';
 import { speakWithBestDeviceVoice } from './engine/speech-engine.js';
+import { applyDocumentLanguage } from './engine/language-runs.js';
 import {
   acceptFamilyInvitation,
   completeFamilyPlay,
@@ -130,7 +131,11 @@ function speak(text) {
   const languageCode = LANGUAGE_PACK.targetLanguage.code;
   const result = speakWithBestDeviceVoice(text, languageCode, window.speechSynthesis, window.SpeechSynthesisUtterance);
   if (!result.spoken && result.reason === 'voice-missing') {
-    const language = languageCode === 'sq' ? 'Albanian' : 'Croatian';
+    const language = languageCode === 'sq'
+      ? 'Albanian'
+      : languageCode === 'ar'
+        ? 'Iraqi Arabic'
+        : 'Croatian';
     const deviceHelp = /iPad|iPhone|iPod/.test(navigator.userAgent)
       ? `On this iPhone or iPad, open Settings → Accessibility → Read & Speak → Voices and download a ${language} voice.`
       : `Install or enable a ${language} speech voice in this device's accessibility or speech settings.`;
@@ -142,6 +147,22 @@ function speak(text) {
 const actions = {
   selectLanguage: async (packId) => {
     if (!state.profile) return;
+    const requestedPack = state.languagePacks.find(pack => pack.id === packId);
+    if (requestedPack?.status === 'pilot') {
+      const consentKey = `nautilus-pilot-consent:${requestedPack.id}:${requestedPack.version}`;
+      if (localStorage.getItem(consentKey) !== 'accepted') {
+        const accepted = window.confirm(
+          `${requestedPack.targetLanguage.name} is an early family pilot. ` +
+          'Its wording, transliteration, pronunciation, and cultural material have not completed community review. ' +
+          'Use it for testing and report corrections; do not treat it as an authoritative course yet. Continue?'
+        );
+        if (!accepted) {
+          rerender();
+          return;
+        }
+        localStorage.setItem(consentKey, 'accepted');
+      }
+    }
     activatePackForProfile(state.profile, packId);
     if (state.sessionUser) {
       try {
@@ -696,6 +717,7 @@ function watchFamilyPlay() {
 
 // Global Rerender Controller
 function rerender() {
+  applyDocumentLanguage(LANGUAGE_PACK);
   const activeBeforeRender = state.familyPlayState?.activeSession;
   const nextFamilyStage = activeBeforeRender ? `${activeBeforeRender.id}:${activeBeforeRender.currentSegment}` : null;
   const existingFamilyPanel = appContainer.querySelector('.family-play-panel');

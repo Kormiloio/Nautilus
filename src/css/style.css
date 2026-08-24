@@ -51,6 +51,199 @@ body {
   padding-bottom: 60px;
 }
 
+/* Isolate target/support runs so Arabic and Mandaic can safely share a card
+   with English without changing the direction of the surrounding controls. */
+.language-run {
+  unicode-bidi: isolate;
+}
+
+.target-language-run[dir="rtl"] {
+  direction: rtl;
+  text-align: start;
+}
+
+.support-language-run,
+.transliteration-language-run {
+  direction: ltr;
+}
+
+.script-arab,
+.script-mand {
+  font-family: "Noto Sans Arabic", "Noto Sans Mandaic", system-ui, sans-serif;
+  line-height: 1.55;
+  letter-spacing: normal;
+}
+
+.transliteration-text {
+  color: var(--text-muted);
+  font-size: 0.82em;
+  font-weight: 600;
+  margin-top: 0.35rem;
+  text-align: center;
+}
+
+.pilot-pack-banner {
+  align-items: center;
+  background: rgba(250, 204, 21, 0.08);
+  border: 1px solid rgba(250, 204, 21, 0.55);
+  border-radius: 16px;
+  color: #ffe58f;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding: 16px 18px;
+}
+
+.pilot-pack-banner div {
+  display: grid;
+  gap: 3px;
+}
+
+.pilot-pack-banner span {
+  font-size: 13px;
+}
+
+.audio-review-badge.pilot {
+  border-color: var(--amber);
+  color: #ffe58f;
+}
+
+@media (max-width: 600px) {
+  .pilot-pack-banner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.river-pilot-map {
+  background: linear-gradient(180deg, #e9c97a 0 35%, #7a9f8e 36% 48%, #277a91 49% 68%, #c89b58 69% 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  min-height: 360px;
+  overflow: hidden;
+  padding: 64px 28px 28px;
+  position: relative;
+}
+
+.river-immersive-pilot {
+  background: linear-gradient(165deg, #e9c97a 0 34%, #7a9f8e 35% 47%, #277a91 48% 70%, #bd8d4f 71% 100%);
+  min-height: min(720px, 72vh);
+}
+
+.river-visual-review-note {
+  background: rgba(11, 35, 42, 0.82);
+  border-radius: 12px;
+  bottom: 24px;
+  color: #e8f5f5;
+  font-size: 13px;
+  inset-inline-end: 24px;
+  max-width: 360px;
+  padding: 12px 14px;
+  position: absolute;
+  z-index: 5;
+}
+
+.river-pilot-sun {
+  background: #fff0b4;
+  border-radius: 50%;
+  box-shadow: 0 0 42px rgba(255, 238, 171, 0.7);
+  height: 68px;
+  inset: 28px 12% auto auto;
+  position: absolute;
+  width: 68px;
+}
+
+.river-pilot-reeds {
+  bottom: 25%;
+  color: #244c39;
+  font-size: 54px;
+  inset-inline: 2%;
+  letter-spacing: -10px;
+  opacity: 0.85;
+  position: absolute;
+}
+
+.river-pilot-route {
+  background: rgba(255, 255, 255, 0.38);
+  height: 6px;
+  inset: 54% 6% auto;
+  position: absolute;
+}
+
+.river-pilot-route span {
+  background: var(--cyan);
+  display: block;
+  height: 100%;
+  width: var(--voyage-progress);
+}
+
+.river-pilot-map ol {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(10, minmax(62px, 1fr));
+  list-style: none;
+  position: relative;
+  z-index: 1;
+}
+
+.river-pilot-map li {
+  align-items: center;
+  color: #173a42;
+  display: flex;
+  flex-direction: column;
+  font-weight: 800;
+  gap: 8px;
+  text-align: center;
+}
+
+.river-pilot-map li > span {
+  align-items: center;
+  background: #11303a;
+  border: 3px solid #8aa5a8;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  height: 48px;
+  justify-content: center;
+  width: 48px;
+}
+
+.river-pilot-map li.current > span,
+.river-pilot-map li.reached > span {
+  border-color: var(--cyan);
+  box-shadow: 0 0 18px rgba(125, 211, 252, 0.7);
+}
+
+.river-pilot-map > p {
+  background: rgba(11, 35, 42, 0.84);
+  border-radius: 12px;
+  bottom: 18px;
+  color: #e8f5f5;
+  font-size: 13px;
+  inset-inline: 28px;
+  padding: 12px 14px;
+  position: absolute;
+  z-index: 2;
+}
+
+@media (max-width: 760px) {
+  .river-pilot-map {
+    overflow-x: auto;
+  }
+
+  .river-pilot-map ol {
+    min-width: 760px;
+  }
+}
+
+html[data-target-direction="rtl"] .flashcard-text-mn,
+html[data-target-direction="rtl"] .quiz-option,
+html[data-target-direction="rtl"] .match-tile,
+html[data-target-direction="rtl"] .family-answer,
+html[data-target-direction="rtl"] .family-vocab-reveal strong {
+  text-align: start;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 700;

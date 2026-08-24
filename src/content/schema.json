@@ -23,11 +23,30 @@
         "targetLanguage": { "$ref": "#/definitions/languageIdentity" },
         "supportLanguage": { "$ref": "#/definitions/supportLanguageIdentity" },
         "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
-        "status": { "type": "string", "enum": ["draft", "review", "published", "retired"] },
+        "status": { "type": "string", "enum": ["draft", "pilot", "review", "published", "retired"] },
+        "direction": { "$ref": "#/definitions/direction" },
+        "defaultScript": { "type": "string", "pattern": "^[A-Z][a-z]{3}$" },
+        "locale": { "type": "string", "minLength": 2 },
+        "varietyPolicy": { "type": "string", "minLength": 1 },
+        "tracks": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/track" }
+        },
+        "journeyThemeId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*@[0-9]+[.][0-9]+[.][0-9]+$" },
         "audio": { "$ref": "#/definitions/audioProfile" }
       },
-      "required": ["id", "targetLanguage", "supportLanguage", "version", "status"],
+      "required": ["id", "targetLanguage", "supportLanguage", "version", "status", "direction", "defaultScript"],
       "additionalProperties": false
+    },
+    "direction": {
+      "type": "string",
+      "enum": ["ltr", "rtl"]
+    },
+    "track": {
+      "type": "string",
+      "enum": ["heritage-classical", "conversation-neo"]
     },
     "audioProfile": {
       "type": "object",
@@ -121,7 +140,16 @@
           "enum": ["draft", "language-reviewed", "audio-reviewed", "publishable"],
           "default": "draft"
         },
-        "audioUrl": { "type": "string" }
+        "audioUrl": { "type": "string" },
+        "languageTag": { "type": "string", "minLength": 2 },
+        "script": { "type": "string", "pattern": "^[A-Z][a-z]{3}$" },
+        "direction": { "$ref": "#/definitions/direction" },
+        "variety": { "type": "string", "minLength": 1 },
+        "register": { "type": "string", "minLength": 1 },
+        "track": { "$ref": "#/definitions/track" },
+        "transliteration": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "contributor": { "type": "string", "minLength": 1 }
       },
       "required": ["id", "targetText", "supportText"],
       "additionalProperties": false
@@ -153,7 +181,16 @@
           "enum": ["draft", "language-reviewed", "audio-reviewed", "publishable"],
           "default": "draft"
         },
-        "audioUrl": { "type": "string" }
+        "audioUrl": { "type": "string" },
+        "languageTag": { "type": "string", "minLength": 2 },
+        "script": { "type": "string", "pattern": "^[A-Z][a-z]{3}$" },
+        "direction": { "$ref": "#/definitions/direction" },
+        "variety": { "type": "string", "minLength": 1 },
+        "register": { "type": "string", "minLength": 1 },
+        "track": { "$ref": "#/definitions/track" },
+        "transliteration": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "contributor": { "type": "string", "minLength": 1 }
       },
       "required": ["id", "role", "targetText", "supportText"],
       "additionalProperties": false
