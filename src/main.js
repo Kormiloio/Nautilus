@@ -124,6 +124,10 @@ function showAudioDeviceNotice(message) {
 }
 
 function speak(text) {
+  if (LANGUAGE_PACK.audio?.delivery === 'none') {
+    showAudioDeviceNotice(`${LANGUAGE_PACK.targetLanguage.name} audio is not available in this pilot. Nautilus will not substitute an Arabic, English, or generic device voice.`);
+    return;
+  }
   if (!('speechSynthesis' in window)) {
     showAudioDeviceNotice('Speech playback is not supported by this browser.');
     return;
@@ -131,11 +135,10 @@ function speak(text) {
   const languageCode = LANGUAGE_PACK.targetLanguage.code;
   const result = speakWithBestDeviceVoice(text, languageCode, window.speechSynthesis, window.SpeechSynthesisUtterance);
   if (!result.spoken && result.reason === 'voice-missing') {
-    const language = languageCode === 'sq'
-      ? 'Albanian'
-      : languageCode === 'ar'
-        ? 'Iraqi Arabic'
-        : 'Croatian';
+    const language = ({
+      sq: 'Albanian', ar: 'Iraqi Arabic', es: 'Spanish (Spain)',
+      it: 'Italian', fr: 'French (France)', cnr: 'Croatian',
+    })[languageCode] || LANGUAGE_PACK.targetLanguage.name;
     const deviceHelp = /iPad|iPhone|iPod/.test(navigator.userAgent)
       ? `On this iPhone or iPad, open Settings → Accessibility → Read & Speak → Voices and download a ${language} voice.`
       : `Install or enable a ${language} speech voice in this device's accessibility or speech settings.`;

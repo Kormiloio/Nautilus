@@ -20,7 +20,7 @@
 
 - [x] 3.1 Render target, support, and transliteration as isolated language runs using semantic `lang`/`dir` attributes and CSS logical properties.
 - [x] 3.2 Audit existing flashcards, matching, quizzes, dialogue, pronunciation, session, and Family Play learning surfaces for RTL and mixed-direction behavior. Pilot dashboard and feedback surfaces remain covered by their implementation tasks.
-- [ ] 3.3 Add and license a Mandaic-capable web font; validate U+0840–U+085F glyph coverage and joining behavior.
+- [x] 3.3 Add and license a Mandaic-capable web font; validate U+0840–U+085F glyph coverage and joining behavior. Noto Sans Mandaic and its OFL license are bundled; representative glyph validation is automated. Community visual review of joining examples remains required.
 - [ ] 3.4 Preserve semantic icon, media, chronology, keyboard, and focus order instead of mirroring the entire interface blindly.
 - [ ] 3.5 Add visible missing-font/glyph and audio-unavailable fallbacks.
 
@@ -33,18 +33,18 @@
 
 ## 5. Build combined Mandaic pilot
 
-- [ ] 5.1 Author the Classical heritage/script foundation with the Mandaic alphabet, character recognition, joining/reading exercises, and approved context.
+- [x] 5.1 Author the Classical heritage/script foundation with the Mandaic alphabet and character recognition. Joining/reading claims remain deliberately excluded pending Classical Mandaic review.
 - [ ] 5.2 Author initial Neo-Mandaic family and everyday vocabulary, phrases, dialogues, and family-play prompts for the selected variety.
 - [ ] 5.3 Link related Classical/Neo forms with explicit reviewed relationships while keeping scoring and labels strand-specific.
-- [ ] 5.4 Keep activities text-first and suppress speech controls unless approved Mandaic audio exists.
+- [x] 5.4 Keep activities text-first and suppress speech controls unless approved Mandaic audio exists.
 - [ ] 5.5 Complete separate Classical Mandaic, Neo-Mandaic speaker, transliteration, curriculum, and audio reviews before publication.
 
 ## 6. Build the cultural journey theme
 
-- [ ] 6.1 Create a `rivers-of-mesopotamia` asset manifest with stable IDs, alt text, motion mode, licenses/provenance, and cultural-review metadata.
-- [ ] 6.2 Prototype river, reeds, date palms, boats, courtyard, market, family, and regional craft scenes without generic desert or Islamic visual shorthand.
+- [x] 6.1 Create a `rivers-of-mesopotamia` asset manifest with stable IDs, alt text, motion mode, licenses/provenance, and cultural-review metadata.
+- [x] 6.2 Prototype river, reeds, date palms, boats, courtyard, market, family, and regional craft scenes without generic desert or Islamic visual shorthand.
 - [ ] 6.3 Obtain community approval before depicting sacred people, rites, garments, buildings, or symbols.
-- [ ] 6.4 Add static/reduced-motion and missing-image fallbacks.
+- [x] 6.4 Add static/reduced-motion and missing-image fallbacks.
 - [ ] 6.5 Verify that switching an approved theme leaves lesson content and progress unchanged.
 
 ## 7. Add private pilot feedback

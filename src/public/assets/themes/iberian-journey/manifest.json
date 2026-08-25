@@ -1,0 +1,4 @@
+{
+  "id":"iberian-journey","version":"0.1.0","status":"pilot","compatiblePacks":["spanish-spain-en"],
+  "scenes":[{"id":"iberian-journey-panorama","asset":"iberian-journey-panorama-v1.jpg","sha256":"40a1a1602f7c2c1d81afdd24ff0dc9b9e777bf4cf5f89ff285595b1820732301","altText":"Illustrated journey across Spain from an Atlantic coast and green hills through villages, a plaza, olive country, a café terrace, whitewashed streets, and a Mediterranean harbor","motionMode":"pan-horizontal","staticFallback":"warm-iberian-gradient","provenance":"Original Nautilus pilot artwork generated with OpenAI image generation on 2026-08-24.","culturalReview":{"state":"draft","reviewerId":null,"reviewedAt":null},"restrictedElements":["political symbols","religious processions","costume stereotypes"]}]
+}

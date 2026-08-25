@@ -4,6 +4,7 @@ import { escapeHtml, renderLanguageRun } from '../engine/language-runs.js';
 
 export function renderTopicView(container, state, actions) {
   const topic = getTopic(state.topicId);
+  if (LANGUAGE_PACK.audio?.delivery === 'none' && state.activity === 'listen') state.activity = 'flashcards';
   const isCompleted = state.completedTopicIds.includes(topic.id);
   const showSkipButton = !isCompleted && !state.isGuide;
 
@@ -11,8 +12,8 @@ export function renderTopicView(container, state, actions) {
     { id: 'flashcards', label: 'Flashcards' },
     { id: 'match', label: 'Match' },
     { id: 'quiz', label: 'Quiz' },
-    { id: 'listen', label: 'Listen' },
   ];
+  if (LANGUAGE_PACK.audio?.delivery !== 'none') tabDefs.push({ id: 'listen', label: 'Listen' });
   if (topic.dialogue) {
     tabDefs.push({ id: 'dialogue', label: 'Role-play' });
   }
@@ -214,7 +215,7 @@ function renderMatch(mount, topic, state, actions) {
             else if (isSelected) classes += ' selected';
 
             return `
-              <button class="${classes}" data-tile-id="${tile.id}"${colorTileStyle(tile.text)} ${isMatched ? 'disabled' : ''}>
+              <button class="${classes}" data-tile-id="${tile.id}" data-match-color="${matchPairColor(tile.pairId)}"${colorTileStyle(tile.text)} ${isMatched ? 'disabled' : ''}>
                 ${renderLanguageRun(tile.text, tile.kind, LANGUAGE_PACK, tile)}
               </button>
             `;
@@ -241,6 +242,11 @@ function renderMatch(mount, topic, state, actions) {
       handleTileClick(tileId, mount, topic, state, actions);
     });
   });
+}
+
+function matchPairColor(pairId) {
+  const colors = ['lime', 'teal', 'blue', 'purple', 'pink', 'amber'];
+  return colors[Math.max(0, Number(pairId) || 0) % colors.length];
 }
 
 function handleTileClick(tileId, mount, topic, state, actions) {

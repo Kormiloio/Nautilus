@@ -3,6 +3,11 @@ const VOICE_PRIORITIES = {
   sq: ['sq-AL', 'sq-XK', 'sq'],
   // The Iraqi pilot may preview only a voice explicitly tagged for Iraq.
   ar: ['ar-IQ'],
+  // The Spain pack must not silently switch to a Latin American voice.
+  es: ['es-ES'],
+  // Keep the Italy and France pilots on their reviewed regional targets.
+  it: ['it-IT'],
+  fr: ['fr-FR'],
 };
 
 function normalizeLocale(locale) {

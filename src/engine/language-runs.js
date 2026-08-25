@@ -40,7 +40,7 @@ export function renderLanguageRun(text, kind, pack, item = {}, className = '') {
     className,
   ].filter(Boolean).join(' ');
 
-  return `<bdi class="${classes}" lang="${escapeHtml(metadata.languageTag)}" dir="${direction}">${escapeHtml(text)}</bdi>`;
+  return `<bdi class="${classes}" lang="${escapeHtml(metadata.languageTag)}" dir="${direction}"${metadata.script ? ` data-script="${escapeHtml(metadata.script)}"` : ''}>${escapeHtml(text)}</bdi>`;
 }
 
 export function applyDocumentLanguage(pack, root = globalThis.document?.documentElement) {

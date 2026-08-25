@@ -1,0 +1,4 @@
+{
+  "id":"france-atlantic-to-mediterranean","version":"0.1.0","status":"pilot","compatiblePacks":["french-france-en"],
+  "scenes":[{"id":"france-journey-panorama","asset":"france-journey-panorama-v1.jpg","sha256":"1357e3b6c8dd1ffe82459c6290ba74319324d15be6a127c4d238f1aef1ac0cbf","altText":"Illustrated journey across France from the Atlantic coast through riverside villages, markets, orchards, a family café, vineyards, the Alps, and a Mediterranean harbor","motionMode":"pan-horizontal","staticFallback":"warm-france-gradient","provenance":"Original Nautilus pilot artwork generated with OpenAI image generation on 2026-08-24.","culturalReview":{"state":"draft","reviewerId":null,"reviewedAt":null},"restrictedElements":["political symbols","costume stereotypes","single-monument shorthand","café caricatures"]}]
+}

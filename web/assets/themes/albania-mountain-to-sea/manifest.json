@@ -1,0 +1,4 @@
+{
+  "id":"albania-mountain-to-sea","version":"0.1.0","status":"pilot","compatiblePacks":["albanian-en"],
+  "scenes":[{"id":"albania-journey-panorama","asset":"albania-journey-panorama-v1.jpg","sha256":"1e0f3c8f825c5a4862e94b72983db0437badb5a7dc415a6a92d73dd0941f5518","altText":"Illustrated journey across Albania from alpine mountains and a stone bridge through a public square, olive hills and a family courtyard to the Ionian coast","motionMode":"pan-horizontal","staticFallback":"alpine-to-coast-gradient","provenance":"Original Nautilus pilot artwork generated with OpenAI image generation on 2026-08-24.","culturalReview":{"state":"draft","reviewerId":null,"reviewedAt":null},"restrictedElements":["Kosovo landmarks","nationalist symbols","religious shorthand","costume stereotypes"]}]
+}

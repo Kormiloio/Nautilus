@@ -159,6 +159,61 @@ describe('Learning Engine', () => {
       setActiveLanguagePack('montenegrin-en');
     }
   });
+
+  it('should expose a script-only Mandaic pilot without substitute audio', () => {
+    setActiveLanguagePack('mandaic-en');
+    try {
+      expect(LANGUAGE_PACK).toMatchObject({
+        status: 'pilot', direction: 'rtl', defaultScript: 'Mand', locale: 'mid',
+        tracks: ['heritage-classical', 'conversation-neo'],
+        audio: { delivery: 'none' },
+      });
+      expect(VOYAGE_LESSONS).toHaveLength(200);
+      expect(getTopics()).toHaveLength(30);
+      expect(getExtraTopics()).toHaveLength(3);
+      expect(getTopic('script-01').items[0]).toMatchObject({
+        targetText: 'ࡀ', script: 'Mand', direction: 'rtl',
+        track: 'heritage-classical', reviewStatus: 'draft',
+      });
+      expect(getTopics().flatMap(topic => topic.items).every(item => item.track === 'heritage-classical')).toBe(true);
+    } finally {
+      setActiveLanguagePack('montenegrin-en');
+    }
+  });
+
+  it('should expose a complete Castilian Spanish pilot with Spain-scoped metadata', () => {
+    setActiveLanguagePack('spanish-spain-en');
+    try {
+      expect(LANGUAGE_PACK).toMatchObject({
+        status: 'pilot', locale: 'es-ES', defaultScript: 'Latn',
+        journeyThemeId: 'iberian-journey@0.1.0',
+        audio: { locale: 'es-ES', reviewStatus: 'draft' },
+      });
+      expect(VOYAGE_LESSONS).toHaveLength(200);
+      expect(getTopics()).toHaveLength(30);
+      expect(getExtraTopics()).toHaveLength(3);
+      expect(getTopic('cafe').items.some(item => item.targetText === '¿Tenéis té?')).toBe(true);
+      expect(getTopic('plans').items.some(item => item.targetText === '¡Vale!')).toBe(true);
+    } finally {
+      setActiveLanguagePack('montenegrin-en');
+    }
+  });
+
+  it.each([
+    ['italian-en', 'it-IT', 'italy-alps-to-sea@0.1.0', 'cafe', 'Un caffè, per favore'],
+    ['french-france-en', 'fr-FR', 'france-atlantic-to-mediterranean@0.1.0', 'cafe', 'Un café, s’il vous plaît'],
+  ])('should expose a complete %s structural pilot', (packId, locale, journeyThemeId, topicId, expectedText) => {
+    setActiveLanguagePack(packId);
+    try {
+      expect(LANGUAGE_PACK).toMatchObject({ status:'pilot', locale, journeyThemeId, audio:{ locale, reviewStatus:'draft' } });
+      expect(VOYAGE_LESSONS).toHaveLength(200);
+      expect(getTopics()).toHaveLength(30);
+      expect(getExtraTopics()).toHaveLength(3);
+      expect(getTopic(topicId).items.some(item => item.targetText === expectedText)).toBe(true);
+    } finally {
+      setActiveLanguagePack('montenegrin-en');
+    }
+  });
 });
 
 describe('Progress Store', () => {

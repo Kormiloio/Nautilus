@@ -117,7 +117,7 @@ body {
 }
 
 .river-pilot-map {
-  background: linear-gradient(180deg, #e9c97a 0 35%, #7a9f8e 36% 48%, #277a91 49% 68%, #c89b58 69% 100%);
+  background: linear-gradient(180deg, #dcb868, #185e74);
   border-top: 1px solid rgba(255, 255, 255, 0.14);
   min-height: 360px;
   overflow: hidden;
@@ -125,9 +125,54 @@ body {
   position: relative;
 }
 
+.river-pilot-map__art {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+}
+
+.river-pilot-map__veil {
+  background: linear-gradient(180deg, rgba(5, 22, 28, .04), rgba(5, 22, 28, .18) 45%, rgba(5, 22, 28, .72));
+  inset: 0;
+  position: absolute;
+}
+
 .river-immersive-pilot {
-  background: linear-gradient(165deg, #e9c97a 0 34%, #7a9f8e 35% 47%, #277a91 48% 70%, #bd8d4f 71% 100%);
+  background: #173d48;
   min-height: min(720px, 72vh);
+}
+
+.river-immersive-pilot .river-journey-world {
+  filter: saturate(.92) contrast(1.04);
+}
+
+.river-journey-veil {
+  background: linear-gradient(90deg, rgba(4, 18, 24, .82) 0%, rgba(4, 18, 24, .38) 48%, rgba(4, 18, 24, .12) 100%);
+}
+
+@font-face {
+  font-family: 'Noto Sans Mandaic';
+  src: url('../assets/fonts/NotoSansMandaic-Regular.ttf') format('truetype');
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+}
+
+[lang="mid"], [data-script="Mand"] {
+  font-family: 'Noto Sans Mandaic', sans-serif;
+  font-size: 1.18em;
+  line-height: 1.5;
+}
+
+html[data-target-language="mid"] #speak-btn,
+html[data-target-language="mid"] #disc-speak-btn,
+html[data-target-language="mid"] #recall-speak-btn,
+html[data-target-language="mid"] #play-audio-btn,
+html[data-target-language="mid"] #family-play-audio,
+html[data-target-language="mid"] [data-reflection-audio] {
+  display: none;
 }
 
 .river-visual-review-note {
@@ -1180,11 +1225,19 @@ button, input, select {
   border-color: var(--cyan);
 }
 
+.match-tile[data-match-color="lime"] { --match-pair-color:#b8f45b; --match-pair-bg:#315219; }
+.match-tile[data-match-color="teal"] { --match-pair-color:#55ead1; --match-pair-bg:#12534e; }
+.match-tile[data-match-color="blue"] { --match-pair-color:#79c9ff; --match-pair-bg:#174b73; }
+.match-tile[data-match-color="purple"] { --match-pair-color:#c5a0ff; --match-pair-bg:#4b3274; }
+.match-tile[data-match-color="pink"] { --match-pair-color:#ff92c6; --match-pair-bg:#703354; }
+.match-tile[data-match-color="amber"] { --match-pair-color:#ffd166; --match-pair-bg:#71521a; }
+
 .match-tile.matched {
-  background: #0f2e1a;
-  border-color: var(--lime);
-  color: var(--lime);
-  opacity: 0.6;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--match-pair-bg) 88%, #fff 12%), var(--match-pair-bg));
+  border-color: var(--match-pair-color);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--match-pair-color) 42%, transparent), 0 8px 22px color-mix(in srgb, var(--match-pair-bg) 48%, transparent);
+  opacity: 1;
   cursor: default;
 }
 

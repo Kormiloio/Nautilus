@@ -8,6 +8,52 @@ const VOYAGE_STAGES = [
   { id: 'shipshape-moored', label: 'Shipshape · Moored', min: 200, icon: '🏝️' },
 ];
 
+const RIVER_STAGES = [
+  { label: 'Riverbank Beginnings', min: 0, icon: '🌱' },
+  { label: 'Following the Current', min: 50, icon: '🛶' },
+  { label: 'Across the Reeds', min: 100, icon: '🌾' },
+  { label: 'Gathering at the Bridge', min: 150, icon: '🌉' },
+  { label: 'Home by the Water', min: 200, icon: '🌴' },
+];
+
+const REGIONAL_JOURNEYS = {
+  'rivers-of-mesopotamia': {
+    eyebrow: 'Rivers of Mesopotamia · visual pilot', title: 'Family River Journey', unit: 'along the river', icon: '🛶', journal: 'river journal',
+    asset: 'assets/themes/rivers-of-mesopotamia/river-journey-panorama-v1.jpg',
+    alt: 'Illustrated river journey through reed beds, date palms, boats, bridges, gardens, courtyards, and a market',
+    stages: RIVER_STAGES,
+    stops: ['Family Landing','Greeting Bridge','Number Reeds','Color Garden','Market Bank','Tea Courtyard','Compass Bend','Story Boat','Gathering Place','Home Waters'],
+  },
+  'iberian-journey': {
+    eyebrow: 'Iberian Journey · visual pilot', title: 'Across Spain', unit: 'across Iberia', icon: '🚆', journal: 'Iberian journal',
+    asset: 'assets/themes/iberian-journey/iberian-journey-panorama-v1.jpg',
+    alt: 'Illustrated journey across Spain from an Atlantic coast through villages, a plaza, olive country, a café, southern streets, and a Mediterranean harbor',
+    stages: [{label:'Atlantic Beginnings',min:0,icon:'🌊'},{label:'Village Roads',min:50,icon:'🚆'},{label:'Across the Meseta',min:100,icon:'🌿'},{label:'Southern Light',min:150,icon:'☀️'},{label:'Mediterranean Arrival',min:200,icon:'⛵'}],
+    stops: ['Atlantic Path','Green Hills','Stone Village','Railway Bridge','Central Plaza','Olive Country','Café Terrace','White Town','Coastal Lookout','Mediterranean Harbor'],
+  },
+  'albania-mountain-to-sea': {
+    eyebrow: 'Albania · Mountain to Sea', title: 'Across Albania', unit: 'from the Alps to the Ionian Sea', icon: '🏔️', journal: 'Albania journey book',
+    asset: 'assets/themes/albania-mountain-to-sea/albania-journey-panorama-v1.jpg',
+    alt: 'Illustrated journey across Albania from alpine mountains and a stone bridge through a town square, olive hills, and a family courtyard to the Ionian coast',
+    stages: [{label:'Alpine Beginnings',min:0,icon:'🏔️'},{label:'Following the Valley',min:50,icon:'🌲'},{label:'Across the Stone Bridge',min:100,icon:'🌉'},{label:'Among the Olive Hills',min:150,icon:'🌿'},{label:'Ionian Arrival',min:200,icon:'🌊'}],
+    stops: ['Alpine House','Mountain River','Stone Bridge','Lakeside Town','Central Square','Orchard Path','Family Courtyard','Olive Hills','Coastal Village','Ionian Shore'],
+  },
+  'italy-alps-to-sea': {
+    eyebrow: 'Italy · Alps to Sea', title: 'Across Italy', unit: 'from the Alps to the Mediterranean', icon: '🚆', journal: 'Italy journey book',
+    asset: 'assets/themes/italy-alps-to-sea/italy-journey-panorama-v1.jpg',
+    alt: 'Illustrated journey across Italy from alpine lakes through arcaded towns, vineyards, a family café, hill towns, and a Mediterranean harbor',
+    stages: [{label:'Alpine Beginnings',min:0,icon:'🏔️'},{label:'Lakes and Railways',min:50,icon:'🚆'},{label:'Among the Vineyards',min:100,icon:'🍇'},{label:'Southern Roads',min:150,icon:'🌿'},{label:'Mediterranean Arrival',min:200,icon:'⛵'}],
+    stops: ['Alpine Lake','Railway Town','Arcaded Square','Vineyard Road','Family Café','Hill Village','Olive Country','Southern Fields','Coastal Town','Mediterranean Harbor'],
+  },
+  'france-atlantic-to-mediterranean': {
+    eyebrow: 'France · Atlantic to Mediterranean', title: 'Across France', unit: 'from the Atlantic to the Mediterranean', icon: '🚲', journal: 'France journey book',
+    asset: 'assets/themes/france-atlantic-to-mediterranean/france-journey-panorama-v1.jpg',
+    alt: 'Illustrated journey across France from the Atlantic coast through riverside villages, markets, orchards, a family café, vineyards, the Alps, and a Mediterranean harbor',
+    stages: [{label:'Atlantic Beginnings',min:0,icon:'🌊'},{label:'Village Paths',min:50,icon:'🚲'},{label:'Orchards and Markets',min:100,icon:'🍎'},{label:'Alpine Crossing',min:150,icon:'🏔️'},{label:'Mediterranean Arrival',min:200,icon:'⛵'}],
+    stops: ['Atlantic Shore','Riverside Village','Market Town','Orchard Path','Family Café','Vineyard Hills','Alpine Road','Southern Street','Coastal Village','Mediterranean Harbor'],
+  },
+};
+
 const PUBLIC_ASSET_BASE = import.meta.env.BASE_URL;
 
 const COMPANIONS = [
@@ -44,6 +90,16 @@ const DESTINATION_POSTERS = [
   { label: 'Voyage finale', name: 'Homecoming Harbor', chapter: 'The 200-day voyage', asset: 'poster-homecoming-v1.jpg', unlock: 200 },
 ];
 
+function getRegionalJourney(state, activePack) {
+  const fallbackThemes = {
+    'iraqi-arabic-en':'rivers-of-mesopotamia', 'mandaic-en':'rivers-of-mesopotamia',
+    'spanish-spain-en':'iberian-journey', 'albanian-en':'albania-mountain-to-sea',
+    'italian-en':'italy-alps-to-sea', 'french-france-en':'france-atlantic-to-mediterranean',
+  };
+  const themeId = activePack?.journeyThemeId?.split('@')[0] || fallbackThemes[state.activePackId];
+  return REGIONAL_JOURNEYS[themeId] || null;
+}
+
 function getVoyagePosition(percent) {
   const routePosition = Math.max(0, Math.min(99.999, percent)) / 100 * (VOYAGE_PORTS.length - 1);
   const startIndex = Math.floor(routePosition);
@@ -79,9 +135,12 @@ export function renderVoyageExperience(state) {
   const stamps = buildDayPassport(state.familyPlayState?.completedDates || state.activityDates);
   const nextCompanion = COMPANIONS.find(companion => completedCount < companion.min);
   const percent = Math.round((completedCount / 200) * 100);
-  const activeLanguage = state.languagePacks.find(pack => pack.id === state.activePackId)?.targetLanguage.name || 'Language';
-  if (state.activePackId === 'iraqi-arabic-en') {
-    return renderPilotRiverVoyage({ completedCount, percent, stage, activeLanguage, state });
+  const activeLanguage = state.languagePacks?.find(pack => pack.id === state.activePackId)?.targetLanguage.name || 'Language';
+  const activePack = state.languagePacks?.find(pack => pack.id === state.activePackId);
+  const regionalJourney = getRegionalJourney(state, activePack);
+  if (regionalJourney) {
+    const regionalStage = [...regionalJourney.stages].reverse().find(item => completedCount >= item.min);
+    return renderRegionalJourney({ completedCount, percent, stage: regionalStage, activeLanguage, state, theme: regionalJourney });
   }
   const posterCollection = DESTINATION_POSTERS.map(poster => {
     const unlocked = completedCount >= poster.unlock;
@@ -166,33 +225,32 @@ export function renderVoyageExperience(state) {
     </section>`;
 }
 
-function renderPilotRiverVoyage({ completedCount, percent, stage, activeLanguage, state }) {
-  const stops = ['Family Landing', 'Greeting Bridge', 'Number Reeds', 'Color Garden', 'Market Bank', 'Tea Courtyard', 'Compass Bend', 'Story Boat', 'Gathering Place', 'Home Waters'];
+function renderRegionalJourney({ completedCount, percent, stage, activeLanguage, state, theme }) {
   const activeStop = Math.min(9, Math.floor(completedCount / 20));
   return `
     <section class="voyage-map-card river-pilot-card" aria-labelledby="voyage-map-title">
       <div class="voyage-map__header">
         <div>
-          <div class="hero-tag">Rivers of Mesopotamia · visual pilot</div>
+          <div class="hero-tag">${escapeHtml(theme.eyebrow)}</div>
           <h3 id="voyage-map-title">${stage.icon} ${stage.label}</h3>
-          <p>${completedCount} of 200 Iraqi Arabic voyage days complete · ${percent}% along the river</p>
+          <p>${completedCount} of 200 ${escapeHtml(activeLanguage)} voyage days complete · ${percent}% ${escapeHtml(theme.unit)}</p>
         </div>
         <button class="btn btn-secondary btn-pill" id="view-voyage-btn">View voyage plan →</button>
       </div>
       <div class="river-pilot-map" style="--voyage-progress:${percent}%">
-        <div class="river-pilot-sun" aria-hidden="true"></div>
-        <div class="river-pilot-reeds" aria-hidden="true">⌇⌇⌇　⌇⌇　⌇⌇⌇</div>
+        <img class="river-pilot-map__art" src="${PUBLIC_ASSET_BASE}${theme.asset}" alt="${escapeHtml(theme.alt)}">
+        <div class="river-pilot-map__veil" aria-hidden="true"></div>
         <div class="river-pilot-route" aria-hidden="true"><span></span></div>
         <ol aria-label="Ten river journey stops">
-          ${stops.map((stop, index) => `<li class="${index < activeStop ? 'reached' : index === activeStop ? 'current' : ''}"><span>${index < activeStop ? '✓' : index + 1}</span><small>${escapeHtml(stop)}</small></li>`).join('')}
+          ${theme.stops.map((stop, index) => `<li class="${index < activeStop ? 'reached' : index === activeStop ? 'current' : ''}"><span>${index < activeStop ? '✓' : index + 1}</span><small>${escapeHtml(stop)}</small></li>`).join('')}
         </ol>
-        <p>This neutral river map prevents the Iraqi Arabic pilot from inheriting another language pack's imagery. Community-reviewed illustrated scenes will replace it in the next visual phase.</p>
+        <p>Original Nautilus pilot artwork · awaiting fluent and cultural review.</p>
       </div>
     </section>
     <section class="captains-quarters river-pilot-log" aria-labelledby="quarters-title">
       <div class="quarters-profile">
-        <div class="quarters-avatar" aria-hidden="true">🛶</div>
-        <div><div class="hero-tag">Family pilot log</div><h3 id="quarters-title">${escapeHtml(state.profile)}'s river journal</h3><p>${escapeHtml(activeLanguage)} · ${state.streakDays} day streak · ${state.stars} stars</p></div>
+        <div class="quarters-avatar" aria-hidden="true">${theme.icon}</div>
+        <div><div class="hero-tag">Family pilot log</div><h3 id="quarters-title">${escapeHtml(state.profile)}'s ${escapeHtml(theme.journal)}</h3><p>${escapeHtml(activeLanguage)} · ${state.streakDays} day streak · ${state.stars} stars</p></div>
       </div>
     </section>`;
 }
@@ -201,17 +259,21 @@ export function renderImmersiveVoyageHero(state) {
   const completedDays = state.familyPlayState?.completedDays ?? getLearningDayCount(state.activityDates);
   const percent = Math.round((completedDays / 200) * 100);
   const stage = getVoyageStage(completedDays);
-  if (state.activePackId === 'iraqi-arabic-en') {
+  const activePack = state.languagePacks?.find(pack => pack.id === state.activePackId);
+  const regionalJourney = getRegionalJourney(state, activePack);
+  if (regionalJourney) {
+    const regionalStage = [...regionalJourney.stages].reverse().find(item => completedDays >= item.min);
     return `<section class="immersive-voyage river-immersive-pilot" aria-labelledby="immersive-voyage-title">
-      <div class="river-pilot-sun" aria-hidden="true"></div>
+      <picture class="immersive-voyage__world-frame"><img class="immersive-voyage__world river-journey-world" src="${PUBLIC_ASSET_BASE}${regionalJourney.asset}" alt="${escapeHtml(regionalJourney.alt)}"></picture>
+      <div class="immersive-voyage__veil river-journey-veil" aria-hidden="true"></div>
       <div class="immersive-voyage__hud">
-        <div class="hero-tag">Rivers of Mesopotamia · visual pilot</div>
-        <h1 id="immersive-voyage-title">Family River Journey</h1>
-        <p><strong>${stage.icon} ${stage.label}</strong><br>${completedDays} Iraqi Arabic family days complete · ${percent}% along the river</p>
+        <div class="hero-tag">${escapeHtml(regionalJourney.eyebrow)}</div>
+        <h1 id="immersive-voyage-title">${escapeHtml(regionalJourney.title)}</h1>
+        <p><strong>${regionalStage.icon} ${escapeHtml(regionalStage.label)}</strong><br>${completedDays} ${escapeHtml(activePack?.targetLanguage?.name || 'language')} family days complete · ${percent}% ${escapeHtml(regionalJourney.unit)}</p>
         <div class="immersive-voyage__meter" aria-label="${percent}% of family voyage complete"><span style="width:${percent}%"></span></div>
         <a class="btn btn-primary" href="#voyage-plan">Explore the route plan ↓</a>
       </div>
-      <p class="river-visual-review-note">Illustrated river scenes are intentionally withheld until community cultural review.</p>
+      <p class="river-visual-review-note">Pilot artwork · awaiting community cultural review</p>
     </section>`;
   }
   const port = Math.min(10, Math.floor(completedDays / 20) + 1);

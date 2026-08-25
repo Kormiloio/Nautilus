@@ -120,6 +120,8 @@ export default {
     direction: 'ltr',
     defaultScript: 'Latn',
     locale: 'sq-AL',
+    varietyPolicy: 'Standard Albanian with Albania-focused vocabulary and cultural context; fluent review remains required.',
+    journeyThemeId: 'albania-mountain-to-sea@0.1.0',
     audio: {
       locale: 'sq-AL',
       delivery: 'speech-synthesis-draft',

@@ -61,6 +61,36 @@ describe('learner voyage experience', () => {
     expect(curriculum).toContain('Family River Journey');
     expect(dashboard).not.toContain('Montenegro');
     expect(curriculum).not.toContain('nautilus-voyage-panorama');
+    expect(dashboard).toContain('river-journey-panorama-v1.jpg');
+  });
+
+  it('uses the same culturally distinct river theme for the Mandaic pilot', () => {
+    const state = {
+      activityDates: [], activePackId: 'mandaic-en', profile: 'Lena', streakDays: 0, stars: 0,
+      languagePacks: [{ id: 'mandaic-en', targetLanguage: { name: 'Mandaic · Script Pilot' }, journeyThemeId: 'rivers-of-mesopotamia@0.1.0' }],
+    };
+    expect(renderVoyageExperience(state)).toContain('river-journey-panorama-v1.jpg');
+    expect(renderImmersiveVoyageHero(state)).toContain('Mandaic · Script Pilot');
+  });
+
+  it('uses separate Spain and Albania journey worlds', () => {
+    const spanish = { activityDates: [], activePackId:'spanish-spain-en', profile:'Lena', streakDays:0, stars:0, languagePacks:[{id:'spanish-spain-en',targetLanguage:{name:'Spanish · Spain'},journeyThemeId:'iberian-journey@0.1.0'}] };
+    const albanian = { activityDates: [], activePackId:'albanian-en', profile:'Lena', streakDays:0, stars:0, languagePacks:[{id:'albanian-en',targetLanguage:{name:'Albanian'},journeyThemeId:'albania-mountain-to-sea@0.1.0'}] };
+    expect(renderVoyageExperience(spanish)).toContain('iberian-journey-panorama-v1.jpg');
+    expect(renderImmersiveVoyageHero(spanish)).toContain('Across Spain');
+    expect(renderVoyageExperience(albanian)).toContain('albania-journey-panorama-v1.jpg');
+    expect(renderImmersiveVoyageHero(albanian)).toContain('Across Albania');
+    expect(renderVoyageExperience(spanish)).not.toContain('albania-journey-panorama');
+  });
+
+  it('uses separate Italy and France journey worlds', () => {
+    const italian = { activityDates:[], activePackId:'italian-en', profile:'Lena', streakDays:0, stars:0, languagePacks:[{id:'italian-en',targetLanguage:{name:'Italian'},journeyThemeId:'italy-alps-to-sea@0.1.0'}] };
+    const french = { activityDates:[], activePackId:'french-france-en', profile:'Lena', streakDays:0, stars:0, languagePacks:[{id:'french-france-en',targetLanguage:{name:'French · France'},journeyThemeId:'france-atlantic-to-mediterranean@0.1.0'}] };
+    expect(renderVoyageExperience(italian)).toContain('italy-journey-panorama-v1.jpg');
+    expect(renderImmersiveVoyageHero(italian)).toContain('Across Italy');
+    expect(renderVoyageExperience(french)).toContain('france-journey-panorama-v1.jpg');
+    expect(renderImmersiveVoyageHero(french)).toContain('Across France');
+    expect(renderVoyageExperience(italian)).not.toContain('france-journey-panorama');
   });
 
   it('renders the immersive route with ten accessible ports and a progress-positioned vessel', () => {

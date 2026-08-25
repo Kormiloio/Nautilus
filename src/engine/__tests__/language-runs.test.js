@@ -30,6 +30,7 @@ describe('language runs', () => {
     const html = renderLanguageRun('<word>', 'target', rtlPack);
     expect(html).toContain('lang="mid"');
     expect(html).toContain('dir="rtl"');
+    expect(html).toContain('data-script="Mand"');
     expect(html).toContain('&lt;word&gt;');
     expect(html).toContain('<bdi');
   });

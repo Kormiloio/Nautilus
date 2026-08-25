@@ -100,6 +100,9 @@ export function renderDashboard(container, state, actions) {
           <div class="badge-pill" aria-label="Streak count">
             <span style="color: var(--pink);">🔥</span> ${state.streakDays} day streak
           </div>
+          <div class="badge-pill" aria-label="Voyage lessons completed">
+            <span style="color: var(--cyan);">✓</span> ${state.completedLessons.length} voyage ${state.completedLessons.length === 1 ? 'lesson' : 'lessons'}
+          </div>
         `}
       </div>
     </header>

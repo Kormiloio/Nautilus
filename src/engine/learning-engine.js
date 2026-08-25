@@ -1,11 +1,19 @@
 import montenegrin from '../content/topics.json';
 import albanian from '../content/albanian.js';
 import iraqiArabic from '../content/iraqi-arabic.js';
+import mandaic from '../content/mandaic.js';
+import spanish from '../content/spanish.js';
+import italian from '../content/italian.js';
+import french from '../content/french.js';
 
 export const LANGUAGE_PACKS = new Map([
   [montenegrin.languagePack.id, montenegrin],
   [albanian.languagePack.id, albanian],
   [iraqiArabic.languagePack.id, iraqiArabic],
+  [mandaic.languagePack.id, mandaic],
+  [spanish.languagePack.id, spanish],
+  [italian.languagePack.id, italian],
+  [french.languagePack.id, french],
 ]);
 
 let content = montenegrin;

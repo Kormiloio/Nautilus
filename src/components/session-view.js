@@ -413,7 +413,7 @@ function renderMatchStep(mount, step, state, actions) {
             else if (isSelected) classes += ' selected';
 
             return `
-              <button class="${classes}" data-tile-id="${tile.id}"${colorTileStyle(tile.text)} ${isMatched ? 'disabled' : ''}>
+              <button class="${classes}" data-tile-id="${tile.id}" data-match-color="${matchPairColor(tile.pairId)}"${colorTileStyle(tile.text)} ${isMatched ? 'disabled' : ''}>
                 ${renderLanguageRun(tile.text, tile.kind, LANGUAGE_PACK, tile)}
               </button>
             `;
@@ -438,6 +438,11 @@ function renderMatchStep(mount, step, state, actions) {
       actions.nextSessionStep();
     });
   }
+}
+
+function matchPairColor(pairId) {
+  const colors = ['lime', 'teal', 'blue', 'purple', 'pink', 'amber'];
+  return colors[Math.max(0, Number(pairId) || 0) % colors.length];
 }
 
 function handleSessionTileClick(tileId, mount, step, state, actions) {

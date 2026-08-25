@@ -1,7 +1,12 @@
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import Ajv from 'ajv';
 import albanian from '../src/content/albanian.js';
 import iraqiArabic from '../src/content/iraqi-arabic.js';
+import mandaic from '../src/content/mandaic.js';
+import spanish from '../src/content/spanish.js';
+import italian from '../src/content/italian.js';
+import french from '../src/content/french.js';
 
 const schema = JSON.parse(readFileSync('./src/content/schema.json', 'utf8'));
 const montenegrin = JSON.parse(readFileSync('./src/content/topics.json', 'utf8'));
@@ -59,11 +64,24 @@ function validatePack(content) {
   if (content.curriculum.months.some(month => month.length !== 3)) {
     throw new Error('Every curriculum month must contain exactly three topics.');
   }
+
+  if (pack.id === 'mandaic-en') {
+    const represented = new Set(learningItems.flatMap(item => [...item.targetText].map(character => character.codePointAt(0))));
+    for (let codePoint = 0x0840; codePoint <= 0x0858; codePoint++) {
+      if (!represented.has(codePoint)) throw new Error(`mandaic-en: missing Unicode Mandaic letter U+${codePoint.toString(16).toUpperCase()}.`);
+    }
+    if (pack.audio?.delivery !== 'none') throw new Error('mandaic-en: audio must remain disabled until an approved recording set exists.');
+    const font = readFileSync('./src/public/assets/fonts/NotoSansMandaic-Regular.ttf');
+    const checksum = createHash('sha256').update(font).digest('hex');
+    if (checksum !== '28f9cdd5221c0c0ce42871996a3ca716e0f2f7be5131423e51021c6397be0fdc') {
+      throw new Error('mandaic-en: bundled Noto Sans Mandaic font checksum does not match the reviewed asset manifest.');
+    }
+  }
 }
 
 try {
-  [montenegrin, albanian, iraqiArabic].forEach(validatePack);
-  console.log('✓ Montenegrin, Albanian, and Iraqi Arabic pack validation passed successfully!');
+  [montenegrin, albanian, iraqiArabic, mandaic, spanish, italian, french].forEach(validatePack);
+  console.log('✓ All seven language packs passed content validation successfully!');
 } catch (error) {
   console.error('Content validation failed:', error.message);
   process.exit(1);

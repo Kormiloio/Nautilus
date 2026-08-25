@@ -1,0 +1,4 @@
+{
+  "id":"italy-alps-to-sea","version":"0.1.0","status":"pilot","compatiblePacks":["italian-en"],
+  "scenes":[{"id":"italy-journey-panorama","asset":"italy-journey-panorama-v1.jpg","sha256":"8764dfb075116de50be1b867977d14233c0642b06497c963f9b5ca8e7cbb41a6","altText":"Illustrated journey across Italy from alpine lakes through arcaded towns, vineyards, a family café, hill towns, and a Mediterranean harbor","motionMode":"pan-horizontal","staticFallback":"warm-italy-gradient","provenance":"Original Nautilus pilot artwork generated with OpenAI image generation on 2026-08-24.","culturalReview":{"state":"draft","reviewerId":null,"reviewedAt":null},"restrictedElements":["political symbols","organized-crime stereotypes","costume caricatures","single-monument shorthand"]}]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "rivers-of-mesopotamia",
+  "version": "0.1.0",
+  "status": "pilot",
+  "compatiblePacks": ["iraqi-arabic-en", "mandaic-en"],
+  "scenes": [
+    {
+      "id": "river-journey-panorama",
+      "asset": "river-journey-panorama-v1.jpg",
+      "sha256": "ac76b994296ab7afebe8d0d466d96ddf7a2f7539d0664a607387def3fb2c1f54",
+      "altText": "Illustrated river landscape with reed beds, date palms, boats, bridges, gardens, courtyards, and a market along branching waterways",
+      "motionMode": "pan-horizontal",
+      "staticFallback": "gradient-river-map",
+      "provenance": "Original Nautilus pilot artwork generated with OpenAI image generation on 2026-08-24.",
+      "culturalReview": { "state": "draft", "reviewerId": null, "reviewedAt": null },
+      "restrictedElements": ["sacred figures", "rites", "clergy", "religious symbols", "political symbols"]
+    }
+  ]
+}

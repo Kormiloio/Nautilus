@@ -19,13 +19,15 @@
 
 - [ ] 3.1 Migrate and review Montenegrin as the reference `montenegrin-en` pack.
 - [ ] 3.2 Complete fluent review of the authored `albanian-en@0.1.0` starter pack; the selectable pack remains visibly marked Review until approval.
-- [ ] 3.3 Identify fluent owners and author separate Spanish, French, and Greek packs.
+- [ ] 3.3 Identify fluent owners and review separate Spanish, French, Italian, and Greek packs. Complete Spain-Spanish, France-French, and Italian structural pilots are authored; fluent review remains open, as does Greek ownership.
 - [ ] 3.4 Create script, pronunciation, audio, and voyage-readiness rules for every pack.
 - [x] 3.5 Expand the draft Albanian pack with high-frequency vocabulary and four practical dialogues.
 - [x] 3.6 Configure the Albanian `sq-AL` device-voice preview and label it as unapproved draft audio.
 - [ ] 3.7 Obtain fluent Albanian review of text, pronunciation, dialogues, and recorded/native audio before publication.
 - [x] 3.8 Prevent incompatible English speech fallback and select the best installed target-language device voice.
 - [ ] 3.9 Replace device-dependent speech with reviewed recorded Montenegrin and Albanian audio.
+- [x] 3.10 Add a Spain-specific `es-ES` pilot with an Iberian journey theme and an Albania-focused visual theme for the existing Albanian pack.
+- [x] 3.11 Add Italy-specific `it-IT` and France-specific `fr-FR` pilots with culturally distinct journey themes and independent progress.
 
 ## 4. Verify
 
