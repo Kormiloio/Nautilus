@@ -61,6 +61,7 @@ import { renderSessionView } from './components/session-view.js';
 import { renderCurriculum } from './components/curriculum-view.js';
 import { renderFamilyOverview } from './components/family-overview.js';
 import { renderFamilyPlayView } from './components/family-play-view.js';
+import { renderSideQuestView } from './components/side-quest-view.js';
 
 // Global state
 const state = {
@@ -94,6 +95,7 @@ const state = {
 
   // Active session context
   activeLesson: null,
+  sideQuest: null,
   session: null, // Holds active session steps and indexes
 
   // Card states
@@ -259,6 +261,15 @@ const actions = {
     cleanupSessionState();
     rerender();
     window.scrollTo({ top: 0, behavior: 'auto' });
+  },
+
+  openSideQuest: (quest) => {
+    if (!quest || quest.locked) return;
+    state.sideQuest = quest;
+    state.screen = 'side-quest';
+    cleanupSessionState();
+    rerender();
+    window.scrollTo({ top:0, behavior:'auto' });
   },
 
   goCurriculum: () => {
@@ -744,12 +755,17 @@ function rerender() {
   syncLearnerPresence();
   syncFamilyPlayRefresh();
 
+  // Family Overview is an account-level screen. A parent can arrive here
+  // while a learner profile is still active (notably after completing Family
+  // Play), so route it before the profile-dependent learning screens.
+  if (state.screen === 'family-overview') {
+    renderFamilyOverview(appContainer, state, actions);
+    return;
+  }
+
   if (!state.profile) {
-    if (state.screen === 'family-overview') renderFamilyOverview(appContainer, state, actions);
-    else {
-      state.screen = 'profile-select';
-      renderProfileSelect(appContainer, state, actions);
-    }
+    state.screen = 'profile-select';
+    renderProfileSelect(appContainer, state, actions);
     return;
   }
 
@@ -778,6 +794,8 @@ function rerender() {
     renderSessionView(appContainer, state, actions);
   } else if (state.screen === 'curriculum') {
     renderCurriculum(appContainer, state, actions);
+  } else if (state.screen === 'side-quest') {
+    renderSideQuestView(appContainer, state, actions);
   }
 }
 
