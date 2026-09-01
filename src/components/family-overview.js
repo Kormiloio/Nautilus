@@ -120,10 +120,10 @@ export function renderFamilyOverview(container, state, actions) {
               const byPack = new Map(learner.progress.map(progress => [progress.packId, progress]));
               return `<article class="kid-progress-card">
                 <div class="kid-progress-header">${escapeHtml(learner.name)} ${learner.linked ? '<span style="color:var(--teal);font-size:12px;">✓ Sign-in linked</span>' : ''}</div>
-                <div class="kid-progress-stats">
+                <div class="kid-progress-stats language-progress-list">
                   ${state.languagePacks.map(pack => {
                     const progress = byPack.get(pack.id) || { stars: 0, completedLessons: 0, activeDays: 0 };
-                    return `<div><strong>${escapeHtml(PACK_NAMES[pack.id] || pack.targetLanguage.name)}</strong>: ${progress.completedLessons}/200 lessons · ${progress.activeDays} active days · ${progress.stars} stars</div>`;
+                    return `<div class="language-progress-item"><strong>${escapeHtml(PACK_NAMES[pack.id] || pack.targetLanguage.name)}</strong><span>${progress.completedLessons}/200 lessons · ${progress.activeDays} active days · ${progress.stars} stars</span></div>`;
                   }).join('')}
                 </div>
                 <button class="btn btn-secondary" data-repair-learner="${escapeHtml(learner.id)}" data-learner-name="${escapeHtml(learner.name)}" style="margin-top:12px;">Link or repair Google sign-in</button>

@@ -1492,9 +1492,36 @@ button, input, select {
 
 .kid-progress-stats {
   display: flex;
+  flex-wrap: wrap;
   gap: 14px;
   font-size: 13px;
   color: var(--text-muted);
+}
+
+.language-progress-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.language-progress-item {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  background: rgba(255,255,255,.025);
+  overflow-wrap: anywhere;
+}
+
+.language-progress-item strong,
+.language-progress-item span {
+  display: block;
+}
+
+.language-progress-item strong {
+  margin-bottom: 3px;
+  color: var(--text-main);
 }
 
 /* Responsiveness overrides */
