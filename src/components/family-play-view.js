@@ -65,7 +65,10 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
   }
   const turnPrompt = turnPerson ? `<div class="family-turn-prompt"><span>${escapeHtml(turnPerson.name).slice(0, 1)}</span><div><small>It’s your turn</small><strong>${escapeHtml(turnPerson.name)}, lead this round—then everyone joins in.</strong></div></div>` : '';
   if (step.type === 'family-flashcards') {
-    return `<div class="family-activity-instructions"><strong>How to play</strong><span>Everyone taps each card on their own screen, says the word, then reveals its meaning. The parent moves on when the family is ready.</span></div>
+    const spiralNote = step.reviewCount || step.connectionCount
+      ? `<em>${step.reviewCount || 0} review cards · ${step.connectionCount || 0} cross-lesson sentences</em>`
+      : '<em>New language for today’s voyage</em>';
+    return `<div class="family-activity-instructions"><strong>How to play</strong><span>Everyone taps each card on their own screen, says the phrase, then reveals its meaning. Notice how today’s language connects to earlier lessons.</span>${spiralNote}</div>
       <div class="family-vocabulary-grid">${step.items.map((item, index) => `<article><span>${item.emoji || '✦'}</span><button class="family-vocab-reveal" data-family-reveal><strong>${renderLanguageRun(item.targetText, 'target', LANGUAGE_PACK, item)}</strong><small>${renderLanguageRun(item.supportText, 'support', LANGUAGE_PACK, item)}</small><em>Tap to reveal</em></button><button class="dialogue-play-btn" data-family-audio="${index}" aria-label="Play ${escapeHtml(item.targetText)}">►</button></article>`).join('')}</div>`;
   }
   if (step.type === 'family-match') {

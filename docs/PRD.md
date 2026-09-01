@@ -210,6 +210,8 @@ Adult control uses a short renewable lease. Reconnecting controllers resume the 
 
 Each shared session begins in a readiness lobby. Selected learners join from their own devices and appear as connecting or ready in a persistent crew rail. The controlling adult starts the lesson after the selected crew is ready. During shared activities, the interface rotates a visible speaking prompt among participants while keeping next, back, audio, pause, handoff, and completion controls restricted to the active adult controller.
 
+Family Play uses a spiral curriculum rather than repeating the current topic deck. `Discover`, `Recall`, `Build`, `Use`, and `Checkpoint` have distinct mixes of current material, recent review, older retrieval, and cross-topic application. Cross-topic sentences are authored and reviewed inside each language pack with explicit prerequisite topic IDs. The session engine selects only connections whose prerequisites have already appeared in the voyage; it must never contain language-specific rules such as a hard-coded Numbers-plus-Family pairing.
+
 The Family Overview compares the shared voyage position with each learner's personal practice progress. Personal practice may be ahead of or behind the shared route without changing it. The dashboard also exposes participation, stars, completed family sessions, and review history without ranking learners against one another.
 
 ### 8.5 Immersive voyage presentation
@@ -259,6 +261,8 @@ Selected lesson topics extend that world into the activity itself. Their vocabul
 | FR-35 | An authorized adult can start, control, pause, and complete a synchronized Family Play session for selected learners. | Must |
 | FR-36 | Learners in Family Play follow the adult-controlled segment while retaining separate independent-practice progress. | Must |
 | FR-37 | The voyage plan provides an immersive, progress-positioned world with an accessible reduced-motion presentation. | Should |
+| FR-38 | Family Play lesson purposes are meaningfully distinct and cumulatively retrieve both recent and older learned material. | Must |
+| FR-39 | Cross-topic applications are schema-validated language-pack content with explicit learned-topic prerequisites, not language-specific engine logic. | Must |
 
 ## 10. Quality requirements
 

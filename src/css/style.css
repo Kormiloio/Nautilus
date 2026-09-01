@@ -941,6 +941,9 @@ button, input, select {
   .family-crew-person { min-width:128px; }
   .family-crew__captain { display:none; }
   .family-play-panel { max-height:none; padding:18px; }
+  .family-ready-call { flex-direction:column; text-align:center; }
+  .family-ready-call>span { width:100%; display:block; text-align:center; }
+  .family-ready-call>div { width:100%; }
   .family-play-phrases { grid-template-columns: 1fr; }
   .family-play-controls { display: grid; grid-template-columns: 1fr 1fr; }
   .family-play-controls .family-complete-btn { grid-column: 1 / -1; }

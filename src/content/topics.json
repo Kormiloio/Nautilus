@@ -345,6 +345,20 @@
           "targetText": "sto",
           "supportText": "one hundred (100)"
         }
+      ],
+      "connections": [
+        {
+          "id": "numbers-family-connection",
+          "requiresTopicIds": ["family"],
+          "items": [
+            { "id": "connection-numbers-family-001", "targetText": "Imam jednog brata.", "supportText": "I have one brother.", "reviewStatus": "draft" },
+            { "id": "connection-numbers-family-002", "targetText": "Imam dva brata.", "supportText": "I have two brothers.", "reviewStatus": "draft" },
+            { "id": "connection-numbers-family-003", "targetText": "Imam tri sestre.", "supportText": "I have three sisters.", "reviewStatus": "draft" },
+            { "id": "connection-numbers-family-004", "targetText": "Imam četiri brata.", "supportText": "I have four brothers.", "reviewStatus": "draft" },
+            { "id": "connection-numbers-family-005", "targetText": "Imam pet sestara.", "supportText": "I have five sisters.", "reviewStatus": "draft" },
+            { "id": "connection-numbers-family-006", "targetText": "U mojoj porodici ima šest osoba.", "supportText": "There are six people in my family.", "reviewStatus": "draft" }
+          ]
+        }
       ]
     },
     {

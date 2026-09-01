@@ -27,6 +27,7 @@ function validatePack(content) {
   const allTopicIds = allTopics.map(topic => topic.id);
   const learningItems = allTopics.flatMap(topic => [
     ...topic.items,
+    ...(topic.connections || []).flatMap(connection => connection.items),
     ...(topic.dialogue?.lines || []),
   ]);
   const itemIds = learningItems.map(item => item.id);
@@ -37,9 +38,15 @@ function validatePack(content) {
   // material unless a pack explicitly lists them in curriculum.extras.
   const unmappedIds = topicIds.filter(id => !mappedIds.includes(id));
   const pack = content.languagePack;
+  const invalidConnection = allTopics
+    .flatMap(topic => topic.connections || [])
+    .find(connection => connection.requiresTopicIds.some(topicId => !allTopicIds.includes(topicId)));
 
   if (!pack.targetLanguage.scripts.includes(pack.defaultScript)) {
     throw new Error(`${pack.id}: defaultScript ${pack.defaultScript} is not declared in targetLanguage.scripts.`);
+  }
+  if (invalidConnection) {
+    throw new Error(`${pack.id}: connection ${invalidConnection.id} requires an unknown topic.`);
   }
   if (pack.tracks?.length) {
     const missingTrack = learningItems.find(item => !item.track);

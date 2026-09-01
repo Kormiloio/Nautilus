@@ -28,6 +28,10 @@
 - [x] Add shared-versus-personal progress comparison to Family Overview.
 - [x] Add completed-session history and non-advancing family lesson review.
 - [x] Add a live readiness lobby, persistent crew status, and rotating turn prompts.
+- [x] Give Discover, Recall, Build, Use, and Checkpoint distinct cumulative content mixes.
+- [x] Add schema-backed cross-topic connections gated by learned-topic prerequisites.
+- [x] Mix recent review with deterministic retrieval of older voyage topics.
+- [x] Center the readiness anchor and copy on narrow phone layouts.
 
 ## Immersive voyage
 

@@ -26,6 +26,12 @@ An adult chooses a family, language pack, voyage day, and participants. The serv
 
 Realtime updates broadcast only identifiers and session state; microphone recordings are not uploaded or retained.
 
+## Cumulative session composition
+
+The five lesson purposes use different proportions of current items, recent review, older retrieval, and cross-topic application. The engine derives the learned topic set from earlier voyage lessons, always retains recent topics, and deterministically samples older topics so several sessions in one subject do not replay the same deck.
+
+Language packs own cross-topic connections. Each connection declares prerequisite topic IDs and reviewed learning items; the engine exposes it only after every prerequisite has appeared earlier in the voyage. This keeps grammar and idiomatic sentences in validated content and prevents language- or topic-specific pairings from being hard-coded into session logic.
+
 ## Immersive voyage
 
 The voyage page uses a viewport-sized camera window with purpose-composed wide and narrow worlds. Shared progress selects the position from home harbor through intermediate islands to Montenegro. A reduced-motion preference disables transitions while preserving the same positional state and text.
