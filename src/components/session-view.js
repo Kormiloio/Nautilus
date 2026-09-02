@@ -413,7 +413,7 @@ function renderMatchStep(mount, step, state, actions) {
             else if (isSelected) classes += ' selected';
 
             return `
-              <button class="${classes}" data-tile-id="${tile.id}" data-match-color="${matchPairColor(tile.pairId)}"${colorTileStyle(tile.text)} ${isMatched ? 'disabled' : ''}>
+              <button class="${classes}" data-tile-id="${tile.id}" data-match-color="${matchPairColor(tile.pairId)}"${isMatched ? colorTileStyle(tile.text) : ''} ${isMatched ? 'disabled' : ''}>
                 ${renderLanguageRun(tile.text, tile.kind, LANGUAGE_PACK, tile)}
               </button>
             `;

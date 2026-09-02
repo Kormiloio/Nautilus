@@ -118,13 +118,21 @@ export function renderFamilyOverview(container, state, actions) {
           <div class="kids-progress-grid">
             ${overview.learners.map(learner => {
               const byPack = new Map(learner.progress.map(progress => [progress.packId, progress]));
+              const selectedPack = state.languagePacks.find(pack => pack.id === state.activePackId) || state.languagePacks[0];
+              const selectedProgress = byPack.get(selectedPack?.id) || { stars: 0, completedLessons: 0, activeDays: 0 };
               return `<article class="kid-progress-card">
                 <div class="kid-progress-header">${escapeHtml(learner.name)} ${learner.linked ? '<span style="color:var(--teal);font-size:12px;">✓ Sign-in linked</span>' : ''}</div>
-                <div class="kid-progress-stats language-progress-list">
-                  ${state.languagePacks.map(pack => {
-                    const progress = byPack.get(pack.id) || { stars: 0, completedLessons: 0, activeDays: 0 };
-                    return `<div class="language-progress-item"><strong>${escapeHtml(PACK_NAMES[pack.id] || pack.targetLanguage.name)}</strong><span>${progress.completedLessons}/200 lessons · ${progress.activeDays} active days · ${progress.stars} stars</span></div>`;
-                  }).join('')}
+                <label class="learner-language-picker">
+                  <span>Language</span>
+                  <select data-learner-language="${escapeHtml(learner.id)}">
+                    ${state.languagePacks.map(pack => `<option value="${escapeHtml(pack.id)}" ${pack.id === selectedPack?.id ? 'selected' : ''}>${escapeHtml(PACK_NAMES[pack.id] || pack.targetLanguage.name)}</option>`).join('')}
+                  </select>
+                </label>
+                <div class="learner-language-summary" data-learner-summary="${escapeHtml(learner.id)}">
+                  <strong>${escapeHtml(PACK_NAMES[selectedPack?.id] || selectedPack?.targetLanguage?.name || 'Language')}</strong>
+                  <span>${selectedProgress.completedLessons}/200 lessons</span>
+                  <span>${selectedProgress.activeDays} active days</span>
+                  <span>${selectedProgress.stars} stars</span>
                 </div>
                 <button class="btn btn-secondary" data-repair-learner="${escapeHtml(learner.id)}" data-learner-name="${escapeHtml(learner.name)}" style="margin-top:12px;">Link or repair Google sign-in</button>
               </article>`;
@@ -165,6 +173,16 @@ export function renderFamilyOverview(container, state, actions) {
   container.querySelector('#continue-family-play-btn')?.addEventListener('click', actions.openFamilySession);
   container.querySelectorAll('[data-review-session]').forEach(button => {
     button.addEventListener('click', () => actions.reviewFamilySession(button.dataset.reviewSession));
+  });
+  container.querySelectorAll('[data-learner-language]').forEach(select => {
+    select.addEventListener('change', () => {
+      const learner = overview?.learners.find(candidate => candidate.id === select.dataset.learnerLanguage);
+      const pack = state.languagePacks.find(candidate => candidate.id === select.value);
+      const progress = learner?.progress.find(candidate => candidate.packId === select.value)
+        || { stars: 0, completedLessons: 0, activeDays: 0 };
+      const summary = container.querySelector(`[data-learner-summary="${CSS.escape(select.dataset.learnerLanguage)}"]`);
+      if (summary) summary.innerHTML = `<strong>${escapeHtml(PACK_NAMES[pack?.id] || pack?.targetLanguage?.name || 'Language')}</strong><span>${progress.completedLessons}/200 lessons</span><span>${progress.activeDays} active days</span><span>${progress.stars} stars</span>`;
+    });
   });
   container.querySelectorAll('[data-repair-learner]').forEach(button => {
     button.addEventListener('click', async () => {

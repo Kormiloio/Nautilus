@@ -6,6 +6,11 @@ describe('color lesson visuals', () => {
     expect(getColorSpec('crvena')?.hex).toBe('#e53935');
     expect(getColorSpec('blue')?.id).toBe('blue');
     expect(getColorSpec('bijela')?.id).toBe('white');
+    expect(getColorSpec('narandžasta')?.id).toBe('orange');
+    expect(getColorSpec('ljubičasta')?.id).toBe('purple');
+    expect(getColorSpec('roze')?.id).toBe('pink');
+    expect(getColorSpec('smeđa')?.id).toBe('brown');
+    expect(getColorSpec('siva')?.id).toBe('gray');
   });
 
   it('does not apply color visuals outside the Colors topic', () => {

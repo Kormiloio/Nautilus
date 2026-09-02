@@ -404,6 +404,41 @@
           "targetText": "bijela",
           "supportText": "white",
           "emoji": "⚪"
+        },
+        {
+          "id": "colors-item-007",
+          "targetText": "narandžasta",
+          "supportText": "orange",
+          "emoji": "🟠",
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "colors-item-008",
+          "targetText": "ljubičasta",
+          "supportText": "purple",
+          "emoji": "🟣",
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "colors-item-009",
+          "targetText": "roze",
+          "supportText": "pink",
+          "emoji": "🌸",
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "colors-item-010",
+          "targetText": "smeđa",
+          "supportText": "brown",
+          "emoji": "🟤",
+          "reviewStatus": "draft"
+        },
+        {
+          "id": "colors-item-011",
+          "targetText": "siva",
+          "supportText": "gray",
+          "emoji": "🩶",
+          "reviewStatus": "draft"
         }
       ]
     },

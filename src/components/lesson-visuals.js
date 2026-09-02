@@ -5,6 +5,11 @@ const COLOR_SPECS = [
   { id: 'yellow', hex: '#f9c928', dark: true, terms: ['yellow', 'žuta', 'e verdhë'] },
   { id: 'black', hex: '#111318', dark: false, terms: ['black', 'crna', 'e zezë'] },
   { id: 'white', hex: '#f5f1e8', dark: true, terms: ['white', 'bijela', 'e bardhë'] },
+  { id: 'orange', hex: '#f28c28', dark: true, terms: ['orange', 'narandžasta'] },
+  { id: 'purple', hex: '#7e57c2', dark: false, terms: ['purple', 'ljubičasta'] },
+  { id: 'pink', hex: '#ec6f9e', dark: false, terms: ['pink', 'roze'] },
+  { id: 'brown', hex: '#795548', dark: false, terms: ['brown', 'smeđa'] },
+  { id: 'gray', hex: '#78909c', dark: false, terms: ['gray', 'grey', 'siva'] },
 ];
 
 const PUBLIC_ASSET_BASE = import.meta.env.BASE_URL;
