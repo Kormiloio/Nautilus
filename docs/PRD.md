@@ -1,13 +1,15 @@
-# Product requirements document: Nautilus language learning
+# Product requirements document: Nautilus — Learn Your Heritage Together
 
 **Repository codename:** Nautilus  
-**Document status:** Montenegrin technical scaffold implemented; multi-family and multilingual platform in specification
-**Last updated:** 2026-08-10
+**Document status:** Multi-family heritage platform; Montenegrin and Albanian packs implemented, additional pilot packs in progress
+**Last updated:** 2026-09-02
 **Target:** A usable first-year learning experience spanning approximately 10 months
 
 ## 1. Product summary
 
-Nautilus is a responsive family language-learning application. Its first course, Učimo crnogorski, helps teenage learners build enough practical Montenegrin to interact with relatives and navigate common situations during a trip to Montenegro. The platform will also support separately reviewed Albanian, Spanish, French, and Greek language packs. It combines short, repeatable activities with audio and practical role-play. Learners select a language, choose topics freely, and receive lightweight feedback through stars, streaks, and visible topic progress.
+Nautilus — Learn Your Heritage Together is a responsive, multi-family heritage language-learning platform. Families use it to help teenage learners build practical skills in their heritage language through short, repeatable activities with audio and practical role-play. Each family selects the language they are learning, and each learner receives an independent curriculum and progress track for that language.
+
+The platform currently supports Montenegrin and Albanian as reviewed language packs, with additional pilot packs (Iraqi Arabic, Spanish, Italian, French) in progress. It combines flashcards, matching, quizzes, listening/repeat, and role-play into a guided 200-day voyage. Learners choose topics freely and receive lightweight feedback through stars, streaks, and visible topic progress.
 
 The app is a supplement to family teaching, not a comprehensive language course or a substitute for a fluent speaker.
 

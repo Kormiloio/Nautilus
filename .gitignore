@@ -10,6 +10,4 @@ scripts/extract-content.js
 scripts/pack-template.mjs
 src/app.template.html
 
-# migration scratch (2026-09-02)
-_rescued-from-duplicate/
 .vscode/
