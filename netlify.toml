@@ -15,9 +15,10 @@
   publish = "web"
 
 [build.environment]
-  # Not pinned anywhere else in the repo. Vite 6 requires Node 18+;
-  # 20 is the current LTS. Change if your local version differs.
-  NODE_VERSION = "20"
+  # Local dev runs Node 26, which Netlify's build image doesn't offer.
+  # 22 is the newest LTS Netlify supports and satisfies Vite 6 + Vitest 4.
+  # Verified 2026-09-02: `npm run build` and all 75 tests pass.
+  NODE_VERSION = "22"
 
 # web/_headers already sets CORS for /assets/*. Kept there rather than
 # duplicated here, since that file ships with the build output.
