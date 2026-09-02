@@ -431,6 +431,8 @@ const actions = {
       const result = await lockFamilyFinalChallenge(sessionId, segment);
       await loadFamilyPlayState();
       if (result?.completed) {
+        await syncCloudDataToLocal();
+        if (state.profile) loadProfileState(state.profile);
         state.screen = 'family-overview';
         state.activeLesson = null;
         state.familyNotice = 'Everyone finished—the family voyage lesson is complete.';
@@ -449,6 +451,8 @@ const actions = {
     try {
       await completeFamilyPlay(sessionId);
       await loadFamilyPlayState();
+      await syncCloudDataToLocal();
+      if (state.profile) loadProfileState(state.profile);
       state.screen = 'family-overview';
       state.activeLesson = null;
       state.familyNotice = 'Family voyage day completed together.';
@@ -467,10 +471,17 @@ const actions = {
     rerender();
   },
 
-  switchProfile: (name) => {
+  switchProfile: async (name) => {
     setActiveProfile(name);
     state.profile = name;
     activatePackForProfile(name);
+    if (state.sessionUser) {
+      try {
+        await syncCloudDataToLocal();
+      } catch (error) {
+        state.familyError = error.message;
+      }
+    }
     loadProfileState(name);
     state.screen = 'dashboard';
     cleanupSessionState();
