@@ -18,7 +18,7 @@
     "@vitest/coverage-v8": "^5.0.0",
     "ajv": "^8.17.1",
     "vite": "^6.0.0",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.2"
