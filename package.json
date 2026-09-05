@@ -1,6 +1,6 @@
 {
   "name": "nautilus-ucimo-crnogorski",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Nautilus is a family language-learning web app with versioned language packs, private family vocabulary, and an initial Montenegrin voyage.",
   "type": "module",
   "scripts": {
