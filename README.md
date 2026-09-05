@@ -52,3 +52,6 @@ The build writes to `web/` so the existing Netlify deployment remains compatible
 ## Next step
 
 Expand and review the lesson content so that each topic can support five distinct daily lessons, then pilot the first four weeks as a family before authoring the complete voyage.
+## Build artifact pruning
+
+The `npm run build` pipeline now automatically runs `scripts/prune-build-artifacts.mjs` to remove orphaned hashed assets from `web/assets/`. This keeps the repository clean and reduces deployment size. You can also run it manually with `npm run prune`.
