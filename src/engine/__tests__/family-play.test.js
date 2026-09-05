@@ -21,18 +21,13 @@ vi.mock('../supabase-client.js', () => ({
 }));
 
 import {
-  completeFamilyPlay,
-  claimFamilyPlayController,
   controlFamilyPlay,
   getFamilyProgressDashboard,
   getFamilyPlayState,
-  lockFamilyFinalChallenge,
-  reconcileFamilyQuizRound,
   startFamilyPlay,
   startFamilyReview,
   subscribeToFamilyPlay,
   touchFamilyPlay,
-  submitFamilyQuizAnswer,
 } from '../family-service.js';
 
 describe('Family Play cloud service', () => {
@@ -62,17 +57,6 @@ describe('Family Play cloud service', () => {
     }));
   });
 
-  it('keeps completion an explicit RPC separate from segment control', async () => {
-    await controlFamilyPlay('session-1', 'live', 3);
-    await completeFamilyPlay('session-1');
-    expect(rpc).toHaveBeenNthCalledWith(1, 'control_family_play', {
-      target_session: 'session-1', requested_status: 'live', requested_segment: 3,
-    });
-    expect(rpc).toHaveBeenNthCalledWith(2, 'complete_family_play', {
-      target_session: 'session-1',
-    });
-  });
-
   it('returns an empty shared state without converting learner activity', async () => {
     rpc.mockResolvedValueOnce({ data: null, error: null });
     await expect(getFamilyPlayState('family-1', 'montenegrin-en')).resolves.toEqual({
@@ -80,7 +64,7 @@ describe('Family Play cloud service', () => {
     });
   });
 
-  it('subscribes to session, participant, and quiz answer changes', () => {
+  it('subscribes to session, participant, and verified-attempt changes', () => {
     const stop = subscribeToFamilyPlay('family-1', vi.fn());
     expect(channel).toHaveBeenCalledWith('family-play:family-1');
     expect(on).toHaveBeenCalledWith('postgres_changes', expect.objectContaining({
@@ -90,25 +74,12 @@ describe('Family Play cloud service', () => {
     expect(on).toHaveBeenCalledWith('postgres_changes', expect.objectContaining({
       table: 'family_voyage_participants',
     }), expect.any(Function));
-    expect(channel).toHaveBeenCalledWith('family-play-answers:family-1');
+    expect(channel).toHaveBeenCalledWith('family-play-verified:family-1');
     expect(on).toHaveBeenCalledWith('postgres_changes', expect.objectContaining({
-      table: 'family_quiz_answers',
+      table: 'verified_lesson_attempts', filter: 'family_id=eq.family-1',
     }), expect.any(Function));
     stop();
     expect(removeChannel).toHaveBeenCalledTimes(3);
-  });
-
-  it('supports controller reconnect and historical review without personal progress writes', async () => {
-    await claimFamilyPlayController('session-1');
-    await startFamilyReview('completed-session-1', ['mia']);
-    await getFamilyProgressDashboard('family-1', 'montenegrin-en');
-    expect(rpc).toHaveBeenNthCalledWith(1, 'claim_family_play_controller', { target_session: 'session-1' });
-    expect(rpc).toHaveBeenNthCalledWith(2, 'start_family_review', {
-      source_session: 'completed-session-1', participant_profiles: ['mia'],
-    });
-    expect(rpc).toHaveBeenNthCalledWith(3, 'get_family_progress_dashboard', {
-      target_family: 'family-1', target_pack_id: 'montenegrin-en',
-    });
   });
 
   it('renews learner presence using the active session identity', async () => {
@@ -116,28 +87,18 @@ describe('Family Play cloud service', () => {
     await expect(touchFamilyPlay('session-1')).resolves.toBe('mia-profile');
     expect(rpc).toHaveBeenCalledWith('touch_family_play', { target_session: 'session-1' });
   });
-
-  it('locks the final challenge without requiring a separate parent completion click', async () => {
-    rpc.mockResolvedValueOnce({ data: { locked: true, received: 3, expected: 3, completed: true }, error: null });
-    await expect(lockFamilyFinalChallenge('session-1', 15)).resolves.toMatchObject({ completed: true });
-    expect(rpc).toHaveBeenCalledWith('lock_family_final_challenge', {
-      target_session: 'session-1', target_segment: 15,
+  it('keeps pause control and historical review on their authorized RPCs', async () => {
+    await controlFamilyPlay('session-1', 'paused', 0);
+    await startFamilyReview('completed-session-1', ['mia']);
+    await getFamilyProgressDashboard('family-1', 'montenegrin-en');
+    expect(rpc).toHaveBeenNthCalledWith(1, 'control_family_play', {
+      target_session: 'session-1', requested_status: 'paused', requested_segment: 0,
     });
-  });
-
-  it('reconciles a fully answered quiz after a pause or missed realtime event', async () => {
-    rpc.mockResolvedValueOnce({ data: { advanced: true, currentSegment: 7 }, error: null });
-    await expect(reconcileFamilyQuizRound('session-1', 6)).resolves.toMatchObject({ advanced: true });
-    expect(rpc).toHaveBeenCalledWith('reconcile_family_quiz_round', {
-      target_session: 'session-1', target_segment: 6,
+    expect(rpc).toHaveBeenNthCalledWith(2, 'start_family_review', {
+      source_session: 'completed-session-1', participant_profiles: ['mia'],
     });
-  });
-});
-
-it('locks a shared quiz answer through the family RPC', async () => {
-  rpc.mockResolvedValueOnce({ data: { locked: true, received: 2, expected: 3, advanced: false }, error: null });
-  await submitFamilyQuizAnswer('session-1', 5, 'parents');
-  expect(rpc).toHaveBeenCalledWith('submit_family_quiz_answer', {
-    target_session: 'session-1', target_segment: 5, selected_answer: 'parents',
+    expect(rpc).toHaveBeenNthCalledWith(3, 'get_family_progress_dashboard', {
+      target_family: 'family-1', target_pack_id: 'montenegrin-en',
+    });
   });
 });

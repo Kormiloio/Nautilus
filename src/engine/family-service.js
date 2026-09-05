@@ -8,12 +8,18 @@ function requireCloud() {
 
 export async function listFamilies() {
   requireCloud();
+  const { data: auth, error: authError } = await supabase.auth.getSession();
+  if (authError) throw authError;
+  if (!auth.session) return [];
   const { data, error } = await supabase
     .from('family_memberships')
     .select('family_id, role, joined_at, families(id, name, learners_can_invite)')
+    .eq('user_id', auth.session.user.id)
     .order('joined_at', { ascending: true });
   if (error) throw error;
-  return data || [];
+  const families = data || [];
+  const selected = localStorage.getItem('nautilus:family:' + auth.session.user.id);
+  return [...families.filter(f => f.family_id === selected), ...families.filter(f => f.family_id !== selected)];
 }
 
 export async function getFamilyOverview(familyId) {
@@ -208,63 +214,6 @@ export async function touchFamilyPlay(sessionId) {
   return data;
 }
 
-export async function submitFamilyQuizAnswer(sessionId, segment, answerId) {
-  requireCloud();
-  const { data, error } = await supabase.rpc('submit_family_quiz_answer', {
-    target_session: sessionId,
-    target_segment: segment,
-    selected_answer: answerId,
-  });
-  if (error) throw error;
-  return data;
-}
-
-export async function lockFamilyFinalChallenge(sessionId, segment) {
-  requireCloud();
-  const { data, error } = await supabase.rpc('lock_family_final_challenge', {
-    target_session: sessionId,
-    target_segment: segment,
-  });
-  if (error) throw error;
-  return data;
-}
-
-export async function reconcileFamilyQuizRound(sessionId, segment) {
-  requireCloud();
-  const { data, error } = await supabase.rpc('reconcile_family_quiz_round', {
-    target_session: sessionId,
-    target_segment: segment,
-  });
-  if (error) throw error;
-  return data;
-}
-
-export async function completeFamilyPlay(sessionId) {
-  requireCloud();
-  const { data, error } = await supabase.rpc('complete_family_play', {
-    target_session: sessionId,
-  });
-  if (error) throw error;
-  return data;
-}
-
-export async function claimFamilyPlayController(sessionId) {
-  requireCloud();
-  const { data, error } = await supabase.rpc('claim_family_play_controller', { target_session: sessionId });
-  if (error) throw error;
-  return data;
-}
-
-export async function handoffFamilyPlayController(sessionId, nextAdultId) {
-  requireCloud();
-  const { data, error } = await supabase.rpc('handoff_family_play_controller', {
-    target_session: sessionId,
-    next_adult: nextAdultId,
-  });
-  if (error) throw error;
-  return data;
-}
-
 export async function heartbeatFamilyPlay(sessionId) {
   requireCloud();
   const { data, error } = await supabase.rpc('heartbeat_family_play', { target_session: sessionId });
@@ -314,17 +263,25 @@ export function subscribeToFamilyPlay(familyId, onChange) {
       table: 'family_voyage_participants',
     }, onChange)
     .subscribe();
-  const answerChannel = supabase
-    .channel(`family-play-answers:${familyId}`)
+  const verifiedChannel = supabase
+    .channel(`family-play-verified:${familyId}`)
     .on('postgres_changes', {
       event: '*',
       schema: 'public',
-      table: 'family_quiz_answers',
+      table: 'verified_lesson_attempts',
+      filter: `family_id=eq.${familyId}`,
     }, onChange)
     .subscribe();
   return () => {
     supabase.removeChannel(sessionChannel);
     supabase.removeChannel(participantChannel);
-    supabase.removeChannel(answerChannel);
+    supabase.removeChannel(verifiedChannel);
   };
+}
+
+export async function getFamilySessionStatus(sessionId) {
+  requireCloud();
+  const { data, error } = await supabase.from('family_voyage_sessions').select('status').eq('id', sessionId).maybeSingle();
+  if (error) throw error;
+  return data?.status;
 }

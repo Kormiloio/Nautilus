@@ -6,6 +6,7 @@ import { renderLanguageRun } from '../engine/language-runs.js';
 
 const familyMatchProgress = new Map();
 const quizAdvanceTimers = new Map();
+const interactionStates = new Map();
 
 function readMatchedPairs(key) {
   if (familyMatchProgress.has(key)) return familyMatchProgress.get(key);
@@ -137,6 +138,15 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
 }
 
 export function renderFamilyPlayView(container, state, actions) {
+  const oldKey = container.dataset.familyInteractionKey;
+  if (oldKey) {
+    const selected = container.querySelector('[data-family-match].selected');
+    interactionStates.set(oldKey, {
+      revealed: [...container.querySelectorAll('[data-family-reveal]')].map(button => button.classList.contains('revealed')),
+      selectedId: selected?.dataset.familyMatch,
+      selectedSide: selected?.dataset.familyMatchSide,
+    });
+  }
   const cloudSession = state.familyPlayState?.activeSession;
   const lesson = state.activeLesson;
   if (!cloudSession || !lesson) {
@@ -239,7 +249,16 @@ export function renderFamilyPlayView(container, state, actions) {
   });
   container.querySelectorAll('[data-reflection-audio]').forEach(button => button.addEventListener('click', () => actions.speak(button.dataset.reflectionAudio)));
   container.querySelectorAll('[data-family-reveal]').forEach(button => button.addEventListener('click', () => button.classList.toggle('revealed')));
-  let selectedMatch = null;
+  const interactionKey = cloudSession.id + ':' + stepIndex;
+  container.dataset.familyInteractionKey = interactionKey;
+  const interaction = interactionStates.get(interactionKey);
+  container.querySelectorAll('[data-family-reveal]').forEach((button, index) => {
+    if (interaction?.revealed[index]) button.classList.add('revealed');
+  });
+  let selectedMatch = [...container.querySelectorAll('[data-family-match]')].find(button =>
+    !button.disabled && button.dataset.familyMatch === interaction?.selectedId && button.dataset.familyMatchSide === interaction?.selectedSide
+  ) || null;
+  selectedMatch?.classList.add('selected');
   container.querySelectorAll('[data-family-match]').forEach(button => button.addEventListener('click', () => {
     if (button.classList.contains('matched')) return;
     if (!selectedMatch) {

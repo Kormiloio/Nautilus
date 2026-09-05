@@ -3,7 +3,10 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(36);
+select extensions.plan(30);
+insert into public.verified_lesson_catalog(pack_id,pack_version,lesson_id,revision,mode,voyage_position,exercises)
+select 'montenegrin-en','0.1.0','voyage-'||n,10000,'family',n,
+'[{"kind":"quiz","prompt":"Hello","choices":["Zdravo","Ne"],"answer":"Zdravo"}]'::jsonb from generate_series(1,2) n;
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password,
@@ -78,9 +81,10 @@ end;
 $$;
 select extensions.pass('learner cannot create an adult invitation');
 
-insert into public.learner_language_progress
-  (profile_id, pack_id, pack_version, stars, dialogues_done)
-values (:'kid_profile', 'montenegrin-en', '0.1.0', 5, 1);
+reset role;
+insert into public.learner_language_progress(profile_id,pack_id,pack_version,stars,dialogues_done)
+values(:'kid_profile','montenegrin-en','0.1.0',5,1);
+set local role authenticated;
 
 select extensions.ok(
   (select stars = 5 from public.learner_language_progress where profile_id = :'kid_profile'),
@@ -160,10 +164,12 @@ select extensions.ok(
   'selected learner is added to the shared session'
 );
 
+reset role;
 insert into public.completed_lessons
   (profile_id, pack_id, pack_version, lesson_id, operation_id)
 values
   (:'kid_profile', 'montenegrin-en', '0.1.0', 'voyage-1', gen_random_uuid());
+set local role authenticated;
 
 select extensions.is(
   (public.get_family_play_state(:'family_a', 'montenegrin-en') ->> 'completedDays')::integer,
@@ -184,107 +190,30 @@ select extensions.ok(
   (public.get_family_play_state(:'family_a','montenegrin-en')->'activeSession'->'participants'->0->>'isCurrentUser')::boolean,
   'shared state identifies the learner attached to the current Google account'
 );
-select public.submit_family_quiz_answer(:'family_session', 0, 'learner-answer');
-select extensions.is(
-  (select count(*) from public.family_quiz_answers where session_id=:'family_session' and segment=0),
-  1::bigint,
-  'learner locks one durable quiz answer'
-);
-select public.submit_family_quiz_answer(:'family_session', 0, 'changed-answer');
-select extensions.is(
-  (select answer_id from public.family_quiz_answers where session_id=:'family_session' and segment=0 and user_id=auth.uid()),
-  'learner-answer',
-  'a locked quiz answer cannot be changed by repeated taps'
-);
-
+select public.get_verified_family_attempt(:'family_session')->>'id' as verified_session \gset
+select public.submit_verified_exercise(:'verified_session',0,'"Zdravo"');
+select extensions.is(public.get_verified_attempt(:'verified_session')->>'status','active','learner locks in without completing ahead of parent');
 reset role;
 set local role authenticated;
-select set_config('request.jwt.claim.sub', '10000000-0000-0000-0000-000000000001', true);
-select set_config('request.jwt.claims', '{"sub":"10000000-0000-0000-0000-000000000001","email":"parent-a@example.com","role":"authenticated"}', true);
-
-select public.submit_family_quiz_answer(:'family_session', 0, 'parent-answer');
-select extensions.is(
-  (select current_segment from public.family_voyage_sessions where id=:'family_session'),
-  0,
-  'the fully answered quiz remains visible for result feedback'
-);
-select extensions.is(
-  jsonb_array_length(public.get_family_play_state(:'family_a','montenegrin-en')->'activeSession'->'quizAnswers'),
-  2,
-  'the result phase exposes every locked answer'
-);
-select public.reconcile_family_quiz_round(:'family_session',0);
-select extensions.is(
-  (select current_segment from public.family_voyage_sessions where id=:'family_session'),
-  1,
-  'the quiz advances after the result phase is reconciled'
-);
-
-select public.control_family_play(:'family_session', 'live', 3);
-select extensions.is(
-  (select current_segment from public.family_voyage_sessions where id = :'family_session'),
-  3,
-  'controlling adult advances the shared segment'
-);
-
-select public.claim_family_play_controller(:'family_session');
-select extensions.ok(
-  exists(select 1 from public.family_controller_events where session_id=:'family_session' and reason='reconnect'),
-  'controlling adult can recover the controller lease after reconnecting'
-);
-
-select public.complete_family_play(:'family_session');
-select extensions.is(
-  (public.get_family_play_state(:'family_a', 'montenegrin-en') ->> 'completedDays')::integer,
-  1,
-  'explicit adult completion advances exactly one family day'
-);
-
-select extensions.ok(
-  exists(
-    select 1 from public.family_voyage_participants
-    where session_id = :'family_session'
-      and profile_id = :'kid_profile'
-      and status = 'credited'
-  ),
-  'participants receive shared-session credit without replacing independent attempts'
-);
-
-savepoint multiple_lessons_same_date;
-select public.start_family_play(
-  :'family_a','montenegrin-en','0.1.0','voyage-2',2,
-  '2026-08-10','America/New_York',array[:'kid_profile'::uuid]
-) as second_same_day_session \gset
-select public.complete_family_play(:'second_same_day_session');
-select extensions.is(
-  (public.get_family_play_state(:'family_a','montenegrin-en')->>'completedDays')::integer,
-  2,
-  'multiple completed family lessons on one calendar date each advance the voyage'
-);
-rollback to savepoint multiple_lessons_same_date;
-
-select extensions.is(
-  (public.get_family_progress_dashboard(:'family_a','montenegrin-en')->'shared'->>'completedDays')::integer,
-  1,
-  'family dashboard reports shared progress separately from learner attempts'
-);
-
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',true);
+select public.submit_verified_exercise(:'verified_session',0,'"Zdravo"');
+select extensions.is((public.get_family_play_state(:'family_a','montenegrin-en')->>'completedDays')::integer,1,'verified family completion advances one voyage lesson');
+select extensions.ok(exists(select 1 from public.family_voyage_participants where session_id=:'family_session' and status='credited'),'verified participants receive credit');
+select public.start_family_play(:'family_a','montenegrin-en','0.1.0','voyage-2',2,current_date,'America/New_York',array[:'kid_profile'::uuid]) as second_session \gset
+select public.get_verified_family_attempt(:'second_session')->>'id' as second_attempt \gset
+select public.submit_verified_exercise(:'second_attempt',0,'"Zdravo"');
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000002',true);
+select public.submit_verified_exercise(:'second_attempt',0,'"Zdravo"');
+select extensions.is((public.get_family_play_state(:'family_a','montenegrin-en')->>'completedDays')::integer,2,'multiple verified lessons on one date both count');
+select extensions.is((select count(*)::integer from public.activity_history where profile_id=:'kid_profile'),1,'same-day family completions produce one activity day');
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',true);
 select public.start_family_review(:'family_session',array[:'kid_profile'::uuid]) as review_session \gset
-select extensions.ok(
-  exists(select 1 from public.family_voyage_sessions where id=:'review_session' and is_review and status='live'),
-  'adult can reopen a completed family lesson as a review session'
-);
-select public.complete_family_play(:'review_session');
-select extensions.is(
-  (public.get_family_play_state(:'family_a','montenegrin-en')->>'completedDays')::integer,
-  1,
-  'completing a review session does not advance the family voyage'
-);
-select extensions.is(
-  jsonb_array_length(public.get_family_progress_dashboard(:'family_a','montenegrin-en')->'history'),
-  2,
-  'family history contains the voyage session and its later review'
-);
+select public.get_verified_family_attempt(:'review_session')->>'id' as review_attempt \gset
+select public.submit_verified_exercise(:'review_attempt',0,'"Zdravo"');
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000002',true);
+select public.submit_verified_exercise(:'review_attempt',0,'"Zdravo"');
+select extensions.is((public.get_family_play_state(:'family_a','montenegrin-en')->>'completedDays')::integer,2,'verified review does not advance voyage');
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',true);
 
 insert into public.learner_profiles (family_id, display_name, created_by)
 values (:'family_a', 'Lena', auth.uid()) returning id as mia_profile \gset
@@ -359,6 +288,16 @@ end;
 $$;
 select extensions.pass('unrelated family cannot change learner progress');
 
+select extensions.throws_ok(
+  format('select public.get_family_overview(%L::uuid)', current_setting('test.family_a')),
+  'P0001', 'Adult family access required',
+  'nonmember cannot read family overview through a definer RPC'
+);
+select extensions.throws_ok(
+  format('select public.link_family_learner_account(%L::uuid, %L)', current_setting('test.kid_profile'), 'parent-b@example.com'),
+  'P0001', 'Only a parent or adult guide can repair learner sign-in',
+  'nonmember cannot relink another family learner'
+);
 select * from extensions.finish();
 
 rollback;

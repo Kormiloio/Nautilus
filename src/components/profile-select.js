@@ -1,6 +1,10 @@
 import { getProfiles, addLearnerProfile } from '../engine/progress-store.js';
 import { isConfigured, signInWithGoogle, signOut } from '../engine/supabase-client.js';
 
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;'}[c]));
+}
+
 export function renderProfileSelect(container, state, actions) {
   const storedProfiles = getProfiles();
   // Cloud family workspaces must never inherit prototype/local-only identities
@@ -10,16 +14,14 @@ export function renderProfileSelect(container, state, actions) {
     : storedProfiles;
   const learners = profiles.filter(p => !p.isGuide);
   const guides = profiles.filter(p => p.isGuide);
-  const canManageFamily = state.families?.some(
-    family => family.role === 'owner' || family.role === 'adult_guide'
-  );
+  const canManageFamily = ['owner', 'adult_guide'].includes(state.families?.[0]?.role);
 
   const authHeaderHtml = isConfigured
     ? state.sessionUser
       ? `<div style="text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 24px; display: flex; flex-direction: column; gap: 4px; align-items: center;">
-           <span>Family Account: <strong>${state.sessionUser.email}</strong></span>
+           <span>Family Account: <strong>${escapeHtml(state.sessionUser.email)}</strong></span>
            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 6px;">
-             ${state.families?.some(family => family.role === 'owner' || family.role === 'adult_guide')
+             ${['owner', 'adult_guide'].includes(state.families?.[0]?.role)
                ? '<button class="btn btn-secondary" id="family-overview-btn" style="padding: 4px 12px; font-size: 12px;">Family Overview</button><button class="btn btn-secondary" id="invite-partner-btn" style="padding: 4px 12px; font-size: 12px;">Invite Adult Partner</button>'
                : ''}
              <button class="btn btn-secondary" id="logout-btn" style="padding: 4px 12px; font-size: 12px; border-color: var(--pink); color: var(--pink);">Sign Out</button>
@@ -68,7 +70,7 @@ export function renderProfileSelect(container, state, actions) {
         </div>
         <div style="width: 100%; max-width: 480px;">
           ${authHeaderHtml}
-          ${state.familyError ? `<p role="alert" style="color: var(--pink); margin-bottom: 16px;">${state.familyError}</p>` : ''}
+          ${state.familyError ? `<p role="alert" style="color: var(--pink); margin-bottom: 16px;">${escapeHtml(state.familyError)}</p>` : ''}
           ${needsFamily ? `
             <form id="family-setup-form" style="display: flex; flex-direction: column; gap: 12px;">
               <label for="family-name" style="font-weight: 700;">Family name</label>
@@ -100,7 +102,7 @@ export function renderProfileSelect(container, state, actions) {
 
       <div style="display: flex; flex-direction: column; gap: 24px; width: 100%; max-width: 480px;">
         ${authHeaderHtml}
-        ${state.familyError ? `<p role="alert" style="color: var(--pink); margin-bottom: 16px;">${state.familyError}</p>` : ''}
+        ${state.familyError ? `<p role="alert" style="color: var(--pink); margin-bottom: 16px;">${escapeHtml(state.familyError)}</p>` : ''}
         ${state.familyNotice ? `<p role="status" style="color: var(--teal); margin-bottom: 16px;">${state.familyNotice}</p>` : ''}
 
         <div>

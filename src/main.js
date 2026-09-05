@@ -1,3 +1,5 @@
+import { beginVerifiedLesson, getVerifiedAttempt, getVerifiedFamilyAttempt, submitVerifiedExercise } from './engine/verified-learning-service.js';
+import { renderVerifiedLessonView } from './components/verified-lesson-view.js';
 import {
   getActiveProfile,
   getProfiles,
@@ -29,25 +31,20 @@ import { speakWithBestDeviceVoice } from './engine/speech-engine.js';
 import { applyDocumentLanguage } from './engine/language-runs.js';
 import {
   acceptFamilyInvitation,
-  completeFamilyPlay,
-  claimFamilyPlayController,
   controlFamilyPlay,
   createFamily,
   getFamilyPlayState,
+  getFamilySessionStatus,
   getFamilyOverview,
   getFamilyProgressDashboard,
-  handoffFamilyPlayController,
   heartbeatFamilyPlay,
   inviteFamilyMember,
   inviteLearnerProfile,
   joinFamilyPlay,
   linkFamilyLearnerAccount,
-  lockFamilyFinalChallenge,
-  reconcileFamilyQuizRound,
   listFamilies,
   startFamilyPlay,
   startFamilyReview,
-  submitFamilyQuizAnswer,
   subscribeToFamilyPlay,
   touchFamilyPlay,
 } from './engine/family-service.js';
@@ -60,7 +57,6 @@ import { renderTopicView } from './components/topic-view.js';
 import { renderSessionView } from './components/session-view.js';
 import { renderCurriculum } from './components/curriculum-view.js';
 import { renderFamilyOverview } from './components/family-overview.js';
-import { renderFamilyPlayView } from './components/family-play-view.js';
 import { renderSideQuestView } from './components/side-quest-view.js';
 
 // Global state
@@ -150,6 +146,26 @@ function speak(text) {
 
 // Router actions
 const actions = {
+  selectFamily: async (familyId) => {
+    if (!state.sessionUser || !state.families?.some(f => f.family_id === familyId)) return;
+    localStorage.setItem('nautilus:family:' + state.sessionUser.id, familyId);
+    state.profile = null;
+    setActiveProfile(null);
+    state.familyOverview = null;
+    state.familyProgress = null;
+    state.familyPlayState = null;
+    state.familyError = null;
+    cleanupSessionState();
+    state.screen = 'profile-select';
+    try {
+      state.families = await listFamilies();
+      await syncCloudDataToLocal();
+      selectLinkedLearnerProfile();
+      await loadFamilyPlayState();
+      watchFamilyPlay();
+    } catch (error) { state.familyError = error.message; }
+    rerender();
+  },
   selectLanguage: async (packId) => {
     if (!state.profile) return;
     const requestedPack = state.languagePacks.find(pack => pack.id === packId);
@@ -295,7 +311,7 @@ const actions = {
     try {
       const familyId = state.families?.[0]?.family_id;
       state.familyOverview = await getFamilyOverview(familyId);
-      state.familyPlayState = await getFamilyPlayState(familyId, state.activePackId);
+      await loadFamilyPlayState();
       state.familyProgress = await getFamilyProgressDashboard(familyId, state.activePackId);
     } catch (error) {
       state.familyError = error.message;
@@ -323,6 +339,7 @@ const actions = {
       await loadFamilyPlayState();
       state.activeLesson = lesson;
       state.screen = 'family-play';
+      hydrateVerifiedAttempt(await getVerifiedFamilyAttempt(state.familyPlayState.activeSession.id));
     } catch (error) {
       state.familyError = error.message;
     }
@@ -339,7 +356,7 @@ const actions = {
         state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
       }
       if (isLinkedLearner || state.families?.[0]?.role === 'learner') await joinFamilyPlay(active.id);
-      else if (active.canTakeControl) await claimFamilyPlayController(active.id);
+      // Verified rosters are pinned; taking over requires an explicit restart.
       await loadFamilyPlayState();
       state.activeLesson = VOYAGE_LESSONS.find(lesson => lesson.id === active.lessonId) || VOYAGE_LESSONS[active.voyageDay - 1];
       state.screen = 'family-play';
@@ -354,26 +371,6 @@ const actions = {
       await maintainLearnerPresence();
       await loadFamilyPlayState();
       state.familyNotice = 'Connection status refreshed.';
-    } catch (error) { state.familyError = error.message; }
-    rerender();
-  },
-
-  claimFamilyController: async () => {
-    const sessionId = state.familyPlayState?.activeSession?.id;
-    if (!sessionId) return;
-    try {
-      await claimFamilyPlayController(sessionId);
-      await loadFamilyPlayState();
-    } catch (error) { state.familyError = error.message; }
-    rerender();
-  },
-
-  handoffFamilyController: async (nextAdultId) => {
-    const sessionId = state.familyPlayState?.activeSession?.id;
-    if (!sessionId) return;
-    try {
-      await handoffFamilyPlayController(sessionId, nextAdultId);
-      await loadFamilyPlayState();
     } catch (error) { state.familyError = error.message; }
     rerender();
   },
@@ -393,71 +390,6 @@ const actions = {
     try {
       await controlFamilyPlay(sessionId, status, segment);
       await loadFamilyPlayState();
-    } catch (error) {
-      state.familyError = error.message;
-    }
-    rerender();
-  },
-
-  answerFamilyQuiz: async (answerId, segment) => {
-    const sessionId = state.familyPlayState?.activeSession?.id;
-    if (!sessionId) return;
-    try {
-      await submitFamilyQuizAnswer(sessionId, segment, answerId);
-      await loadFamilyPlayState();
-    } catch (error) {
-      state.familyError = error.message;
-    }
-    rerender();
-  },
-
-  reconcileFamilyQuiz: async (segment) => {
-    const sessionId = state.familyPlayState?.activeSession?.id;
-    if (!sessionId) return;
-    try {
-      await reconcileFamilyQuizRound(sessionId, segment);
-      await loadFamilyPlayState();
-    } catch (error) {
-      state.familyError = error.message;
-    }
-    rerender();
-  },
-
-  finishFamilyChallenge: async (segment) => {
-    const sessionId = state.familyPlayState?.activeSession?.id;
-    if (!sessionId) return;
-    try {
-      state.familyError = null;
-      const result = await lockFamilyFinalChallenge(sessionId, segment);
-      await loadFamilyPlayState();
-      if (result?.completed) {
-        await syncCloudDataToLocal();
-        if (state.profile) loadProfileState(state.profile);
-        state.screen = 'family-overview';
-        state.activeLesson = null;
-        state.familyNotice = 'Everyone finished—the family voyage lesson is complete.';
-        state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
-        state.familyProgress = await getFamilyProgressDashboard(state.families?.[0]?.family_id, state.activePackId);
-      }
-    } catch (error) {
-      state.familyError = error.message;
-    }
-    rerender();
-  },
-
-  completeFamilySession: async () => {
-    const sessionId = state.familyPlayState?.activeSession?.id;
-    if (!sessionId) return;
-    try {
-      await completeFamilyPlay(sessionId);
-      await loadFamilyPlayState();
-      await syncCloudDataToLocal();
-      if (state.profile) loadProfileState(state.profile);
-      state.screen = 'family-overview';
-      state.activeLesson = null;
-      state.familyNotice = 'Family voyage day completed together.';
-      state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
-      state.familyProgress = await getFamilyProgressDashboard(state.families?.[0]?.family_id, state.activePackId);
     } catch (error) {
       state.familyError = error.message;
     }
@@ -495,8 +427,12 @@ const actions = {
     rerender();
   },
 
-  openTopic: (id) => {
+  openTopic: async (id) => {
     state.topicId = id;
+    if (state.sessionUser) {
+      await openVerifiedLesson({id:'practice:'+id+':flashcards',topicId:id,title:getTopic(id)?.title});
+      return;
+    }
     state.screen = 'topic';
     state.activity = 'flashcards';
     state.flash = { order: null, idx: 0, flipped: false };
@@ -507,7 +443,11 @@ const actions = {
     rerender();
   },
 
-  setActivity: (activityId) => {
+  setActivity: async (activityId) => {
+    if (state.sessionUser) {
+      await openVerifiedLesson({id:'practice:'+state.topicId+':'+activityId,topicId:state.topicId,title:getTopic(state.topicId)?.title});
+      return;
+    }
     state.activity = activityId;
     state.flash = { order: null, idx: 0, flipped: false };
     state.match = { tiles: [], selectedIds: [], matchedIds: [] };
@@ -517,7 +457,56 @@ const actions = {
     rerender();
   },
 
-  startSession: (lesson) => {
+
+  exitVerifiedLesson: async () => {
+    verifiedOpenGeneration++;state.verifiedLoading=false;state.verifiedAttempt=null; state.verifiedFeedback=null; state.verifiedError=null; state.verifiedPending=null;
+    await actions.goDashboard();
+  },
+  continueVerifiedLesson: () => {
+    state.verifiedFeedback=null;
+    rerender();
+  },
+  submitVerifiedAnswer: async (index,response) => {
+    const attempt=state.verifiedAttempt;
+    if (!attempt || state.verifiedBusy) return;
+    const key=verifiedPendingKey(attempt.id,index);
+    state.verifiedBusy=true;state.verifiedError=null;
+    const pending=state.verifiedPending;
+    if (pending?.attemptId===attempt.id && pending.index===index) response=pending.response;
+    localStorage.setItem(key,JSON.stringify({attemptId:attempt.id,index,response}));
+    state.verifiedPending={attemptId:attempt.id,index,response};
+    rerender();
+    try {
+      const result=await submitVerifiedExercise(attempt.id,index,response);
+      const fresh=await getVerifiedAttempt(attempt.id);
+      localStorage.removeItem(key);
+      if(state.verifiedAttempt?.id!==attempt.id) return;
+      state.verifiedPending=null;hydrateVerifiedAttempt(fresh);
+      if(result.retry) {
+        state.verifiedError='Not quite—check your pairs and try again.';
+      } else if(attempt.exercises[index].kind!=='self_report') {
+        const receipt=fresh.receipts.find(r=>r.index===index);
+        state.verifiedFeedback={attemptId:attempt.id,index,answer:response,correct:result.correct,
+          correctAnswer:result.correctAnswer??receipt?.correctAnswer};
+        if(state.screen==='family-play') setTimeout(()=>{
+          if(state.verifiedFeedback?.attemptId===attempt.id&&state.verifiedFeedback.index===index){state.verifiedFeedback=null;rerender();}
+        },2500);
+      }
+      if(result.completed) {
+        await syncCloudDataToLocal();
+        if(state.profile) loadProfileState(state.profile);
+        if(state.screen==='family-play') {await loadFamilyPlayState();await handleFamilyCompletion(attempt.familySessionId);}
+      }
+    } catch(error) {
+      if(state.verifiedAttempt?.id===attempt.id) state.verifiedError='Could not confirm this answer: '+error.message+'. Retry to check the same answer safely.';
+    } finally {state.verifiedBusy=false;rerender();}
+  },
+
+  startSession: async (lesson) => {
+    if (state.sessionUser) {
+      await openVerifiedLesson(lesson);
+      return;
+    }
     state.activeLesson = lesson;
     state.screen = 'session';
     state.session = null; // Forces dynamic steps generation in session view
@@ -567,7 +556,12 @@ const actions = {
 
   speak,
 
-  startMixedReview: () => {
+  startMixedReview: async () => {
+    if (state.sessionUser) {
+      const lesson=VOYAGE_LESSONS.find(l=>state.completedLessons.includes(l.id)&&l.type==='checkpoint') || VOYAGE_LESSONS.find(l=>state.completedLessons.includes(l.id));
+      if (lesson) await openVerifiedLesson(lesson);
+      return;
+    }
     // Generate an ad-hoc session representing mixed review
     const unlocked = state.completedTopicIds.map(id => getTopic(id)).filter(Boolean);
     const pool = unlocked.flatMap(t => t.items);
@@ -654,16 +648,76 @@ function selectLinkedLearnerProfile() {
 
 let stopFamilyPlaySubscription = null;
 
+function verifiedPendingKey(id,index) { return 'nautilus:verified-response:'+state.sessionUser?.id+':'+id+':'+index; }
+function hydrateVerifiedAttempt(attempt) {
+  if(state.verifiedAttempt?.id!==attempt?.id) {state.verifiedFeedback=null;state.verifiedError=null;state.verifiedPending=null;}
+  state.verifiedAttempt=attempt;
+  if(attempt) {
+    const prefix='nautilus:verified-response:'+state.sessionUser?.id+':'+attempt.id+':';
+    state.verifiedPending=null;
+    for(let i=localStorage.length-1;i>=0;i--) {
+      const key=localStorage.key(i);if(!key?.startsWith(prefix))continue;
+      try {
+        const pending=JSON.parse(localStorage.getItem(key));
+        const receipt=attempt.receipts.find(r=>r.index===pending.index);
+        if(receipt) {
+          localStorage.removeItem(key);
+          if(attempt.exercises[pending.index]?.kind!=='self_report')state.verifiedFeedback={attemptId:attempt.id,index:pending.index,answer:receipt.answer,correct:receipt.correct,correctAnswer:receipt.correctAnswer};
+        } else state.verifiedPending=pending;
+      } catch {state.verifiedError='A saved response could not be read. Keep browser data so it can be reviewed.';}
+    }
+  }
+}
+let verifiedOpenGeneration=0;
+async function openVerifiedLesson(lesson) {
+  const generation=++verifiedOpenGeneration;
+  state.familyError=null;state.verifiedLoading=true;state.verifiedAttempt=null;state.verifiedFeedback=null;state.verifiedPending=null;state.verifiedError=null;state.screen='verified';rerender();
+  try {
+    const profile=getProfiles().find(p=>p.name===state.profile);
+    if(!profile || String(profile.id).startsWith('local-')) throw new Error('Select a linked learner profile first.');
+    const attempt=await beginVerifiedLesson({packId:LANGUAGE_PACK.id,packVersion:LANGUAGE_PACK.version,lessonId:lesson.id,profileId:profile.id});
+    if(generation!==verifiedOpenGeneration) return;
+    state.activeLesson=lesson;hydrateVerifiedAttempt(attempt);state.screen='verified';
+  } catch(error) {if(generation===verifiedOpenGeneration){state.familyError=error.message;state.verifiedError=error.message;}}
+  finally {if(generation===verifiedOpenGeneration)state.verifiedLoading=false;}
+  rerender();
+}
+
+const completionRefreshes = new Map();
+function handleFamilyCompletion(sessionId) {
+  if (completionRefreshes.has(sessionId)) return completionRefreshes.get(sessionId);
+  const refresh = (async () => {
+    await syncCloudDataToLocal();
+    if (state.profile) loadProfileState(state.profile);
+    if (state.screen === 'family-play') {
+      state.activeLesson = null;
+      state.screen = state.profile ? 'dashboard' : 'profile-select';
+    }
+    state.familyNotice = 'Everyone finished—the family voyage lesson is complete.';
+  })().catch(error => { completionRefreshes.delete(sessionId); throw error; });
+  completionRefreshes.set(sessionId, refresh);
+  return refresh;
+}
+
 async function loadFamilyPlayState() {
   const familyId = state.families?.[0]?.family_id;
   if (!familyId || !state.sessionUser) {
     state.familyPlayState = null;
     return;
   }
+  const previousSession = state.familyPlayState?.activeSession;
   state.familyPlayState = await getFamilyPlayState(familyId, state.activePackId);
+  if (state.screen==='family-play' && state.familyPlayState?.activeSession) {
+    hydrateVerifiedAttempt(await getVerifiedFamilyAttempt(state.familyPlayState.activeSession.id));
+  }
+  if (previousSession && previousSession.id !== state.familyPlayState?.activeSession?.id
+      && await getFamilySessionStatus(previousSession.id) === 'completed') {
+    await handleFamilyCompletion(previousSession.id);
+  }
 }
 
 let familyHeartbeatTimer = null;
+let familyHeartbeatSessionId = null;
 let learnerPresenceTimer = null;
 let learnerPresenceSessionId = null;
 let familyPlayRefreshTimer = null;
@@ -671,10 +725,16 @@ let familyPlayRefreshSessionId = null;
 let lastRenderedFamilyStage = null;
 
 function syncFamilyHeartbeat() {
-  clearInterval(familyHeartbeatTimer);
-  familyHeartbeatTimer = null;
   const active = state.familyPlayState?.activeSession;
-  if (!active || active.controllingAdult !== state.sessionUser?.id || state.screen !== 'family-play') return;
+  if (!active || active.controllingAdult !== state.sessionUser?.id || state.screen !== 'family-play') {
+    clearInterval(familyHeartbeatTimer);
+    familyHeartbeatTimer = null;
+    familyHeartbeatSessionId = null;
+    return;
+  }
+  if (familyHeartbeatTimer && familyHeartbeatSessionId === active.id) return;
+  clearInterval(familyHeartbeatTimer);
+  familyHeartbeatSessionId = active.id;
   familyHeartbeatTimer = setInterval(() => heartbeatFamilyPlay(active.id).catch(() => {}), 45_000);
 }
 
@@ -718,7 +778,7 @@ function syncFamilyPlayRefresh() {
   familyPlayRefreshTimer = setInterval(async () => {
     try {
       await loadFamilyPlayState();
-      if (state.screen === 'family-play') rerender();
+      rerender();
     } catch {
       // Realtime remains primary; the poll is recovery for missed events.
     }
@@ -741,6 +801,25 @@ function watchFamilyPlay() {
 }
 
 // Global Rerender Controller
+function mountFamilySelector() {
+  if (!state.sessionUser || (state.families?.length || 0) < 2) return;
+  const label = document.createElement('label');
+  label.className = 'container';
+  label.textContent = 'Family workspace ';
+  const select = document.createElement('select');
+  select.className = 'badge-pill';
+  select.setAttribute('aria-label', 'Family workspace');
+  for (const family of state.families) {
+    const option = document.createElement('option');
+    option.value = family.family_id;
+    option.textContent = family.families?.name || 'Family';
+    select.append(option);
+  }
+  select.addEventListener('change', () => actions.selectFamily(select.value));
+  label.append(select);
+  appContainer.prepend(label);
+}
+
 function rerender() {
   applyDocumentLanguage(LANGUAGE_PACK);
   const activeBeforeRender = state.familyPlayState?.activeSession;
@@ -748,13 +827,13 @@ function rerender() {
   const existingFamilyPanel = appContainer.querySelector('.family-play-panel');
   const preservedPanelScroll = existingFamilyPanel?.scrollTop || 0;
   const preserveFamilyPosition = state.screen === 'family-play' && nextFamilyStage === lastRenderedFamilyStage;
-  appContainer.innerHTML = '';
+  // Each view owns its DOM replacement; Family Play captures interaction state first.
 
   if (state.screen === 'family-play') {
     syncFamilyHeartbeat();
     syncLearnerPresence();
     syncFamilyPlayRefresh();
-    renderFamilyPlayView(appContainer, state, actions);
+    renderVerifiedLessonView(appContainer, state, actions);
     const renderedPanel = appContainer.querySelector('.family-play-panel');
     if (renderedPanel) renderedPanel.scrollTop = preserveFamilyPosition ? preservedPanelScroll : 0;
     lastRenderedFamilyStage = nextFamilyStage;
@@ -771,17 +850,20 @@ function rerender() {
   // Play), so route it before the profile-dependent learning screens.
   if (state.screen === 'family-overview') {
     renderFamilyOverview(appContainer, state, actions);
+    mountFamilySelector();
     return;
   }
 
   if (!state.profile) {
     state.screen = 'profile-select';
     renderProfileSelect(appContainer, state, actions);
+    mountFamilySelector();
     return;
   }
 
   if (state.screen === 'dashboard') {
     renderDashboard(appContainer, state, actions);
+    mountFamilySelector();
 
     // Mount sub-component: Calendar
     const calMount = appContainer.querySelector('#calendar-mount');
@@ -801,6 +883,8 @@ function rerender() {
     }
   } else if (state.screen === 'topic') {
     renderTopicView(appContainer, state, actions);
+  } else if (state.screen === 'verified') {
+    renderVerifiedLessonView(appContainer,state,actions);
   } else if (state.screen === 'session') {
     renderSessionView(appContainer, state, actions);
   } else if (state.screen === 'curriculum') {

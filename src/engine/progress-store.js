@@ -1,5 +1,6 @@
 import { dateKey, LANGUAGE_PACK } from './learning-engine.js';
 import { supabase, isConfigured } from './supabase-client.js';
+import { listFamilies } from './family-service.js';
 
 export let ACTIVE_PACK_ID = LANGUAGE_PACK.id;
 export let ACTIVE_PACK_VERSION = LANGUAGE_PACK.version;
@@ -38,7 +39,7 @@ function readProgressValue(profileName, suffix, fallback) {
   if (scoped !== null) return scoped;
 
   // One-time compatibility read for the original Montenegrin local keys.
-  const legacyKey = legacyProgressKey(profileName, suffix);
+  const legacyKey = ACTIVE_PACK_ID === 'montenegrin-en' ? legacyProgressKey(profileName, suffix) : null;
   const legacy = legacyKey ? localStorage.getItem(legacyKey) : null;
   if (legacy !== null) {
     localStorage.setItem(scopedKey, legacy);
@@ -180,17 +181,19 @@ export function saveDialoguesDone(name, count) {
 // Scored actions
 export function awardStars(name, count) {
   const data = loadProfileData(name);
+  if (!String(data.id).startsWith('local-')) return; // Cloud credit is server-owned.
   if (data.isGuide) return;
   const newStars = data.stars + count;
   saveStars(name, newStars);
   recordActivity(name);
 
   // Queue to cloud
-  enqueueTransaction(data.id, 'awardStars', { name, stars: newStars });
+  enqueueTransaction(data.id, 'awardStars', { name, delta: count });
 }
 
 export function recordActivity(name) {
   const data = loadProfileData(name);
+  if (!String(data.id).startsWith('local-')) return; // Cloud credit is server-owned.
   if (data.isGuide) return;
   const today = dateKey(new Date());
 
@@ -205,6 +208,7 @@ export function recordActivity(name) {
 
 export function completeVoyageLesson(name, lessonId) {
   const data = loadProfileData(name);
+  if (!String(data.id).startsWith('local-')) return; // Cloud credit is server-owned.
   if (data.isGuide) return;
 
   if (!data.completedLessons.includes(lessonId)) {
@@ -219,6 +223,7 @@ export function completeVoyageLesson(name, lessonId) {
 
 export function completeTopic(name, topicId) {
   const data = loadProfileData(name);
+  if (!String(data.id).startsWith('local-')) return; // Cloud credit is server-owned.
   if (data.isGuide) return;
 
   if (!data.completedTopicIds.includes(topicId)) {
@@ -232,12 +237,13 @@ export function completeTopic(name, topicId) {
 
 export function incrementDialogues(name) {
   const data = loadProfileData(name);
+  if (!String(data.id).startsWith('local-')) return; // Cloud credit is server-owned.
   if (data.isGuide) return;
   const count = data.dialoguesDone + 1;
   saveDialoguesDone(name, count);
 
   // Queue to cloud
-  enqueueTransaction(data.id, 'incrementDialogues', { name, dialoguesDone: count });
+  enqueueTransaction(data.id, 'incrementDialogues', { name, delta: 1 });
 }
 
 export function getGuidesProgress() {
@@ -266,14 +272,7 @@ export async function addLearnerProfile(name, isGuide) {
 
   if (loggedIn) {
     const user = session.data.session.user;
-    const { data: membership, error: membershipError } = await supabase
-      .from('family_memberships')
-      .select('family_id')
-      .order('joined_at', { ascending: true })
-      .limit(1)
-      .maybeSingle();
-
-    if (membershipError) throw membershipError;
+    const [membership] = await listFamilies();
     if (!membership?.family_id || isGuide) {
       // Adult/guide identity is a family membership in the new model. Until the
       // workspace UI ships, retain guide-only additions locally.
@@ -308,26 +307,36 @@ export async function addLearnerProfile(name, isGuide) {
 // Offline Sync Queue & Cloud Sync Logic
 // -------------------------------------------------------------
 
-function getTransactionQueue() {
-  try {
-    return JSON.parse(localStorage.getItem('mn_sync_queue') || '[]');
-  } catch (e) {
-    return [];
-  }
+const QUEUE_PREFIX = 'nautilus:sync-operation:';
+
+function storageKeys(prefix) {
+  return Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i))
+    .filter(key => key?.startsWith(prefix));
 }
 
-function saveTransactionQueue(queue) {
-  localStorage.setItem('mn_sync_queue', JSON.stringify(queue));
+export function getPendingProgressTransactions() {
+  // Convert the old shared array into independently acknowledged operations.
+  // Concurrent migrations may repeat inserts, but IDs make server retries safe.
+  const legacy = localStorage.getItem('mn_sync_queue');
+  if (legacy) {
+    const entries = JSON.parse(legacy);
+    for (const tx of entries) localStorage.setItem(QUEUE_PREFIX + tx.operationId, JSON.stringify(tx));
+    localStorage.removeItem('mn_sync_queue');
+  }
+  return storageKeys(QUEUE_PREFIX)
+    .map(key => JSON.parse(localStorage.getItem(key)))
+    .filter(Boolean).sort((a,b) => a.timestamp - b.timestamp || a.operationId.localeCompare(b.operationId));
 }
+
+const getTransactionQueue = getPendingProgressTransactions;
 
 export function enqueueTransaction(profileId, type, payload) {
   // If the profile ID is a local mock ID, we don't write to Supabase
   if (String(profileId).startsWith('local-')) return;
 
-  const queue = getTransactionQueue();
   const operationId = globalThis.crypto?.randomUUID?.()
     || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  queue.push({
+  const tx = {
     operationId,
     profileId,
     packId: ACTIVE_PACK_ID,
@@ -335,120 +344,76 @@ export function enqueueTransaction(profileId, type, payload) {
     type,
     payload,
     timestamp: Date.now(),
-  });
-  saveTransactionQueue(queue);
+  };
+  localStorage.setItem(QUEUE_PREFIX + operationId, JSON.stringify(tx));
   triggerSync();
 }
 
-let isSyncing = false;
+function quarantineTransaction(tx, reason) {
+  // One key per operation avoids concurrent tabs overwriting the recovery log.
+  localStorage.setItem('nautilus:sync-recovery:' + tx.operationId,
+    JSON.stringify({ ...tx, reason, quarantinedAt: Date.now() }));
+}
 
-export async function triggerSync() {
-  if (isSyncing || !isConfigured) return;
+export function getSyncRecoveryItems() {
+  return storageKeys('nautilus:sync-recovery:')
+    .flatMap(key => {
+      try { return [JSON.parse(localStorage.getItem(key))]; } catch { return []; }
+    });
+}
+
+let syncPromise = null;
+
+export function triggerSync() {
+  if (!isConfigured) return Promise.resolve();
+  if (!syncPromise) {
+    syncPromise = drainQueue().finally(() => { syncPromise = null; });
+  }
+  return syncPromise;
+}
+
+async function drainQueue() {
   const session = await supabase.auth.getSession();
   if (!session?.data?.session) return; // Not signed in
 
-  isSyncing = true;
-  const queue = getTransactionQueue();
+  while (true) {
+    if (!navigator.onLine) break;
+    const queue = getTransactionQueue();
+    if (!queue.length) break;
+    const tx = queue[0];
+    let success = false;
 
-  try {
-    while (queue.length > 0) {
-      if (!navigator.onLine) break;
+    try {
+      // Legacy queue entries have no verified exercise evidence. Preserve them
+      // visibly for reconciliation; never resubmit them to revoked credit APIs.
+      quarantineTransaction(tx, 'unverified_legacy_progress');
+      success = true;
 
-      const tx = queue[0];
-      let success = false;
-
-      try {
-        if (tx.type === 'awardStars') {
-          const { error } = await supabase
-            .from('learner_language_progress')
-            .upsert({
-              profile_id: tx.profileId,
-              pack_id: tx.packId,
-              pack_version: tx.packVersion,
-              stars: tx.payload.stars,
-              updated_at: new Date().toISOString(),
-            }, { onConflict: 'profile_id,pack_id' });
-          if (!error) success = true;
-        } else if (tx.type === 'incrementDialogues') {
-          const { error } = await supabase
-            .from('learner_language_progress')
-            .upsert({
-              profile_id: tx.profileId,
-              pack_id: tx.packId,
-              pack_version: tx.packVersion,
-              dialogues_done: tx.payload.dialoguesDone,
-              updated_at: new Date().toISOString(),
-            }, { onConflict: 'profile_id,pack_id' });
-          if (!error) success = true;
-        } else if (tx.type === 'recordActivity') {
-          const { error } = await supabase
-            .from('activity_history')
-            .insert({
-              profile_id: tx.profileId,
-              pack_id: tx.packId,
-              pack_version: tx.packVersion,
-              local_date: tx.payload.dateKey,
-              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
-              operation_id: tx.operationId,
-            });
-          // If row exists, insert might fail on primary key, which is acceptable
-          if (!error || error.code === '23505') success = true;
-        } else if (tx.type === 'completeLesson') {
-          const { error } = await supabase
-            .from('completed_lessons')
-            .insert({
-              profile_id: tx.profileId,
-              pack_id: tx.packId,
-              pack_version: tx.packVersion,
-              lesson_id: tx.payload.lessonId,
-              operation_id: tx.operationId,
-            });
-          if (!error || error.code === '23505') success = true;
-        } else if (tx.type === 'completeTopic') {
-          const { error } = await supabase
-            .from('completed_topics')
-            .insert({
-              profile_id: tx.profileId,
-              pack_id: tx.packId,
-              pack_version: tx.packVersion,
-              topic_id: tx.payload.topicId,
-              operation_id: tx.operationId,
-            });
-          if (!error || error.code === '23505') success = true;
-        }
-      } catch (err) {
-        console.error('Database write error during transaction processing:', err);
-      }
-
-      if (success) {
-        queue.shift();
-        saveTransactionQueue(queue);
-      } else {
-        // Stop on first failure (network issue, server error) and retry later
-        break;
-      }
+    } catch (err) {
+      console.error('Database write error during transaction processing:', err);
     }
-  } finally {
-    isSyncing = false;
+
+    if (success) {
+      // Acknowledge only this operation; new actions can arrive while awaiting IO.
+      localStorage.removeItem(QUEUE_PREFIX + tx.operationId);
+    } else {
+      // Stop on first failure (network issue, server error) and retry later
+      break;
+    }
   }
 }
 
-// Fetch the first available family workspace. A workspace-selection screen will
-// replace this deterministic family-alpha fallback when multi-family UI ships.
+// Refresh the explicitly selected family (first membership is the default until selected).
 export async function syncCloudDataToLocal() {
   if (!isConfigured) return;
   const session = await supabase.auth.getSession();
   if (!session?.data?.session) return;
 
-  const { data: memberships, error: membershipError } = await supabase
-    .from('family_memberships')
-    .select('family_id, role, joined_at')
-    .order('joined_at', { ascending: true })
-    .limit(1);
-
-  if (membershipError) throw membershipError;
+  await triggerSync();
+  const packId = ACTIVE_PACK_ID;
+  const memberships = await listFamilies();
   const familyId = memberships?.[0]?.family_id;
-  if (!familyId) return;
+  if (!familyId) { saveProfiles([]); return; }
 
   const { data: cloudProfiles, error } = await supabase
     .from('learner_profiles')
@@ -456,7 +421,7 @@ export async function syncCloudDataToLocal() {
     .eq('family_id', familyId);
 
   if (error) throw error;
-  if (!cloudProfiles?.length) return;
+  if (!cloudProfiles?.length) { saveProfiles([]); return; }
 
   // Write mapped profiles to cache
   const mappedProfiles = cloudProfiles.map(p => ({
@@ -470,30 +435,34 @@ export async function syncCloudDataToLocal() {
 
   // 2. Refresh details for each profile from cloud and update local storage cache
   for (const p of cloudProfiles) {
-    const { data: summary } = await supabase
+    const { data: summary, error: summaryError } = await supabase
       .from('learner_language_progress')
       .select('stars, dialogues_done')
       .eq('profile_id', p.id)
-      .eq('pack_id', ACTIVE_PACK_ID)
+      .eq('pack_id', packId)
       .maybeSingle();
 
-    saveStars(p.display_name, summary?.stars || 0);
-    saveDialoguesDone(p.display_name, summary?.dialogues_done || 0);
+    const pending = getTransactionQueue().some(tx => tx.profileId === p.id && tx.packId === packId);
+    if (pending) continue; // Keep optimistic offline progress until its writes settle.
+    if (!summaryError) {
+      localStorage.setItem(progressKey(p.display_name, 'stars', packId), String(summary?.stars || 0));
+      localStorage.setItem(progressKey(p.display_name, 'dialogues', packId), String(summary?.dialogues_done || 0));
+    }
 
     const [lessonsRes, topicsRes, activityRes] = await Promise.all([
-      supabase.from('completed_lessons').select('lesson_id').eq('profile_id', p.id).eq('pack_id', ACTIVE_PACK_ID),
-      supabase.from('completed_topics').select('topic_id').eq('profile_id', p.id).eq('pack_id', ACTIVE_PACK_ID),
-      supabase.from('activity_history').select('local_date').eq('profile_id', p.id).eq('pack_id', ACTIVE_PACK_ID)
+      supabase.from('completed_lessons').select('lesson_id').eq('profile_id', p.id).eq('pack_id', packId),
+      supabase.from('completed_topics').select('topic_id').eq('profile_id', p.id).eq('pack_id', packId),
+      supabase.from('activity_history').select('local_date').eq('profile_id', p.id).eq('pack_id', packId)
     ]);
 
     if (!lessonsRes.error) {
-      saveCompletedLessons(p.display_name, lessonsRes.data.map(r => r.lesson_id));
+      localStorage.setItem(progressKey(p.display_name, 'lessons', packId), JSON.stringify(lessonsRes.data.map(r => r.lesson_id)));
     }
     if (!topicsRes.error) {
-      saveCompletedTopics(p.display_name, topicsRes.data.map(r => r.topic_id));
+      localStorage.setItem(progressKey(p.display_name, 'topics', packId), JSON.stringify(topicsRes.data.map(r => r.topic_id)));
     }
     if (!activityRes.error) {
-      saveActivityDates(p.display_name, activityRes.data.map(r => r.local_date));
+      localStorage.setItem(progressKey(p.display_name, 'activity', packId), JSON.stringify(activityRes.data.map(r => r.local_date)));
     }
   }
 }

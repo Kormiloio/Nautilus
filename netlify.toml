@@ -11,7 +11,7 @@
 [build]
   # vite.config.js sets root='src' and build.outDir='../web',
   # so the built site lands in web/ at the repo root.
-  command = "npm run build"
+  command = "npm run verify:release && npm run build"
   publish = "web"
 
 [build.environment]
@@ -22,6 +22,17 @@
 
 # web/_headers already sets CORS for /assets/*. Kept there rather than
 # duplicated here, since that file ships with the build output.
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://kormilo-nautilus.netlify.app; style-src 'self' 'unsafe-inline' https://kormilo-nautilus.netlify.app; img-src 'self' data: https:; font-src 'self' data: https://kormilo-nautilus.netlify.app; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), geolocation=(), payment=(), usb=()"
+    Cross-Origin-Opener-Policy = "same-origin-allow-popups"
 
 [[headers]]
   for = "/index.html"

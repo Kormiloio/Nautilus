@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "node scripts/clean-build.mjs && vite build",
+    "verify:release": "node scripts/verify-verified-release.mjs",
     "test": "vitest run",
     "validate": "node scripts/validate-content.js",
     "db:reset": "supabase db reset --local",
-    "test:db": "supabase test db --local supabase/tests/rls.sql",
+    "test:db": "supabase test db --local supabase/tests/rls.sql supabase/tests/atomic-progress.sql supabase/tests/verified-attempts.sql supabase/tests/verified-practice.sql",
     "lint:db": "supabase db lint --local --level warning"
   },
   "devDependencies": {

@@ -8,7 +8,7 @@ import {
   getTopic,
   LANGUAGE_PACK,
 } from '../engine/learning-engine.js';
-import { getGuidesProgress, getProfiles } from '../engine/progress-store.js';
+import { getGuidesProgress, getProfiles, getSyncRecoveryItems } from '../engine/progress-store.js';
 import { isConfigured } from '../engine/supabase-client.js';
 import { getLearningDayCount } from '../engine/learning-days.js';
 import { renderVoyageExperience } from './voyage-map.js';
@@ -18,6 +18,11 @@ function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;',
   })[character]);
+}
+
+export function renderProfilePill(profile, selectedName) {
+  const name = escapeHtml(profile.name);
+  return `<button class="profile-pill-btn ${selectedName === profile.name ? 'active' : ''}" data-profile="${name}" aria-label="Switch to profile ${name}">${name}</button>`;
 }
 
 export function renderDashboard(container, state, actions) {
@@ -71,7 +76,7 @@ export function renderDashboard(container, state, actions) {
           <div class="logo-title">Learn ${LANGUAGE_PACK.targetLanguage.name}</div>
         </button>
         ${syncBadgeHtml}
-        ${!state.linkedLearnerProfileId && state.families?.some(family => family.role === 'owner' || family.role === 'adult_guide')
+        ${!state.linkedLearnerProfileId && ['owner', 'adult_guide'].includes(state.families?.[0]?.role)
           ? '<button class="btn btn-secondary" id="family-overview-btn" style="padding: 6px 12px; font-size: 12px;">Family Overview</button>'
           : ''}
       </div>
@@ -87,9 +92,7 @@ export function renderDashboard(container, state, actions) {
         </label>
         <!-- Profile switcher -->
         <div class="profile-pill-container" role="group" aria-label="Profiles">
-          ${visibleProfiles.map(p => `
-            <button class="profile-pill-btn ${state.profile === p.name ? 'active' : ''}" data-profile="${p.name}" aria-label="Switch to profile ${p.name}">${p.name}</button>
-          `).join('')}
+          ${visibleProfiles.map(p => renderProfilePill(p, state.profile)).join('')}
           <button class="profile-pill-btn" id="nav-add-profile-btn" style="font-size: 14px; opacity: 0.7;">+</button>
         </div>
 
@@ -242,6 +245,17 @@ export function renderDashboard(container, state, actions) {
       </section>
     </main>
   `;
+
+  const profileId = visibleProfiles.find(profile => profile.name === state.profile)?.id;
+  const recoveryItems = getSyncRecoveryItems().filter(tx => tx.profileId === profileId && tx.packId === LANGUAGE_PACK.id);
+  if (recoveryItems.length) {
+    const notice = document.createElement('p');
+    notice.className = 'glass';
+    notice.setAttribute('role', 'status');
+    notice.style.padding = '16px';
+    notice.textContent = 'Some saved progress needs review before it can sync. The original records are preserved on this device; do not clear browser data.';
+    (container.querySelector('main') || container).prepend(notice);
+  }
 
   // Attach event handlers
   container.querySelector('#logo-btn').addEventListener('click', actions.goDashboard);
