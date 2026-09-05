@@ -17,7 +17,12 @@ const MONTENEGRIN_QUESTS = [
   },
   {
     id:'false-friend-detective', title:'False-Friend Detective', eyebrow:'Mystery cargo · word puzzle',
-    subtitle:'One familiar-looking word can hide several meanings.', warning:'Use the clue cards to guess the meaning before revealing it.',
+    subtitle:'One familiar-looking word can hide several meanings.', warning:'Choose privately, lock in, and reveal only after the whole crew has answered.',
+    game:'detective', cases:[
+      {word:'grad',sentence:'Padao je grad cijelo popodne.',answerId:'hail',choices:[{id:'city',label:'city'},{id:'hail',label:'hail'},{id:'work',label:'work'}],explanation:'Here “grad” means hail: frozen rain fell all afternoon. In another sentence, the same word can mean city.'},
+      {word:'kosa',sentence:'Ona ima dugu kosu.',answerId:'hair',choices:[{id:'slope',label:'slope'},{id:'scythe',label:'scythe'},{id:'hair',label:'hair'}],explanation:'“Kosu” is the sentence form of “kosa” meaning hair. Kosa can also mean a slope or a scythe in other contexts.'},
+      {word:'pravo',sentence:'Idi pravo do trga.',answerId:'straight',choices:[{id:'law',label:'law'},{id:'straight',label:'straight ahead'},{id:'right',label:'right / entitlement'}],explanation:'After the verb “go,” pravo means straight ahead. The same form can refer to law or a right elsewhere.'},
+    ],
     items:[
       {targetText:'grad',supportText:'city—or hail, depending on context',strength:'Clue 1',context:'Listen to the whole sentence before deciding.'},
       {targetText:'kosa',supportText:'hair, a slope, or a scythe',strength:'Clue 2',context:'The surrounding noun or verb reveals the intended meaning.'},

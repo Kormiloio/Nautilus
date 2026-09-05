@@ -1,5 +1,7 @@
 import { beginVerifiedLesson, getVerifiedAttempt, getVerifiedFamilyAttempt, submitVerifiedExercise } from './engine/verified-learning-service.js';
 import { renderVerifiedLessonView } from './components/verified-lesson-view.js';
+import { advanceDetectiveCase, createDetectiveGame, earnSideQuestBadge, lockDetectiveAnswer, selectDetectiveAnswer } from './engine/side-quest-game.js';
+import { advanceFamilySideQuest, getFamilySideQuestState, startFamilySideQuest, submitFamilySideQuestAnswer, subscribeToFamilySideQuest } from './engine/side-quest-service.js';
 import {
   getActiveProfile,
   getProfiles,
@@ -92,6 +94,9 @@ const state = {
   // Active session context
   activeLesson: null,
   sideQuest: null,
+  sideQuestGame: null,
+  familySideQuestState: null,
+  sideQuestSelection: null,
   session: null, // Holds active session steps and indexes
 
   // Card states
@@ -279,13 +284,58 @@ const actions = {
     window.scrollTo({ top: 0, behavior: 'auto' });
   },
 
-  openSideQuest: (quest) => {
+  openSideQuest: async (quest) => {
     if (!quest || quest.locked) return;
     state.sideQuest = quest;
-    state.screen = 'side-quest';
+    state.sideQuestSelection = null;
+    if (quest.game === "detective" && state.sessionUser && state.families?.[0]?.family_id) {
+      try {
+        await loadFamilySideQuestState();
+        if (!state.familySideQuestState || state.familySideQuestState.status !== "active") {
+          if (!["owner", "adult_guide"].includes(state.families[0].role)) throw new Error("Ask your parent or guide to open this side quest for the family.");
+          state.familyOverview ||= await getFamilyOverview(state.families[0].family_id);
+          const participants = (state.familyOverview?.learners || []).filter(p => p.linked).map(p => p.id);
+          await startFamilySideQuest({ familyId: state.families[0].family_id, packId: state.activePackId, packVersion: LANGUAGE_PACK.version, questId: quest.id, milestone: quest.milestone, participantProfileIds: participants });
+          await loadFamilySideQuestState();
+        }
+        watchFamilySideQuest();
+        state.sideQuestGame = null;
+      } catch (error) { state.familyError = error.message; actions.goDashboard(); return; }
+    } else if (quest.game === "detective") {
+      state.familySideQuestState = null;
+      state.sideQuestGame = createDetectiveGame(quest, [state.profile || "Detective"]);
+    } else state.sideQuestGame = null;
+    state.screen = "side-quest";
     cleanupSessionState();
     rerender();
-    window.scrollTo({ top:0, behavior:'auto' });
+    window.scrollTo({ top: 0, behavior: "auto" });
+  },
+
+  selectSideQuestAnswer: answerId => {
+    if (state.familySideQuestState) state.sideQuestSelection = answerId;
+    else state.sideQuestGame = selectDetectiveAnswer(state.sideQuestGame, answerId);
+    rerender();
+  },
+  lockSideQuestAnswer: async () => {
+    if (state.familySideQuestState) {
+      try { await submitFamilySideQuestAnswer(state.familySideQuestState.id, state.familySideQuestState.currentCase, state.sideQuestSelection); state.sideQuestSelection = null; await loadFamilySideQuestState(); }
+      catch (error) { state.familyError = error.message; }
+      rerender(); return;
+    }
+    state.sideQuestGame = lockDetectiveAnswer(state.sideQuestGame); rerender();
+  },
+  nextSideQuestCase: async () => {
+    if (state.familySideQuestState) {
+      try { await advanceFamilySideQuest(state.familySideQuestState.id); await loadFamilySideQuestState(); }
+      catch (error) { state.familyError = error.message; }
+      rerender(); return;
+    }
+    state.sideQuestGame = advanceDetectiveCase(state.sideQuestGame, state.sideQuest.cases.length); rerender();
+  },
+  replaySideQuest: () => { state.sideQuestGame = createDetectiveGame(state.sideQuest, [state.profile || "Detective"]); rerender(); },
+  finishSideQuest: () => {
+    earnSideQuestBadge(state.activePackId, state.profile || 'family', state.sideQuest.id);
+    actions.goDashboard();
   },
 
   goCurriculum: () => {
@@ -699,6 +749,23 @@ function handleFamilyCompletion(sessionId) {
   return refresh;
 }
 
+async function loadFamilySideQuestState() {
+  const familyId = state.families?.[0]?.family_id;
+  if (!familyId || !state.sessionUser) { state.familySideQuestState = null; return; }
+  state.familySideQuestState = await getFamilySideQuestState(familyId, state.activePackId);
+}
+
+let stopFamilySideQuestSubscription = null;
+function watchFamilySideQuest() {
+  stopFamilySideQuestSubscription?.();
+  stopFamilySideQuestSubscription = null;
+  const familyId = state.families?.[0]?.family_id;
+  if (!familyId || !state.sessionUser) return;
+  stopFamilySideQuestSubscription = subscribeToFamilySideQuest(familyId, async () => {
+    try { await loadFamilySideQuestState(); rerender(); } catch (error) { state.familyError = error.message; rerender(); }
+  });
+}
+
 async function loadFamilyPlayState() {
   const familyId = state.families?.[0]?.family_id;
   if (!familyId || !state.sessionUser) {
@@ -917,7 +984,9 @@ async function init() {
           await syncCloudDataToLocal();
           selectLinkedLearnerProfile();
           await loadFamilyPlayState();
+          await loadFamilySideQuestState();
           watchFamilyPlay();
+          watchFamilySideQuest();
           await triggerSync();
         } catch (e) {
           console.error('Error syncing cloud data on auth event:', e);
@@ -926,6 +995,9 @@ async function init() {
       } else {
         state.families = null;
         state.familyPlayState = null;
+        state.familySideQuestState = null;
+        stopFamilySideQuestSubscription?.();
+        stopFamilySideQuestSubscription = null;
         state.linkedLearnerProfileId = null;
         stopFamilyPlaySubscription?.();
         stopFamilyPlaySubscription = null;
@@ -962,7 +1034,9 @@ async function init() {
         await syncCloudDataToLocal();
         selectLinkedLearnerProfile();
         await loadFamilyPlayState();
+        await loadFamilySideQuestState();
         watchFamilyPlay();
+        watchFamilySideQuest();
         await triggerSync();
       } catch (e) {
         console.error('Error syncing initial cloud data:', e);

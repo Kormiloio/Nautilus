@@ -13,6 +13,7 @@ import { isConfigured } from '../engine/supabase-client.js';
 import { getLearningDayCount } from '../engine/learning-days.js';
 import { renderVoyageExperience } from './voyage-map.js';
 import { getSideQuestForProgress } from '../content/side-quests.js';
+import { hasSideQuestBadge } from '../engine/side-quest-game.js';
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -34,6 +35,7 @@ export function renderDashboard(container, state, actions) {
   const tonightTopic = getTopic(nextLesson.topicId) || getTopics()[0];
   const tonightDone = state.completedLessons.includes(nextLesson.id);
   const sideQuest = getSideQuestForProgress(state.activePackId, state.completedLessons.length);
+  const sideQuestComplete = sideQuest && !sideQuest.locked && hasSideQuestBadge(state.activePackId, state.profile, sideQuest.id);
 
   // Calculate badges
   const badgeDefs = [
@@ -124,11 +126,11 @@ export function renderDashboard(container, state, actions) {
           <div><span>Family Play is ${state.familyPlayState.activeSession.status}</span><strong>Voyage day ${state.familyPlayState.activeSession.voyageDay} · Join your family</strong></div>
           <button class="btn btn-primary" id="join-family-play-btn">Open Shared Lesson →</button>
         </section>` : ''}
-      ${!state.isGuide && sideQuest ? `<section class="mystery-cargo ${sideQuest.locked ? 'locked' : 'unlocked'}" aria-labelledby="mystery-cargo-title">
+      ${sideQuest ? `<section class="mystery-cargo ${sideQuest.locked ? 'locked' : 'unlocked'}" aria-labelledby="mystery-cargo-title">
         <div class="mystery-cargo__mark" aria-hidden="true">${sideQuest.locked ? '🔒' : '⚓'}</div>
         <div><div class="hero-tag">Five-lesson surprise</div><h2 id="mystery-cargo-title">${sideQuest.locked ? 'Mystery Cargo' : sideQuest.title}</h2>
-        <p>${sideQuest.locked ? `${sideQuest.remaining} more ${sideQuest.remaining === 1 ? 'lesson' : 'lessons'} until the first side quest unlocks.` : `Unexpected cargo unlocked at lesson ${sideQuest.milestone}. Open it when you’re ready.`}</p></div>
-        ${sideQuest.locked ? `<span>${state.completedLessons.length}/5</span>` : '<button class="btn btn-primary" id="open-side-quest-btn">Open the crate →</button>'}
+        <p>${sideQuest.locked ? `${sideQuest.remaining} more ${sideQuest.remaining === 1 ? 'lesson' : 'lessons'} until the first side quest unlocks.` : (sideQuestComplete ? 'Context Detective badge earned. Replay whenever your crew wants another try.' : `Unexpected cargo unlocked at lesson ${sideQuest.milestone}. Open it when you’re ready.`)}</p></div>
+        ${sideQuest.locked ? `<span>${state.completedLessons.length}/5</span>` : `<button class="btn btn-primary" id="open-side-quest-btn">${sideQuestComplete ? 'Replay the case →' : 'Open the crate →'}</button>`}
       </section>` : ''}
       <!-- Tonight's Session Hero -->
       <section class="hero-card" aria-labelledby="hero-title-id">

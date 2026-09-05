@@ -16,6 +16,9 @@ describe('five-lesson side quests', () => {
   it('changes the surprise at each subsequent five-lesson milestone', () => {
     const ids = [5,10,15,20,25].map(count => getSideQuestForProgress('montenegrin-en', count).id);
     expect(new Set(ids)).toHaveLength(5);
+    const detective = getSideQuestForProgress('montenegrin-en', 10);
+    expect(detective.cases).toHaveLength(3);
+    expect(detective.cases.every(item => item.choices.some(choice => choice.id === item.answerId))).toBe(true);
   });
 
   it('does not leak Montenegrin side quests into other language packs', () => {
