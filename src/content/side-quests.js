@@ -57,6 +57,15 @@ const MONTENEGRIN_QUESTS = [
       {targetText:'jedno pitanje',supportText:'Ask one real question',strength:'20 sec',context:'Someone else must answer in Montenegrin.'},
     ], note:'A rapid family challenge unlocked after twenty-five lessons.'
   },
+  {
+    id:'balkan-explorer', title:'Adriatic Coastal Navigator', eyebrow:'Mystery cargo · nautical challenge',
+    subtitle:'Combine weather, food, and travel words in sea-breeze scenarios.', warning:'Practice shouting clear commands from the helm!',
+    items:[
+      {targetText:'Brod plovi prema ostrvu.',supportText:'The boat sails toward the island.',strength:'Navigator',context:'Picture the coastal bay ahead.'},
+      {targetText:'Vrijeme je sunčano i toplo.',supportText:'The weather is sunny and warm.',strength:'Weather',context:'Observe the sky before setting sail.'},
+      {targetText:'Večeras jedemo svježu ribu.',supportText:'Tonight we eat fresh fish.',strength:'Dining',context:'Order at the harbor konoba.'},
+    ], note:'A coastal challenge unlocked at thirty lessons.'
+  },
 ];
 
 export function getSideQuestForProgress(packId, completedLessonCount) {

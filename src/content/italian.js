@@ -38,7 +38,14 @@ const definitions = [
 
 const months = [['family','greetings','numbers'],['colors','drinks','food'],['market','cafe','talkfamily'],['aboutme','days','outabout'],['weather','feelings','home'],['clothes','body','shopping'],['directions','coast','time'],['hobbies','travel','verbs'],['adjectives','questionwords','plans'],['smalltalk','restaurant','gathering']];
 
-export default buildRomancePack({ definitions, months, extras:['past','future','sounds'], config:{
+const dialogues = {
+  greetings: { roles:['Learner','Friend'], lines:[['Learner','Ciao! Come stai?','Hello! How are you?'],['Friend','Ciao! Molto bene, e tu?','Hello! Very well, and you?'],['Learner','Mi chiamo Lena. Piacere!','My name is Lena. Nice to meet you!'],['Friend','Piacere mio. Arrivederci!','My pleasure. Goodbye!']] },
+  cafe: { roles:['Guest','Cameriere'], lines:[['Guest','Buongiorno. Avete del caffè?','Good morning. Do you have coffee?'],['Cameriere','Sì, certo. Come lo desidera?','Yes, of course. How would you like it?'],['Guest','Un caffè macchiato, per favore.','A macchiato coffee, please.'],['Cameriere','Subito.','Right away.']] },
+  shopping: { roles:['Cliente','Negoziante'], lines:[['Cliente','Buongiorno! Quanto costa questo?','Hello! How much does this cost?'],['Negoziante','Costa dieci euro.','It costs ten euros.'],['Cliente','Lo prendo, grazie!','I will take it, thank you!'],['Negoziante','Grazie a lei, buona giornata!','Thank you, have a good day!']] },
+  travel: { roles:['Passeggero','Agente'], lines:[['Passeggero','Scusi, dov’è la stazione?','Excuse me, where is the station?'],['Agente','Vada sempre dritto per due blocchi.','Go straight ahead for two blocks.'],['Passeggero','Grazie mille!','Thank you very much!'],['Agente','Prego, buon viaggio!','You are welcome, have a good trip!']] },
+};
+
+export default buildRomancePack({ definitions, months, extras:['past','future','sounds'], dialogues, config:{
   id:'italian-en', code:'it', name:'Italian', locale:'it-IT', itemCode:'it-it', variety:'Standard Italian (Italy)',
   journeyThemeId:'italy-alps-to-sea@0.1.0',
   note:'Standard Italian pilot draft. Wording and pronunciation require fluent review.',

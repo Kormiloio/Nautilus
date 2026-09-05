@@ -1,5 +1,5 @@
-// Castilian Spanish (Spain) pilot. Original Nautilus draft content remains in
-// review until a fluent Spain-Spanish reviewer approves language and audio.
+import { buildRomancePack } from './romance-pack.js';
+
 const SOURCE = 'Original Nautilus Castilian Spanish pilot draft; queued for fluent Spain-Spanish review.';
 
 const definitions = [
@@ -38,6 +38,13 @@ const definitions = [
   ['alphabet','Spanish Sounds','Recognize distinctive spelling',[['ñ','the letter eñe'],['ll','the double-l spelling'],['rr','the strong r spelling'],['j','the Spanish jota spelling'],['z','the z spelling used with the Castilian distinction']]],
 ];
 
+const dialogues = {
+  greetings: { roles:['Learner','Friend'], lines:[['Learner','¡Hola! ¿Cómo estás?','Hello! How are you?'],['Friend','¡Hola! Muy bien, ¿y tú?','Hello! Very well, and you?'],['Learner','Me llamo Lena. Encantada.','My name is Lena. Nice to meet you.'],['Friend','Igualmente. ¡Hasta luego!','Likewise. See you later!']] },
+  cafe: { roles:['Guest','Camarero'], lines:[['Guest','Buenas tardes. ¿Tenéis café?','Good afternoon. Do you have coffee?'],['Camarero','Sí, claro. ¿Cómo lo quiere?','Yes, of course. How would you like it?'],['Guest','Un café con leche, por favor.','A coffee with milk, please.'],['Camarero','Ahora mismo.','Right away.']] },
+  shopping: { roles:['Cliente','Dependiente'], lines:[['Cliente','Hola, ¿cuánto cuesta esto?','Hello, how much does this cost?'],['Dependiente','Son diez euros.','It is ten euros.'],['Cliente','Me lo llevo, gracias.','I will take it, thank you.'],['Dependiente','A ti, ¡buen día!','Thank you, good day!']] },
+  travel: { roles:['Pasajero','Agente'], lines:[['Pasajero','Disculpe, ¿dónde está la estación?','Excuse me, where is the station?'],['Agente','Siga todo recto dos calles.','Go straight ahead for two blocks.'],['Pasajero','Muchas gracias.','Thank you very much.'],['Agente','De nada, ¡buen viaje!','You are welcome, have a good trip!']] },
+};
+
 const curriculum = {
   months: [
     ['family','greetings','numbers'], ['colors','drinks','food'], ['market','cafe','talkfamily'],
@@ -48,34 +55,17 @@ const curriculum = {
   extras: ['past','future','alphabet'],
 };
 
-const monthById = new Map(curriculum.months.flatMap((ids, monthIndex) => ids.map(id => [id, monthIndex + 1])));
-const topics = definitions.map(([id,title,subtitle,forms]) => {
-  const month = monthById.get(id) || 10;
-  return {
-    id, month, bucket: month - 1, title, subtitle,
-    icon: id.slice(0,2).toUpperCase(),
-    color: ['#d99a3d','#4f8c73','#4d7fa3'][(month - 1) % 3],
+export default buildRomancePack({
+  definitions,
+  months: curriculum.months,
+  extras: curriculum.extras,
+  dialogues,
+  config: {
+    id: 'spanish-spain-en', code: 'es', name: 'Spanish · Spain', locale: 'es-ES', itemCode: 'es-es', variety: 'Castilian Spanish (Spain)',
+    journeyThemeId: 'iberian-journey@0.1.0',
     note: 'Castilian Spanish (Spain) pilot draft. Regional wording and pronunciation require fluent review.',
-    items: forms.map(([targetText,supportText], index) => ({
-      id: `${id}-es-es-${String(index + 1).padStart(3,'0')}`,
-      targetText, supportText, languageTag:'es-ES', script:'Latn', direction:'ltr',
-      variety:'Castilian Spanish (Spain)', register:'standard conversational',
-      source:SOURCE, contributor:'Nautilus pilot team', reviewStatus:'draft',
-    })),
-  };
+    source: SOURCE,
+    varietyPolicy: 'Castilian Spanish for Spain. Region-specific vocabulary, vosotros forms, and pronunciation are labeled and require fluent Spain-Spanish review.',
+    audioNote: 'Device speech is an unreviewed preview and must use an es-ES voice.',
+  }
 });
-
-export default {
-  languagePack: {
-    id:'spanish-spain-en',
-    targetLanguage:{ code:'es', name:'Spanish · Spain', scripts:['Latn'] },
-    supportLanguage:{ code:'en', name:'English' },
-    version:'0.1.0', status:'pilot', direction:'ltr', defaultScript:'Latn', locale:'es-ES',
-    varietyPolicy:'Castilian Spanish for Spain. Region-specific vocabulary, vosotros forms, and pronunciation are labeled and require fluent Spain-Spanish review.',
-    journeyThemeId:'iberian-journey@0.1.0',
-    audio:{ locale:'es-ES', delivery:'speech-synthesis-draft', reviewStatus:'draft', note:'Device speech is an unreviewed preview and must use an es-ES voice.' },
-  },
-  curriculum,
-  topics:topics.filter(topic => !curriculum.extras.includes(topic.id)),
-  bonusTopics:topics.filter(topic => curriculum.extras.includes(topic.id)),
-};

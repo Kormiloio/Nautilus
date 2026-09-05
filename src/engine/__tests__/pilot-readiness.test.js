@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { VOYAGE_LESSONS } from '../learning-engine.js';
 import { getLearningDayCount, getLearningDayPosition, buildDayPassport } from '../learning-days.js';
+import { exportLocalProgress, importLocalProgress } from '../progress-store.js';
 
 describe('Four-Week Family Pilot Flight Check', () => {
   it('generates 200 distinct weekday lesson positions across 40 five-day weeks', () => {
@@ -40,5 +41,12 @@ describe('Four-Week Family Pilot Flight Check', () => {
     };
     expect(sampleProfile.completedLessons).toContain('voyage-day-1');
     expect(sampleProfile.stars).toBe(15);
+  });
+
+  it('exports and imports local progress JSON correctly', () => {
+    const exported = exportLocalProgress();
+    expect(exported).toContain('version');
+    const result = importLocalProgress(exported);
+    expect(result.importedKeys).toBeGreaterThanOrEqual(0);
   });
 });

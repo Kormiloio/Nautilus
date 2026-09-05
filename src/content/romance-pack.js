@@ -1,4 +1,4 @@
-export function buildRomancePack({ definitions, months, extras, config }) {
+export function buildRomancePack({ definitions, months, extras, config, dialogues = {} }) {
   const monthById = new Map(months.flatMap((ids, monthIndex) => ids.map(id => [id, monthIndex + 1])));
   const topics = definitions.map(([id, title, subtitle, forms]) => {
     const month = monthById.get(id) || 10;
@@ -13,6 +13,15 @@ export function buildRomancePack({ definitions, months, extras, config }) {
         variety: config.variety, register: 'standard conversational', source: config.source,
         contributor: 'Nautilus pilot team', reviewStatus: 'draft',
       })),
+      ...(dialogues[id] ? {
+        dialogue: {
+          roles: dialogues[id].roles,
+          lines: dialogues[id].lines.map(([role, targetText, supportText], index) => ({
+            id: `${id}-dialogue-${config.itemCode}-${String(index + 1).padStart(3, '0')}`,
+            role, targetText, supportText, reviewStatus: 'draft',
+          })),
+        }
+      } : {}),
     };
   });
   return {

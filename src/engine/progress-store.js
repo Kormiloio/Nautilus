@@ -466,3 +466,55 @@ export async function syncCloudDataToLocal() {
     }
   }
 }
+
+function getStorage() {
+  try {
+    if (typeof localStorage !== 'undefined' && localStorage) return localStorage;
+  } catch {
+    // Storage restricted or unavailable
+  }
+  return null;
+}
+
+export function exportLocalProgress() {
+  const storage = getStorage();
+  const exportData = {
+    version: '1.0.0',
+    exportedAt: new Date().toISOString(),
+    items: {},
+  };
+  if (!storage) return JSON.stringify(exportData, null, 2);
+
+  for (let i = 0; i < storage.length; i++) {
+    const key = storage.key(i);
+    if (key && key.startsWith('nautilus:')) {
+      exportData.items[key] = storage.getItem(key);
+    }
+  }
+  return JSON.stringify(exportData, null, 2);
+}
+
+export function importLocalProgress(jsonString) {
+  let parsed;
+  try {
+    parsed = JSON.parse(jsonString);
+  } catch {
+    throw new Error('Invalid JSON format.');
+  }
+
+  if (!parsed || typeof parsed.items !== 'object') {
+    throw new Error('Invalid Nautilus progress backup structure.');
+  }
+
+  const storage = getStorage();
+  let count = 0;
+  if (storage) {
+    for (const [key, value] of Object.entries(parsed.items)) {
+      if (key.startsWith('nautilus:') && typeof value === 'string') {
+        storage.setItem(key, value);
+        count++;
+      }
+    }
+  }
+  return { importedKeys: count, exportedAt: parsed.exportedAt };
+}
