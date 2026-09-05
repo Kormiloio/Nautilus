@@ -59,6 +59,8 @@ const dialogues = {
   cafe: { roles:['Guest','Server'], lines:[['Guest','Përshëndetje. A mund të porosis?','Hello. May I order?'],['Server','Po, sigurisht.','Yes, of course.'],['Guest','Një kafe me qumësht, ju lutem.','A coffee with milk, please.'],['Server','Patjetër.','Certainly.']] },
   directions: { roles:['Traveler','Local'], lines:[['Traveler','Më falni, ku është qendra?','Excuse me, where is the center?'],['Local','Shko drejt dhe kthehu majtas.','Go straight and turn left.'],['Traveler','Është larg?','Is it far?'],['Local','Jo, është këtu afër.','No, it is nearby.']] },
   gathering: { roles:['Host','Guest'], lines:[['Host','Mirë se erdhët! Na keni munguar.','Welcome! We missed you.'],['Guest','Faleminderit. Si keni qenë?','Thank you. How have you been?'],['Host','Shumë mirë. Hajde të hamë.','Very well. Let us eat.'],['Guest','Gëzuar!','Cheers!']] },
+  shopping: { roles:['Customer','Vendor'], lines:[['Customer','Përshëndetje! Sa kushton kjo?','Hello! How much does this cost?'],['Vendor','Cilën dëshironi?','Which one would you like?'],['Customer','Atë të kuqen, ju lutem.','The red one, please.'],['Vendor','Bën pesëqind lekë.','It is five hundred lek.']] },
+  travel: { roles:['Passenger','Agent'], lines:[['Passenger','Përshëndetje! Ku është porta?','Hello! Where is the gate?'],['Agent','Ndiqni tabelat për mbërritje.','Follow the signs for arrivals.'],['Passenger','Kam biletën time këtu.','I have my ticket here.'],['Agent','Udhëtim të mbarë!','Have a good trip!']] },
 };
 
 const curriculum = {
