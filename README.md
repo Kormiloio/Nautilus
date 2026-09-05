@@ -55,3 +55,6 @@ Expand and review the lesson content so that each topic can support five distinc
 ## Build artifact pruning
 
 The `npm run build` pipeline now automatically runs `scripts/prune-build-artifacts.mjs` to remove orphaned hashed assets from `web/assets/`. This keeps the repository clean and reduces deployment size. You can also run it manually with `npm run prune`.
+## FAQ
+
+See the FAQ for details: [FAQ](docs/FAQ.md)
