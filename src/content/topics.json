@@ -1214,7 +1214,39 @@
           "targetText": "Dobro sam.",
           "supportText": "I'm fine."
         }
-      ]
+      ],
+      "dialogue": {
+        "roles": [
+          "Doctor",
+          "You"
+        ],
+        "lines": [
+          {
+            "id": "body-dialogue-001",
+            "targetText": "Dobar dan! Kako se osjećaš?",
+            "supportText": "Good day! How do you feel?",
+            "role": "Doctor"
+          },
+          {
+            "id": "body-dialogue-002",
+            "targetText": "Boli me glava i stomak.",
+            "supportText": "My head and stomach hurt.",
+            "role": "You"
+          },
+          {
+            "id": "body-dialogue-003",
+            "targetText": "Pijte vodu i odmorite se.",
+            "supportText": "Drink water and rest.",
+            "role": "Doctor"
+          },
+          {
+            "id": "body-dialogue-004",
+            "targetText": "Hvala vam mnogo!",
+            "supportText": "Thank you very much!",
+            "role": "You"
+          }
+        ]
+      }
     },
     {
       "id": "shopping",
