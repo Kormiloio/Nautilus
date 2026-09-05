@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/clean-build.mjs && vite build",
+    "build": "node scripts/clean-build.mjs && vite build && node scripts/prune-build-artifacts.mjs",
+    "prune": "node scripts/prune-build-artifacts.mjs",
     "verify:release": "node scripts/verify-verified-release.mjs",
     "test": "vitest run",
     "validate": "node scripts/validate-content.js",

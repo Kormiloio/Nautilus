@@ -1,0 +1,24 @@
+{
+  "name": "Nautilus — Learn Your Heritage Together",
+  "short_name": "Nautilus",
+  "description": "Multi-family heritage language learning voyage for teenagers and families.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b0b0f",
+  "theme_color": "#0b0b0f",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./assets/illustrations/logo-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/illustrations/logo-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

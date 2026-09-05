@@ -265,7 +265,20 @@
             "role": "New Friend"
           }
         ]
-      }
+      },
+      "connections": [
+        {
+          "id": "greetings-family-spiral",
+          "requiresTopicIds": ["greetings", "family"],
+          "items": [
+            {
+              "id": "greetings-conn-001",
+              "targetText": "Dobar dan! Ovo je moja porodica.",
+              "supportText": "Good day! This is my family."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "numbers",

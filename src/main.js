@@ -60,6 +60,7 @@ import { renderSessionView } from './components/session-view.js';
 import { renderCurriculum } from './components/curriculum-view.js';
 import { renderFamilyOverview } from './components/family-overview.js';
 import { renderSideQuestView } from './components/side-quest-view.js';
+import { AdminDashboardComponent } from './components/admin-dashboard.js';
 
 // Global state
 const state = {
@@ -958,11 +959,21 @@ function rerender() {
     renderCurriculum(appContainer, state, actions);
   } else if (state.screen === 'side-quest') {
     renderSideQuestView(appContainer, state, actions);
+  } else if (state.screen === 'admin-dashboard') {
+    const adminComp = new AdminDashboardComponent(appContainer);
+    adminComp.loadData();
   }
 }
 
 // App Initialization
 async function init() {
+  // Service Worker Registration for Offline PWA Support (FR-13)
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    navigator.serviceWorker.register('./sw.js').catch((err) => {
+      console.warn('PWA ServiceWorker registration skipped:', err);
+    });
+  }
+
   // Safari and some mobile browsers populate their voice list asynchronously.
   window.speechSynthesis?.getVoices();
   // Listen for online status to flush pending offline transactions
