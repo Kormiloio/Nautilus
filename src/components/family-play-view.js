@@ -60,6 +60,16 @@ function buildConversationScript(step, leader, participants = []) {
   ];
 }
 
+function renderLessonRecap(recap) {
+  if (!recap) return "";
+  const entry = item => "<li><strong>" + renderLanguageRun(item.targetText, "target", LANGUAGE_PACK, item) + "</strong><span>" + renderLanguageRun(item.supportText, "support", LANGUAGE_PACK, item) + "</span></li>";
+  const column = (label, items, emptyTarget, emptySupport) => "<article><small>" + label + "</small><ul>" + (items.length ? items.map(entry).join("") : "<li><strong>" + emptyTarget + "</strong><span>" + emptySupport + "</span></li>") + "</ul></article>";
+  const connection = recap.connection
+    ? "<article class=\"lesson-recap__connection\"><small>Connection</small><strong>" + renderLanguageRun(recap.connection.targetText, "target", LANGUAGE_PACK, recap.connection) + "</strong><span>" + renderLanguageRun(recap.connection.supportText, "support", LANGUAGE_PACK, recap.connection) + "</span></article>"
+    : "";
+  return "<section class=\"lesson-recap lesson-recap--family\" aria-label=\"What we brought back today\"><div class=\"lesson-recap__heading\"><span>⚓</span><div><small>Today’s voyage recap</small><h4>What we brought back</h4></div></div><div class=\"lesson-recap__grid\">" + column("New today", recap.newItems || [], "Mixed voyage review", "Several familiar topics together") + column("Remembered", recap.recalledItems || [], "Your first words", "More recall appears as your voyage grows") + connection + "</div></section>";
+}
+
 function renderSharedContent(step, turnPerson, quizState = null, participants = [], familyPeople = [], matchState = null) {
   if (step.type === 'ready') {
     return `<div class="family-ready-call"><span aria-hidden="true">⚓</span><div><strong>Gather your crew</strong><p>Open Family Play on each learner's device. When everyone shows Ready, the parent can begin.</p></div></div>`;
@@ -122,7 +132,7 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
   if (step.type === 'family-reflection') {
     const people = familyPeople.length ? familyPeople : [{ name: 'Everyone' }];
     const locks = quizState?.answers || [];
-    return `<div class="family-reflection-card"><strong>Final family challenge</strong><p>Complete your three actions, then lock in your own card. The family day finishes automatically when everyone is done.</p><div class="family-reflection-grid">${people.map((person, index) => { const item = step.items[index % step.items.length]; const lock = locks.find(answer => person.profileId ? answer.profileId === person.profileId : !answer.profileId); const isMine = Boolean(person.isCurrentUser); return `<button class="family-reflection-assignment ${lock ? 'finished' : ''}" data-final-lock ${isMine && !lock ? '' : 'disabled'}><small>${escapeHtml(person.name)}’s word</small><strong>${renderLanguageRun(item.targetText, 'target', LANGUAGE_PACK, item)}</strong><span>${renderLanguageRun(item.supportText, 'support', LANGUAGE_PACK, item)}</span><em>1. Say it · 2. Translate it · 3. Use it in a family example</em><b>${lock ? '✓ Locked in' : isMine ? 'Tap to lock in' : 'Waiting…'}</b></button>`; }).join('')}</div><span>${locks.length} of ${people.length} people locked in</span></div>`;
+    return `${renderLessonRecap(step.recap)}<div class="family-reflection-card"><strong>Final family challenge</strong><p>Complete your three actions, then lock in your own card. The family day finishes automatically when everyone is done.</p><div class="family-reflection-grid">${people.map((person, index) => { const item = step.items[index % step.items.length]; const lock = locks.find(answer => person.profileId ? answer.profileId === person.profileId : !answer.profileId); const isMine = Boolean(person.isCurrentUser); return `<button class="family-reflection-assignment ${lock ? 'finished' : ''}" data-final-lock ${isMine && !lock ? '' : 'disabled'}><small>${escapeHtml(person.name)}’s word</small><strong>${renderLanguageRun(item.targetText, 'target', LANGUAGE_PACK, item)}</strong><span>${renderLanguageRun(item.supportText, 'support', LANGUAGE_PACK, item)}</span><em>1. Say it · 2. Translate it · 3. Use it in a family example</em><b>${lock ? '✓ Locked in' : isMine ? 'Tap to lock in' : 'Waiting…'}</b></button>`; }).join('')}</div><span>${locks.length} of ${people.length} people locked in</span></div>`;
   }
   const items = step.items || step.dialogue?.lines || [];
   if (items.length) {

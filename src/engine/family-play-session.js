@@ -52,6 +52,15 @@ export function getLessonPreview(lesson, learnedTopicIds = []) {
   };
 }
 
+export function getLessonRecap(lesson, learnedTopicIds = []) {
+  const preview = getLessonPreview(lesson, learnedTopicIds);
+  return {
+    newItems: (preview.topic?.items || []).slice(0, 1),
+    recalledItems: preview.reviewTopics.flatMap(topic => topic.items || []).slice(0, 2),
+    connection: preview.connectionItems[0] || null,
+  };
+}
+
 export function buildFamilyPlaySteps(lesson, topic, sessionId) {
   const random = createSeededRandom(`${sessionId}:${lesson.id}:family-full-session`);
   const lessonKind = String(lesson.type || 'discover').replace('integration-', '');
@@ -105,6 +114,10 @@ export function buildFamilyPlaySteps(lesson, topic, sessionId) {
   return [
     { type: 'ready', title: 'Is everyone ready?', subtitle: 'Join on each device before setting sail together.' },
     ...activityOrder,
-    { type: 'family-reflection', title: 'Bring It Home', subtitle: 'Everyone completes one final speaking challenge', items: conversationItems },
+    { type: 'family-reflection', title: 'Bring It Home', subtitle: 'Everyone completes one final speaking challenge', items: conversationItems, recap: {
+      newItems: currentItems.slice(0, 1),
+      recalledItems: reviewItems.slice(0, 2),
+      connection: connectionItems[0] || null,
+    } },
   ];
 }

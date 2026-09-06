@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildFamilyPlaySteps, getAvailableConnectionItems, getLessonPreview } from '../family-play-session.js';
+import { buildFamilyPlaySteps, getAvailableConnectionItems, getLessonPreview, getLessonRecap } from '../family-play-session.js';
 import { getTopic } from '../learning-engine.js';
 
 const topic = { items: Array.from({ length: 12 }, (_, index) => ({ id: `word-${index}`, targetText: `target ${index}`, supportText: `meaning ${index}` })) };
@@ -51,6 +51,19 @@ describe('full Family Play session', () => {
     expect(getAvailableConnectionItems(clothes, ['family', 'colors'])).toEqual(expect.arrayContaining([
       expect.objectContaining({ targetText: 'Moja sestra ima plavu haljinu.' }),
     ]));
+  });
+
+  it('summarizes new, recalled, and authored connected language at lesson end', () => {
+    const lesson = { id:'voyage-13', topicId:'numbers', type:'build' };
+    const recap = getLessonRecap(lesson, ['family']);
+    expect(recap.newItems).toEqual([expect.objectContaining({ targetText: 'jedan' })]);
+    expect(recap.recalledItems).toEqual(expect.arrayContaining([
+      expect.objectContaining({ targetText: 'mama' }),
+      expect.objectContaining({ targetText: 'tata' }),
+    ]));
+    expect(recap.connection).toEqual(expect.objectContaining({ targetText: 'Imam jednog brata.' }));
+
+    expect(getLessonRecap(lesson, []).connection).toBeNull();
   });
 
   it('previews only learned recall topics and eligible authored connections', () => {

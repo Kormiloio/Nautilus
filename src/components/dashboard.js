@@ -31,6 +31,10 @@ export function renderDashboard(container, state, actions) {
   const visibleProfiles = state.sessionUser
     ? getProfiles().filter(profile => !String(profile.id).startsWith('local-'))
     : getProfiles();
+  const activeProfile = getProfiles().find(profile => profile.name === state.profile);
+  const viewingAnotherLearner = Boolean(
+    state.sessionUser && activeProfile?.linkedUserId && activeProfile.linkedUserId !== state.sessionUser.id
+  );
   const learningDayCount = state.familyPlayState?.completedDays ?? getLearningDayCount(state.activityDates);
   const nextLesson = VOYAGE_LESSONS[Math.min(learningDayCount, 199)];
   const tonightTopic = getTopic(nextLesson.topicId) || getTopics()[0];
@@ -139,6 +143,8 @@ export function renderDashboard(container, state, actions) {
         <p>${sideQuest.locked ? `${sideQuest.remaining} more ${sideQuest.remaining === 1 ? 'lesson' : 'lessons'} until the first side quest unlocks.` : (sideQuestComplete ? 'Context Detective badge earned. Replay whenever your crew wants another try.' : `Unexpected cargo unlocked at lesson ${sideQuest.milestone}. Open it when you’re ready.`)}</p></div>
         ${sideQuest.locked ? `<span>${state.completedLessons.length}/5</span>` : `<button class="btn btn-primary" id="open-side-quest-btn">${sideQuestComplete ? 'Replay the case →' : 'Open the crate →'}</button>`}
       </section>` : ''}
+      ${viewingAnotherLearner ? '<section class="learner-credit-guide" role="status"><div><div class="hero-tag">Viewing learner progress</div><strong>' + escapeHtml(activeProfile.name) + ' earns individual progress from their own linked account.</strong><p>For a shared lesson from this parent account, use Family Play. Their stars and voyage days stay safely attached to their account.</p></div><button class="btn btn-primary" id="plan-family-play-btn">Plan Family Play →</button></section>' : ''}
+
       <!-- Tonight's Session Hero -->
       <section class="hero-card" aria-labelledby="hero-title-id">
         <div class="hero-text">
@@ -152,7 +158,7 @@ export function renderDashboard(container, state, actions) {
           </p>
         </div>
         <button class="btn btn-primary" id="start-session-btn">
-          ${state.isGuide ? 'Preview Session' : (tonightDone ? 'Replay Session' : 'Start Lesson')}
+          ${viewingAnotherLearner ? 'Plan Family Play' : (state.isGuide ? 'Preview Session' : (tonightDone ? 'Replay Session' : 'Start Lesson'))}
         </button>
       </section>
 
@@ -288,7 +294,11 @@ export function renderDashboard(container, state, actions) {
 
   // Attach event handlers
   container.querySelector('#logo-btn').addEventListener('click', actions.goDashboard);
-  container.querySelector('#start-session-btn').addEventListener('click', () => actions.startSession(nextLesson));
+  container.querySelector('#start-session-btn').addEventListener('click', () => {
+    if (viewingAnotherLearner) { actions.goFamilyOverview(); return; }
+    actions.startSession(nextLesson);
+  });
+  container.querySelector('#plan-family-play-btn')?.addEventListener('click', actions.goFamilyOverview);
   container.querySelector('#view-voyage-btn').addEventListener('click', actions.goCurriculum);
 
   // Profile switches

@@ -1,4 +1,5 @@
 import { generateSession, getTopic, buildMatch, buildQuiz, shuffle, LANGUAGE_PACK } from '../engine/learning-engine.js';
+import { getLessonRecap } from '../engine/family-play-session.js';
 import { escapeHtml, renderLanguageRun } from '../engine/language-runs.js';
 import { colorTileStyle, getImmersiveLessonScene, renderColorField } from './lesson-visuals.js';
 
@@ -610,6 +611,8 @@ function renderListenStep(mount, step, state, actions) {
 function renderDoneStep(mount, step, state, actions) {
   const lesson = state.activeLesson;
   const topic = lesson.topicId ? getTopic(lesson.topicId) : null;
+  const recap = getLessonRecap(lesson, state.completedTopicIds);
+  const recapItem = item => `<li><strong>${renderLanguageRun(item.targetText, 'target', LANGUAGE_PACK, item)}</strong><span>${renderLanguageRun(item.supportText, 'support', LANGUAGE_PACK, item)}</span></li>`;
 
   mount.innerHTML = `
     <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; padding: 40px 0;">
@@ -623,6 +626,15 @@ function renderDoneStep(mount, step, state, actions) {
       <div class="badge-pill" style="border-color: var(--lime); color: var(--lime); font-size: 14px; font-weight: 800; padding: 10px 20px;">
         ★ Voyage Lesson Completed!
       </div>
+
+      <section class="lesson-recap" aria-label="What we brought back today">
+        <div class="lesson-recap__heading"><span>⚓</span><div><small>Today’s voyage recap</small><h4>What we brought back</h4></div></div>
+        <div class="lesson-recap__grid">
+          <article><small>New today</small><ul>${recap.newItems.length ? recap.newItems.map(recapItem).join('') : '<li><strong>Mixed voyage review</strong><span>Several familiar topics together</span></li>'}</ul></article>
+          <article><small>Remembered</small><ul>${recap.recalledItems.length ? recap.recalledItems.map(recapItem).join('') : '<li><strong>Your first words</strong><span>More recall appears as your voyage grows</span></li>'}</ul></article>
+          ${recap.connection ? `<article class="lesson-recap__connection"><small>Connection</small><strong>${renderLanguageRun(recap.connection.targetText, 'target', LANGUAGE_PACK, recap.connection)}</strong><span>${renderLanguageRun(recap.connection.supportText, 'support', LANGUAGE_PACK, recap.connection)}</span></article>` : ''}
+        </div>
+      </section>
 
       <button class="btn btn-primary" id="finish-lesson-btn" style="margin-top: 12px; padding: 14px 32px;">
         Back to Dashboard
