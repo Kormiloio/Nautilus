@@ -85,6 +85,16 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
       <div class="family-match-board"><div>${targets.map((item, index) => matchButton(item, index + 1, item.targetText, 'target')).join('')}</div><div>${supports.map((item, index) => matchButton(item, String.fromCharCode(65 + index), item.supportText, 'support')).join('')}</div></div>
       <p class="family-match-status" aria-live="polite"><strong>${matched.size} of ${step.items.length}</strong> pairs complete${matched.size === step.items.length ? ' · Great work!' : ''}</p>`;
   }
+  if (step.type === 'family-sentence-builder') {
+    const item = step.items[0];
+    if (!item) return '';
+    return `${turnPrompt}<div class="family-sentence-builder" data-sentence-answer="${escapeHtml(item.targetText)}">
+      <div><small>MAKE THE SENTENCE</small><strong>${renderLanguageRun(item.supportText, 'support', LANGUAGE_PACK, item)}</strong><p>Tap the words in order. Every device can build it at its own pace.</p></div>
+      <div class="family-sentence-builder__answer" aria-live="polite">Tap a word to begin</div>
+      <div class="family-sentence-builder__tokens">${item.tokens.map((token, index) => `<button type="button" data-sentence-token="${index}">${escapeHtml(token)}</button>`).join('')}</div>
+      <button type="button" class="btn btn-secondary family-sentence-builder__reset" data-sentence-reset>Start over</button>
+    </div>`;
+  }
   if (step.type === 'family-quiz') {
     const lockedAnswer = quizState?.currentAnswer?.answerId;
     const status = quizState?.answers || [];
@@ -259,6 +269,27 @@ export function renderFamilyPlayView(container, state, actions) {
     !button.disabled && button.dataset.familyMatch === interaction?.selectedId && button.dataset.familyMatchSide === interaction?.selectedSide
   ) || null;
   selectedMatch?.classList.add('selected');
+  const sentenceBuilder = container.querySelector('.family-sentence-builder');
+  if (sentenceBuilder) {
+    const answer = sentenceBuilder.dataset.sentenceAnswer.trim().replace(/\s+/g, ' ');
+    const chosen = [];
+    const answerSlot = sentenceBuilder.querySelector('.family-sentence-builder__answer');
+    const updateSentence = () => {
+      const assembled = chosen.map(button => button.textContent.trim()).join(' ');
+      answerSlot.textContent = assembled || 'Tap a word to begin';
+      answerSlot.classList.toggle('complete', assembled === answer);
+      answerSlot.classList.toggle('try-again', Boolean(assembled) && chosen.length === sentenceBuilder.querySelectorAll('[data-sentence-token]').length && assembled !== answer);
+      if (assembled === answer) answerSlot.textContent = `✓ ${assembled} · Say it together!`;
+    };
+    sentenceBuilder.querySelectorAll('[data-sentence-token]').forEach(button => button.addEventListener('click', () => {
+      if (button.disabled) return;
+      button.disabled = true; chosen.push(button); updateSentence();
+    }));
+    sentenceBuilder.querySelector('[data-sentence-reset]').addEventListener('click', () => {
+      chosen.length = 0; sentenceBuilder.querySelectorAll('[data-sentence-token]').forEach(button => { button.disabled = false; }); updateSentence();
+    });
+  }
+
   container.querySelectorAll('[data-family-match]').forEach(button => button.addEventListener('click', () => {
     if (button.classList.contains('matched')) return;
     if (!selectedMatch) {

@@ -38,6 +38,19 @@ describe('full Family Play session', () => {
     ]));
   });
 
+  it('gives Build lessons a visible sentence-building round between classic activities', () => {
+    const numbers = getTopic('numbers');
+    const lesson = { id:'voyage-13', topicId:'numbers', title:'Numbers: Build', type:'build' };
+    const steps = buildFamilyPlaySteps(lesson, numbers, 'session-builder');
+    const types = steps.map(step => step.type);
+    expect(types).toContain('family-flashcards');
+    expect(types).toContain('family-match');
+    expect(types).toContain('family-quiz');
+    expect(types).toContain('family-sentence-builder');
+    expect(types.indexOf('family-sentence-builder')).toBeGreaterThan(types.indexOf('family-flashcards'));
+    expect(types.indexOf('family-sentence-builder')).toBeLessThan(types.indexOf('family-match'));
+  });
+
   it('makes a Numbers Build lesson cumulative instead of repeating a numbers-only list', () => {
     const numbers = getTopic('numbers');
     const buildLesson = { id:'voyage-13', topicId:'numbers', title:'Numbers: Build', type:'build' };

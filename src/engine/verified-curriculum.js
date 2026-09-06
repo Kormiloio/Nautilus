@@ -24,7 +24,7 @@ export function toVerifiedExercises(steps) {
       targets:step.targetItems.map(i => ({id:'target-'+i.id,text:i.targetText})),
       supports:step.supportItems.map(i => ({id:'support-'+i.id,text:i.supportText})),
       answer:Object.fromEntries(step.items.map(i => ['target-'+i.id,'support-'+i.id]))}];
-    if (['warmup','discover','recall-flash','note','dialogue','listen','ready','family-flashcards','family-conversation','family-reflection'].includes(step.type)) {
+    if (['warmup','discover','recall-flash','note','dialogue','listen','ready','family-flashcards','family-conversation','family-sentence-builder','family-reflection'].includes(step.type)) {
       return [{...common,kind:'self_report',note:step.note,
         items:words(step.items || (step.item ? [step.item] : step.dialogue?.lines || [])),
         confirmation:'I completed this practice. Speaking is self-reported, not automatically assessed.'}];

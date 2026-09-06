@@ -51,29 +51,44 @@ export function buildFamilyPlaySteps(lesson, topic, sessionId) {
   const completePool = practiceItems.length >= 6 ? practiceItems : uniqueItems([...practiceItems, ...takeItems(fallbackPool, 10, random)]);
   const quizItems = takeItems(completePool, 6, random);
   const conversationItems = takeItems(uniqueItems([...connectionItems, ...reviewItems, ...currentItems]), 6, random);
+  const builderItems = takeItems(connectionItems.length ? connectionItems : uniqueItems([...reviewItems, ...currentItems]), 3, random)
+    .filter(item => String(item.targetText || '').trim().split(/\s+/).length > 1)
+    .map(item => ({ ...item, tokens: shuffle(String(item.targetText).trim().split(/\s+/), random) }));
 
-  const steps = [
+  const flashcards = {
+    type: 'family-flashcards', title: mix.title, subtitle: mix.subtitle, items: completePool,
+    reviewCount: reviewItems.length, connectionCount: connectionItems.length,
+  };
+  const matchItems = completePool.slice(0, 6);
+  const match = {
+    type: 'family-match', title: lessonKind === 'discover' ? 'Match as a Crew' : 'Connect Old and New',
+    subtitle: 'Take turns connecting current and earlier language to its meaning', items: matchItems,
+    targetItems: shuffle(matchItems, random), supportItems: shuffle(matchItems, random),
+  };
+  const quizzes = quizItems.map((item, index) => ({
+    type: 'family-quiz', title: `Family Quiz · ${index + 1} of ${quizItems.length}`,
+    subtitle: 'Choose an answer together, then reveal it', item,
+    options: shuffle([item, ...takeItems(completePool.filter(candidate => candidate.id !== item.id), 3, random)], random),
+  }));
+  const conversations = conversationItems.map((item, index) => ({
+    type: 'family-conversation', title: `Talk Together · Round ${index + 1}`,
+    subtitle: 'Ask, answer, and make the phrase your own', item,
+  }));
+  const builder = builderItems.length ? [{
+    type: 'family-sentence-builder', title: 'Build a Family Sentence',
+    subtitle: 'Tap the words in order, then say the completed sentence together', items: builderItems,
+  }] : [];
+  const activityOrder = {
+    discover: [flashcards, match, ...quizzes, ...conversations],
+    recall: [flashcards, ...quizzes, match, ...conversations],
+    build: [flashcards, ...builder, match, ...quizzes, ...conversations],
+    use: [...conversations, flashcards, ...builder, match, ...quizzes],
+    checkpoint: [...quizzes, match, flashcards, ...conversations],
+  }[lessonKind] || [flashcards, match, ...quizzes, ...conversations];
+
+  return [
     { type: 'ready', title: 'Is everyone ready?', subtitle: 'Join on each device before setting sail together.' },
-    { type: 'family-flashcards', title: mix.title, subtitle: mix.subtitle, items: completePool, reviewCount: reviewItems.length, connectionCount: connectionItems.length },
-    (() => {
-      const matchItems = completePool.slice(0, 6);
-      return {
-        type: 'family-match', title: lessonKind === 'discover' ? 'Match as a Crew' : 'Connect Old and New', subtitle: 'Take turns connecting current and earlier language to its meaning',
-        items: matchItems,
-        targetItems: shuffle(matchItems, random),
-        supportItems: shuffle(matchItems, random),
-      };
-    })(),
-    ...quizItems.map((item, index) => ({
-      type: 'family-quiz', title: `Family Quiz · ${index + 1} of ${quizItems.length}`,
-      subtitle: 'Choose an answer together, then reveal it', item,
-      options: shuffle([item, ...takeItems(completePool.filter(candidate => candidate.id !== item.id), 3, random)], random),
-    })),
-    ...conversationItems.map((item, index) => ({
-      type: 'family-conversation', title: `Talk Together · Round ${index + 1}`,
-      subtitle: 'Ask, answer, and make the phrase your own', item,
-    })),
+    ...activityOrder,
     { type: 'family-reflection', title: 'Bring It Home', subtitle: 'Everyone completes one final speaking challenge', items: conversationItems },
   ];
-  return steps;
 }
