@@ -63,30 +63,23 @@ const COMPANIONS = [
   { min: 150, icon: '🐋', name: 'Great Voyager', note: '150 voyage days completed' },
 ];
 
+// A destination is one shared milestone: its map pin, its learning chapter, and its
+// collectible poster must always tell the same story.
 const VOYAGE_PORTS = [
-  { x: 7, y: 66, name: 'Home Harbor', chapter: 'Family & greetings' },
-  { x: 17, y: 57, name: 'Lantern Quay', chapter: 'Names & introductions' },
-  { x: 28, y: 63, name: 'Echo Arch', chapter: 'Numbers & sounds' },
-  { x: 39, y: 51, name: 'Color Cove', chapter: 'Colors & descriptions' },
-  { x: 49, y: 58, name: 'Market Island', chapter: 'Food & shopping' },
-  { x: 59, y: 44, name: 'Café Point', chapter: 'Ordering & conversation' },
-  { x: 69, y: 52, name: 'Compass Rock', chapter: 'Directions & travel' },
-  { x: 79, y: 39, name: 'Story Bay', chapter: 'Sentences & stories' },
-  { x: 88, y: 47, name: 'Family Coast', chapter: 'Visits & gatherings' },
-  { x: 95, y: 32, name: 'Sunrise Kotor', chapter: 'Confident conversation' },
+  { x: 7, y: 66, name: 'Home Harbor', chapter: 'Family', asset: 'poster-family-v1.jpg', unlock: 0 },
+  { x: 17, y: 57, name: 'Lantern Quay', chapter: 'Greetings', asset: 'poster-greetings-v1.jpg', unlock: 20 },
+  { x: 28, y: 63, name: 'Echo Arch', chapter: 'Numbers & sounds', asset: 'poster-echo-arch-v1.jpg', unlock: 40 },
+  { x: 39, y: 51, name: 'Color Cove', chapter: 'Colors', asset: 'poster-colors-v1.jpg', unlock: 60 },
+  { x: 49, y: 58, name: 'Market Island', chapter: 'Food', asset: 'poster-food-v1.jpg', unlock: 80 },
+  { x: 59, y: 44, name: 'Café Point', chapter: 'Conversation', asset: 'poster-cafe-v1.jpg', unlock: 100 },
+  { x: 69, y: 52, name: 'Compass Rock', chapter: 'Directions', asset: 'poster-directions-v1.jpg', unlock: 120 },
+  { x: 79, y: 39, name: 'Story Bay', chapter: 'Sentences & stories', asset: 'poster-story-bay-v1.jpg', unlock: 140 },
+  { x: 88, y: 47, name: 'Family Coast', chapter: 'Visits & gatherings', asset: 'poster-family-coast-v1.jpg', unlock: 160 },
+  { x: 95, y: 32, name: 'Sunrise Kotor', chapter: 'Confident conversation', asset: 'poster-sunrise-kotor-v1.jpg', unlock: 180 },
 ];
 
 const DESTINATION_POSTERS = [
-  { label: 'Port 1', name: 'Home Harbor', chapter: 'Family', asset: 'poster-family-v1.jpg', unlock: 0 },
-  { label: 'Port 2', name: 'Lantern Quay', chapter: 'Greetings', asset: 'poster-greetings-v1.jpg', unlock: 20 },
-  { label: 'Port 3', name: 'Echo Arch', chapter: 'Numbers & sounds', asset: 'poster-echo-arch-v1.jpg', unlock: 40 },
-  { label: 'Port 4', name: 'Color Cove', chapter: 'Colors', asset: 'poster-colors-v1.jpg', unlock: 60 },
-  { label: 'Port 5', name: 'Market Island', chapter: 'Food', asset: 'poster-food-v1.jpg', unlock: 80 },
-  { label: 'Port 6', name: 'Café Point', chapter: 'Conversation', asset: 'poster-cafe-v1.jpg', unlock: 100 },
-  { label: 'Port 7', name: 'Compass Rock', chapter: 'Directions', asset: 'poster-directions-v1.jpg', unlock: 120 },
-  { label: 'Port 8', name: 'Story Bay', chapter: 'Sentences & stories', asset: 'poster-story-bay-v1.jpg', unlock: 140 },
-  { label: 'Port 9', name: 'Family Coast', chapter: 'Visits & gatherings', asset: 'poster-family-coast-v1.jpg', unlock: 160 },
-  { label: 'Port 10', name: 'Sunrise Kotor', chapter: 'Confident conversation', asset: 'poster-sunrise-kotor-v1.jpg', unlock: 180 },
+  ...VOYAGE_PORTS.map((port, index) => ({ ...port, label: `Port ${index + 1}` })),
   { label: 'Voyage finale', name: 'Homecoming Harbor', chapter: 'The 200-day voyage', asset: 'poster-homecoming-v1.jpg', unlock: 200 },
 ];
 
@@ -146,7 +139,7 @@ export function renderVoyageExperience(state) {
     const unlocked = completedCount >= poster.unlock;
     const active = completedCount >= poster.unlock && completedCount < poster.unlock + 20;
     return `<article class="destination-poster ${unlocked ? 'unlocked' : 'charted'} ${active ? 'active' : ''}">
-      <div class="destination-poster__plaque"><span>Nautilus · ${poster.label}</span><b>${unlocked ? 'Discovered' : `Charts open day ${poster.unlock}`}</b></div>
+      <div class="destination-poster__plaque"><span>${poster.label} · ${escapeHtml(poster.name)}</span><b>${unlocked ? 'In your collection' : `Charts open day ${poster.unlock}`}</b></div>
       <div class="destination-poster__art">
         <img src="${PUBLIC_ASSET_BASE}assets/illustrations/${poster.asset}" alt="Travel-poster illustration of ${poster.name}">
         ${unlocked ? '<span class="destination-poster__stamp" aria-label="Destination discovered">⚓</span>' : '<span class="destination-poster__lock" aria-hidden="true">✦</span>'}
@@ -161,9 +154,10 @@ export function renderVoyageExperience(state) {
     const isReached = completedCount >= end;
     const isCurrent = completedCount >= start && completedCount < end;
     const stateClass = isReached ? 'reached' : (isCurrent ? 'current' : 'charted');
+    const destination = VOYAGE_PORTS[index];
     return `<li class="voyage-port ${stateClass}">
       <span class="voyage-port__marker">${isReached ? '✓' : (isCurrent ? '⛵' : index + 1)}</span>
-      <span class="voyage-port__label">Port ${index + 1}</span>
+      <span class="voyage-port__label"><strong>${escapeHtml(destination.name)}</strong><small>${escapeHtml(destination.chapter)} · Days ${start + 1}–${end}</small></span>
     </li>`;
   }).join('');
 
@@ -183,6 +177,7 @@ export function renderVoyageExperience(state) {
         <div class="voyage-route" aria-hidden="true"><span></span></div>
         <ol class="voyage-ports" aria-label="Ten voyage ports">${route}</ol>
       </div>
+      <p class="voyage-map__legend">Each named port is a learning chapter. Reaching it adds that destination’s matching poster to your collection.</p>
     </section>
 
     <section class="destination-collection" aria-labelledby="destination-collection-title">
@@ -306,10 +301,10 @@ export function renderImmersiveVoyageHero(state) {
     <div class="immersive-voyage__landmarks">${portMarkers}</div>
     <div class="immersive-voyage__masthead">
       <span class="immersive-voyage__eyebrow">The 200-day family voyage</span>
-      <span>Port ${port} of 10</span>
+      <span>${currentPort.name} · Port ${port} of 10</span>
     </div>
     <div class="immersive-voyage__hud">
-      <div class="hero-tag">Now sailing · Port ${port}</div>
+      <div class="hero-tag">Now sailing to · ${currentPort.name}</div>
       <h1 id="immersive-voyage-title">${currentPort.name}</h1>
       <p><strong>${stage.icon} ${stage.label}</strong> · ${currentPort.chapter}<br>${completedDays} family days complete · ${daysToNextPort} to the next port</p>
       <div class="immersive-voyage__meter" aria-label="${percent}% of family voyage complete"><span></span></div>
