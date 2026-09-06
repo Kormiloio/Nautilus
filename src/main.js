@@ -1,4 +1,4 @@
-import { beginVerifiedLesson, getVerifiedAttempt, getVerifiedFamilyAttempt, submitVerifiedExercise } from './engine/verified-learning-service.js';
+import { beginVerifiedLesson, getVerifiedAttempt, submitVerifiedExercise } from './engine/verified-learning-service.js';
 import { renderVerifiedLessonView } from './components/verified-lesson-view.js';
 import { advanceDetectiveCase, createDetectiveGame, earnSideQuestBadge, lockDetectiveAnswer, selectDetectiveAnswer } from './engine/side-quest-game.js';
 import { advanceFamilySideQuest, cancelFamilySideQuest, getFamilySideQuestState, startFamilySideQuest, submitFamilySideQuestAnswer, subscribeToFamilySideQuest } from './engine/side-quest-service.js';
@@ -33,20 +33,26 @@ import { speakWithBestDeviceVoice } from './engine/speech-engine.js';
 import { applyDocumentLanguage } from './engine/language-runs.js';
 import {
   acceptFamilyInvitation,
+  claimFamilyPlayController,
+  completeFamilyPlay,
   controlFamilyPlay,
   createFamily,
   getFamilyPlayState,
   getFamilySessionStatus,
   getFamilyOverview,
   getFamilyProgressDashboard,
+  handoffFamilyPlayController,
   heartbeatFamilyPlay,
   inviteFamilyMember,
   inviteLearnerProfile,
   joinFamilyPlay,
   linkFamilyLearnerAccount,
+  lockFamilyFinalChallenge,
   listFamilies,
   startFamilyPlay,
+  reconcileFamilyQuizRound,
   startFamilyReview,
+  submitFamilyQuizAnswer,
   subscribeToFamilyPlay,
   touchFamilyPlay,
 } from './engine/family-service.js';
@@ -59,6 +65,7 @@ import { renderTopicView } from './components/topic-view.js';
 import { renderSessionView } from './components/session-view.js';
 import { renderCurriculum } from './components/curriculum-view.js';
 import { renderFamilyOverview } from './components/family-overview.js';
+import { renderFamilyPlayView } from './components/family-play-view.js';
 import { renderSideQuestView } from './components/side-quest-view.js';
 import { AdminDashboardComponent } from './components/admin-dashboard.js';
 import { isPlatformAdmin } from './engine/admin-service.js';
@@ -418,7 +425,6 @@ const actions = {
       await loadFamilyPlayState();
       state.activeLesson = lesson;
       state.screen = 'family-play';
-      hydrateVerifiedAttempt(await getVerifiedFamilyAttempt(state.familyPlayState.activeSession.id));
     } catch (error) {
       state.familyError = error.message;
     }
@@ -435,13 +441,52 @@ const actions = {
         state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
       }
       if (isLinkedLearner || state.families?.[0]?.role === 'learner') await joinFamilyPlay(active.id);
-      // Verified rosters are pinned; taking over requires an explicit restart.
+      else if (active.canTakeControl) await claimFamilyPlayController(active.id);
       await loadFamilyPlayState();
       state.activeLesson = VOYAGE_LESSONS.find(lesson => lesson.id === active.lessonId) || VOYAGE_LESSONS[active.voyageDay - 1];
       state.screen = 'family-play';
     } catch (error) {
       state.familyError = error.message;
     }
+    rerender();
+  },
+
+  claimFamilyController: async () => {
+    const sessionId = state.familyPlayState?.activeSession?.id; if (!sessionId) return;
+    try { await claimFamilyPlayController(sessionId); await loadFamilyPlayState(); } catch (error) { state.familyError = error.message; }
+    rerender();
+  },
+
+  handoffFamilyController: async (nextAdultId) => {
+    const sessionId = state.familyPlayState?.activeSession?.id; if (!sessionId) return;
+    try { await handoffFamilyPlayController(sessionId, nextAdultId); await loadFamilyPlayState(); } catch (error) { state.familyError = error.message; }
+    rerender();
+  },
+
+  answerFamilyQuiz: async (answerId, segment) => {
+    const sessionId = state.familyPlayState?.activeSession?.id; if (!sessionId) return;
+    try { await submitFamilyQuizAnswer(sessionId, segment, answerId); await loadFamilyPlayState(); } catch (error) { state.familyError = error.message; }
+    rerender();
+  },
+
+  reconcileFamilyQuiz: async (segment) => {
+    const sessionId = state.familyPlayState?.activeSession?.id; if (!sessionId) return;
+    try { await reconcileFamilyQuizRound(sessionId, segment); await loadFamilyPlayState(); } catch (error) { state.familyError = error.message; }
+    rerender();
+  },
+
+  finishFamilyChallenge: async (segment) => {
+    const sessionId = state.familyPlayState?.activeSession?.id; if (!sessionId) return;
+    try {
+      const result = await lockFamilyFinalChallenge(sessionId, segment); await loadFamilyPlayState();
+      if (result?.completed) { state.activeLesson = null; state.screen = 'family-overview'; state.familyNotice = 'Everyone finished—the family voyage lesson is complete.'; }
+    } catch (error) { state.familyError = error.message; }
+    rerender();
+  },
+
+  completeFamilySession: async () => {
+    const sessionId = state.familyPlayState?.activeSession?.id; if (!sessionId) return;
+    try { await completeFamilyPlay(sessionId); await loadFamilyPlayState(); state.activeLesson = null; state.screen = 'family-overview'; state.familyNotice = 'Family voyage day completed together.'; } catch (error) { state.familyError = error.message; }
     rerender();
   },
 
@@ -803,9 +848,6 @@ async function loadFamilyPlayState() {
   }
   const previousSession = state.familyPlayState?.activeSession;
   state.familyPlayState = await getFamilyPlayState(familyId, state.activePackId);
-  if (state.screen==='family-play' && state.familyPlayState?.activeSession) {
-    hydrateVerifiedAttempt(await getVerifiedFamilyAttempt(state.familyPlayState.activeSession.id));
-  }
   if (previousSession && previousSession.id !== state.familyPlayState?.activeSession?.id
       && await getFamilySessionStatus(previousSession.id) === 'completed') {
     await handleFamilyCompletion(previousSession.id);
@@ -929,7 +971,7 @@ function rerender() {
     syncFamilyHeartbeat();
     syncLearnerPresence();
     syncFamilyPlayRefresh();
-    renderVerifiedLessonView(appContainer, state, actions);
+    renderFamilyPlayView(appContainer, state, actions);
     const renderedPanel = appContainer.querySelector('.family-play-panel');
     if (renderedPanel) renderedPanel.scrollTop = preserveFamilyPosition ? preservedPanelScroll : 0;
     lastRenderedFamilyStage = nextFamilyStage;

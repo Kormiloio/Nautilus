@@ -285,3 +285,45 @@ export async function getFamilySessionStatus(sessionId) {
   if (error) throw error;
   return data?.status;
 }
+
+export async function submitFamilyQuizAnswer(sessionId, segment, answerId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('submit_family_quiz_answer', { target_session: sessionId, target_segment: segment, selected_answer: answerId });
+  if (error) throw error;
+  return data;
+}
+
+export async function lockFamilyFinalChallenge(sessionId, segment) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('lock_family_final_challenge', { target_session: sessionId, target_segment: segment });
+  if (error) throw error;
+  return data;
+}
+
+export async function reconcileFamilyQuizRound(sessionId, segment) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('reconcile_family_quiz_round', { target_session: sessionId, target_segment: segment });
+  if (error) throw error;
+  return data;
+}
+
+export async function completeFamilyPlay(sessionId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('complete_family_play', { target_session: sessionId });
+  if (error) throw error;
+  return data;
+}
+
+export async function claimFamilyPlayController(sessionId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('claim_family_play_controller', { target_session: sessionId });
+  if (error) throw error;
+  return data;
+}
+
+export async function handoffFamilyPlayController(sessionId, nextAdultId) {
+  requireCloud();
+  const { data, error } = await supabase.rpc('handoff_family_play_controller', { target_session: sessionId, next_adult: nextAdultId });
+  if (error) throw error;
+  return data;
+}
