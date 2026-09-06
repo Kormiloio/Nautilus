@@ -77,6 +77,8 @@ function renderStep(mount, step, state, actions) {
     renderQuizStep(mount, step, state, actions);
   } else if (step.type === 'match') {
     renderMatchStep(mount, step, state, actions);
+  } else if (step.type === 'sentence-builder') {
+    renderSentenceBuilderStep(mount, step, state, actions);
   } else if (step.type === 'dialogue') {
     renderDialogueStep(mount, step, state, actions);
   } else if (step.type === 'listen') {
@@ -86,6 +88,29 @@ function renderStep(mount, step, state, actions) {
   }
 }
 
+function renderSentenceBuilderStep(mount, step, state, actions) {
+  const sentenceState = state.session.sentence || { selected: [], feedback: null };
+  state.session.sentence = sentenceState;
+  const selectedTokens = sentenceState.selected.map(index => step.sentence.tokens[index]);
+  const allChosen = sentenceState.selected.length === step.sentence.tokens.length;
+  const isCorrect = allChosen && selectedTokens.every((token, index) => token === step.sentence.answer[index]);
+  const feedback = sentenceState.feedback || (allChosen ? (isCorrect ? '✓ Correct — say the sentence together.' : 'Not quite. The sentence is: ' + step.sentence.answer.join(' ')) : 'Tap each word in the order that makes the sentence.');
+  mount.innerHTML = '<div class="sentence-builder-step">' +
+    '<h3 style="font-size:22px;font-weight:800;margin-bottom:6px;">' + escapeHtml(step.title) + '</h3>' +
+    '<p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">' + escapeHtml(step.sentence.prompt) + '</p>' +
+    '<div class="sentence-builder-step__answer ' + (allChosen ? (isCorrect ? 'correct' : 'incorrect') : '') + '" aria-live="polite">' + (selectedTokens.length ? selectedTokens.map(escapeHtml).join(' ') : 'Tap a word to begin') + '</div>' +
+    '<div class="sentence-builder-step__tokens">' + step.sentence.tokens.map((token, index) => '<button class="btn btn-secondary" data-sentence-token="' + index + '" ' + (sentenceState.selected.includes(index) ? 'disabled' : '') + '>' + escapeHtml(token) + '</button>').join('') + '</div>' +
+    '<p class="sentence-builder-step__feedback ' + (allChosen ? (isCorrect ? 'correct' : 'incorrect') : '') + '" role="status">' + escapeHtml(feedback) + '</p>' +
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn btn-secondary" id="sentence-reset" ' + (!sentenceState.selected.length ? 'disabled' : '') + '>Start over</button><button class="btn btn-primary" id="next-step-btn" ' + (!isCorrect ? 'disabled' : '') + '>Continue →</button></div></div>';
+  const redraw = () => renderSentenceBuilderStep(mount, step, state, actions);
+  mount.querySelectorAll('[data-sentence-token]').forEach(button => button.addEventListener('click', () => {
+    const tokenIndex = Number(button.dataset.sentenceToken);
+    if (!sentenceState.selected.includes(tokenIndex)) sentenceState.selected.push(tokenIndex);
+    sentenceState.feedback = null; redraw();
+  }));
+  mount.querySelector('#sentence-reset')?.addEventListener('click', () => { sentenceState.selected = []; sentenceState.feedback = null; redraw(); });
+  mount.querySelector('#next-step-btn')?.addEventListener('click', actions.nextSessionStep);
+}
 // 1. Warmup Step
 function renderWarmupStep(mount, step, state, actions) {
   mount.innerHTML = `

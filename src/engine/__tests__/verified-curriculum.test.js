@@ -1,5 +1,5 @@
 import { describe,it,expect } from 'vitest';
-import { getAvailableLanguagePacks,setActiveLanguagePack,VOYAGE_LESSONS,generateSession,getTopic,getTopics,createSeededRandom } from '../learning-engine.js';
+import { getAvailableLanguagePacks,setActiveLanguagePack,VOYAGE_LESSONS,generateSession,getTopic,getTopics,createSeededRandom,buildSentenceBuilder } from '../learning-engine.js';
 import { buildFamilyPlaySteps } from '../family-play-session.js';
 import { toVerifiedExercises } from '../verified-curriculum.js';
 
@@ -22,6 +22,9 @@ describe('Server curriculum adapter',()=>{
               expect(Object.keys(exercise.answer)).toHaveLength(exercise.targets.length);
               expect(exercise.targets.length).toBeGreaterThan(0);
               for(const target of exercise.targets) expect(exercise.supports.map(s=>s.id)).toContain(exercise.answer[target.id]);
+            } else if(exercise.kind==='sentence_builder') {
+              expect(exercise.tokens).toHaveLength(exercise.answer.length);
+              expect([...exercise.tokens].sort()).toEqual([...exercise.answer].sort());
             } else {
               expect(exercise.kind).toBe('self_report');
               expect(exercise.confirmation).toContain('self-reported');
@@ -35,5 +38,13 @@ describe('Server curriculum adapter',()=>{
   });
   it('rejects unknown exercise types rather than quietly skipping required work',()=>{
     expect(()=>toVerifiedExercises([{type:'new-unmapped-type'}])).toThrow('Unmapped exercise');
+  });
+  it('turns only reviewed multi-word content into a sentence builder',()=>{
+    const builder=buildSentenceBuilder([{targetText:'Imam dva brata.',supportText:'I have two brothers.'}],createSeededRandom('sentence'));
+    expect(builder.answer).toEqual(['Imam','dva','brata.']);
+    expect(builder.tokens).not.toEqual([]);
+    expect(buildSentenceBuilder([{targetText:'jedan',supportText:'one'}])).toBeNull();
+    const exercises=toVerifiedExercises([{type:'sentence-builder',title:'Build',subtitle:'Build it',sentence:builder}]);
+    expect(exercises).toMatchObject([{kind:'sentence_builder',answer:['Imam','dva','brata.']}]);
   });
 });

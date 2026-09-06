@@ -222,6 +222,17 @@ export function buildQuiz(items, quizLength = 8, random = Math.random) {
   return { questions, qIdx: 0, score: 0, selected: null, answered: false };
 }
 
+// Sentence builders are only created from reviewed authored phrases. The
+// engine deliberately does not try to invent grammar by concatenating items.
+export function buildSentenceBuilder(items, random = Math.random) {
+  const item = shuffle(items, random).find(candidate =>
+    String(candidate?.targetText || '').trim().split(/\s+/).length > 1
+  );
+  if (!item) return null;
+  const answer = String(item.targetText).trim().split(/\s+/);
+  return { item, prompt: item.supportText, tokens: shuffle(answer, random), answer };
+}
+
 // Builds the session steps dynamically based on the lesson
 export function createSeededRandom(seedText) {
   let seed = [...String(seedText)].reduce((value, char) => ((value * 31) + char.charCodeAt(0)) >>> 0, 2166136261);
@@ -281,13 +292,28 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
         quiz: buildQuiz(topic.items, 5, random),
       });
     } else if (lesson.type === 'build') {
-      // Build Cycle: Notes -> Build quiz (sentence completion)
+      // Build Cycle: notes -> reviewed sentence builder -> recognition.
+      // Connections come from language-pack content and only appear after the
+      // prerequisite topics have been completed.
       steps.push({
         type: 'note',
         title: 'Sentence Pattern',
         subtitle: 'How sentences are structured',
         note: topic.note || 'Practice assembling phrases in this topic.',
       });
+      const learned = new Set(completedTopicIds || []);
+      const connectionItems = (topic.connections || [])
+        .filter(connection => (connection.requiresTopicIds || []).every(id => learned.has(id)))
+        .flatMap(connection => connection.items || []);
+      const sentence = buildSentenceBuilder(connectionItems, random);
+      if (sentence) {
+        steps.push({
+          type: 'sentence-builder',
+          title: 'Build the Sentence',
+          subtitle: 'Put the words in order to make the sentence',
+          sentence,
+        });
+      }
       steps.push({
         type: 'quiz',
         title: 'Pattern Practice',
