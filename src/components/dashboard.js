@@ -78,6 +78,7 @@ export function renderDashboard(container, state, actions) {
           <div class="logo-title">Learn ${LANGUAGE_PACK.targetLanguage.name}</div>
         </button>
         ${syncBadgeHtml}
+        ${state.platformAdmin ? '<button class="btn btn-secondary" id="platform-admin-btn" style="padding: 6px 12px; font-size: 12px;">Platform Admin</button>' : ''}
         ${!state.linkedLearnerProfileId && ['owner', 'adult_guide'].includes(state.families?.[0]?.role)
           ? '<button class="btn btn-secondary" id="family-overview-btn" style="padding: 6px 12px; font-size: 12px;">Family Overview</button>'
           : ''}
@@ -281,6 +282,7 @@ export function renderDashboard(container, state, actions) {
     actions.selectLanguage(event.target.value);
   });
   container.querySelector('#family-overview-btn')?.addEventListener('click', actions.goFamilyOverview);
+  container.querySelector('#platform-admin-btn')?.addEventListener('click', actions.goAdminDashboard);
   container.querySelector('#join-family-play-btn')?.addEventListener('click', actions.openFamilySession);
   container.querySelector('#open-side-quest-btn')?.addEventListener('click', () => actions.openSideQuest(sideQuest));
 

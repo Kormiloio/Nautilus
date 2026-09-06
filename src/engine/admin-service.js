@@ -2,7 +2,7 @@ import { supabase, isConfigured } from './supabase-client.js';
 
 function requireCloud() {
   if (!isConfigured || !supabase) {
-    throw new Error('Platform administration requires a active family cloud connection.');
+    throw new Error('Platform administration requires an active family cloud connection.');
   }
 }
 
@@ -22,9 +22,9 @@ export async function getPlatformAdminMetrics() {
   return data;
 }
 
-export async function grantPlatformSupportAccess(targetFamilyId, reason) {
+export async function requestPlatformSupportAccess(targetFamilyId, reason) {
   requireCloud();
-  const { data, error } = await supabase.rpc('grant_platform_support_access', {
+  const { data, error } = await supabase.rpc('request_platform_support_access', {
     target_family: targetFamilyId,
     reason: reason,
   });

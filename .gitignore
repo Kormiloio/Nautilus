@@ -11,3 +11,5 @@ scripts/pack-template.mjs
 src/app.template.html
 
 .vscode/
+
+src/coverage/

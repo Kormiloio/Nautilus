@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nautilus-pwa-v1';
+const CACHE_NAME = 'nautilus-pwa-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -27,7 +27,8 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - Stale-while-revalidate for local assets, Network-first with offline fallback for APIs
+// Prefer the current HTML shell. A stale index can reference hashed bundles
+// removed by a newer deployment and leave users on a blank page.
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
@@ -36,12 +37,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network-first strategy for Supabase API requests
+  // Never cache authenticated API responses.
   if (url.hostname.includes('supabase.co')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
+  if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(event.request);
-      })
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse.ok) {
+            caches.open(CACHE_NAME).then(cache => cache.put('./index.html', networkResponse.clone()));
+          }
+          return networkResponse;
+        })
+        .catch(async () => (await caches.match(event.request)) || caches.match('./index.html'))
     );
     return;
   }

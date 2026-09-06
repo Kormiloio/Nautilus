@@ -21,8 +21,18 @@ jobs:
         run: npm ci
       - name: Run lint (placeholder)
         run: echo "No lint configured"
+      - name: Validate language packs
+        run: npm run validate
       - name: Run tests with coverage
         run: npm test -- --coverage
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start local Supabase
+        run: supabase start
+      - name: Rebuild and test database
+        run: npm run db:reset && npm run test:db && npm run lint:db
       - name: Build project
         run: npm run build
       - name: Accessibility audit

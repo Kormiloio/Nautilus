@@ -1,7 +1,13 @@
-import { getPlatformAdminMetrics, grantPlatformSupportAccess } from '../engine/admin-service.js';
+import { getPlatformAdminMetrics, requestPlatformSupportAccess } from '../engine/admin-service.js';
+
+const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, character => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;',
+})[character]);
+const formatMetric = value => value == null ? '—' : Number(value).toLocaleString();
 
 export class AdminDashboardComponent {
-  constructor(container) {
+  constructor(container, actions) {
+    this.actions = actions;
     this.container = container;
     this.metrics = null;
     this.error = null;
@@ -42,10 +48,10 @@ export class AdminDashboardComponent {
     }
 
     try {
-      if (statusEl) statusEl.textContent = 'Granting support access...';
-      await grantPlatformSupportAccess(familyId, reason);
+      if (statusEl) statusEl.textContent = 'Recording support request...';
+      await requestPlatformSupportAccess(familyId, reason);
       if (statusEl) {
-        statusEl.textContent = '✓ Support access granted and audit event recorded.';
+        statusEl.textContent = '✓ Support request recorded for review.';
         statusEl.className = 'status-msg success';
       }
       familyIdInput.value = '';
@@ -73,7 +79,7 @@ export class AdminDashboardComponent {
       this.container.innerHTML = `
         <div class="admin-dashboard-error card">
           <h2>Platform Operator Console</h2>
-          <p class="error-text">${this.error}</p>
+          <p class="error-text">${escapeHtml(this.error)}</p>
         </div>
       `;
       return;
@@ -103,6 +109,7 @@ export class AdminDashboardComponent {
           <div class="privacy-badge">
             <span class="shield-icon">🛡️</span> Privacy-Gated (FR-41)
           </div>
+          <button class="btn btn-secondary" id="admin-back">← Back</button>
         </header>
 
         ${
@@ -115,19 +122,19 @@ export class AdminDashboardComponent {
 
         <div class="metrics-grid">
           <div class="metric-card">
-            <div class="metric-value">${total_families}</div>
+            <div class="metric-value">${formatMetric(total_families)}</div>
             <div class="metric-label">Total Families</div>
           </div>
           <div class="metric-card">
-            <div class="metric-value">${active_families_7d}</div>
+            <div class="metric-value">${formatMetric(active_families_7d)}</div>
             <div class="metric-label">Active Families (7d)</div>
           </div>
           <div class="metric-card">
-            <div class="metric-value">${completed_sessions}</div>
+            <div class="metric-value">${formatMetric(completed_sessions)}</div>
             <div class="metric-label">Family Sessions Completed</div>
           </div>
           <div class="metric-card">
-            <div class="metric-value">${verified_attempts}</div>
+            <div class="metric-value">${formatMetric(verified_attempts)}</div>
             <div class="metric-label">Verified Lesson Attempts</div>
           </div>
         </div>
@@ -136,17 +143,17 @@ export class AdminDashboardComponent {
           <h3>Language Pack Adoption</h3>
           <div class="pack-list">
             ${
-              pack_distribution.length === 0
+              (pack_distribution || []).length === 0
                 ? '<p>No active language packs recorded yet.</p>'
                 : `<table class="admin-table">
                     <thead>
                       <tr><th>Pack ID</th><th>Family Subscriptions</th></tr>
                     </thead>
                     <tbody>
-                      ${pack_distribution
+                      ${(pack_distribution || [])
                         .map(
                           (p) =>
-                            `<tr><td><code>${p.pack_id}</code></td><td>${p.count}</td></tr>`
+                            `<tr><td><code>${escapeHtml(p.pack_id)}</code></td><td>${formatMetric(p.count)}</td></tr>`
                         )
                         .join('')}
                     </tbody>
@@ -157,7 +164,7 @@ export class AdminDashboardComponent {
 
         <section class="admin-section card">
           <h3>Support Access Audit Request</h3>
-          <p class="help-text">Request temporary support access to a family workspace. Requires an explicit audit justification of at least 10 characters.</p>
+          <p class="help-text">Record a support request for later review. This does not grant access to a family workspace.</p>
           <form id="support-access-form" class="support-form">
             <div class="form-group">
               <label for="support-family-id">Target Family UUID:</label>
@@ -177,6 +184,8 @@ export class AdminDashboardComponent {
         </footer>
       </div>
     `;
+
+    this.container.querySelector('#admin-back')?.addEventListener('click', () => this.actions.goProfileSelect());
 
     const form = this.container.querySelector('#support-access-form');
     if (form) {

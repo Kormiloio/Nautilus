@@ -1,7 +1,7 @@
 import { beginVerifiedLesson, getVerifiedAttempt, getVerifiedFamilyAttempt, submitVerifiedExercise } from './engine/verified-learning-service.js';
 import { renderVerifiedLessonView } from './components/verified-lesson-view.js';
 import { advanceDetectiveCase, createDetectiveGame, earnSideQuestBadge, lockDetectiveAnswer, selectDetectiveAnswer } from './engine/side-quest-game.js';
-import { advanceFamilySideQuest, getFamilySideQuestState, startFamilySideQuest, submitFamilySideQuestAnswer, subscribeToFamilySideQuest } from './engine/side-quest-service.js';
+import { advanceFamilySideQuest, cancelFamilySideQuest, getFamilySideQuestState, startFamilySideQuest, submitFamilySideQuestAnswer, subscribeToFamilySideQuest } from './engine/side-quest-service.js';
 import {
   getActiveProfile,
   getProfiles,
@@ -61,6 +61,7 @@ import { renderCurriculum } from './components/curriculum-view.js';
 import { renderFamilyOverview } from './components/family-overview.js';
 import { renderSideQuestView } from './components/side-quest-view.js';
 import { AdminDashboardComponent } from './components/admin-dashboard.js';
+import { isPlatformAdmin } from './engine/admin-service.js';
 
 // Global state
 const state = {
@@ -71,6 +72,7 @@ const state = {
   families: null,
   familyError: null,
   familyNotice: null,
+  platformAdmin: false,
   familyOverview: null,
   familyOverviewLoading: false,
   familyPlayState: null,
@@ -98,6 +100,7 @@ const state = {
   sideQuestGame: null,
   familySideQuestState: null,
   sideQuestSelection: null,
+  sideQuestSetup: null,
   session: null, // Holds active session steps and indexes
 
   // Card states
@@ -165,6 +168,7 @@ const actions = {
     state.screen = 'profile-select';
     try {
       state.families = await listFamilies();
+      state.platformAdmin = await isPlatformAdmin();
       await syncCloudDataToLocal();
       selectLinkedLearnerProfile();
       await loadFamilyPlayState();
@@ -215,6 +219,7 @@ const actions = {
     try {
       await createFamily(name);
       state.families = await listFamilies();
+      state.platformAdmin = await isPlatformAdmin();
       await syncCloudDataToLocal();
       rerender();
     } catch (error) {
@@ -271,6 +276,7 @@ const actions = {
       await linkFamilyLearnerAccount(profileId, email);
       state.familyNotice = `${learnerName} is now linked to ${email} as a learner.`;
       state.families = await listFamilies();
+      state.platformAdmin = await isPlatformAdmin();
       state.familyOverview = await getFamilyOverview(state.families?.[0]?.family_id);
     } catch (error) {
       state.familyError = error.message;
@@ -285,6 +291,8 @@ const actions = {
     window.scrollTo({ top: 0, behavior: 'auto' });
   },
 
+  goAdminDashboard: () => { state.screen = 'admin-dashboard'; state.profile = null; rerender(); },
+
   openSideQuest: async (quest) => {
     if (!quest || quest.locked) return;
     state.sideQuest = quest;
@@ -295,9 +303,12 @@ const actions = {
         if (!state.familySideQuestState || state.familySideQuestState.status !== "active") {
           if (!["owner", "adult_guide"].includes(state.families[0].role)) throw new Error("Ask your parent or guide to open this side quest for the family.");
           state.familyOverview ||= await getFamilyOverview(state.families[0].family_id);
-          const participants = (state.familyOverview?.learners || []).filter(p => p.linked).map(p => p.id);
-          await startFamilySideQuest({ familyId: state.families[0].family_id, packId: state.activePackId, packVersion: LANGUAGE_PACK.version, questId: quest.id, milestone: quest.milestone, participantProfileIds: participants });
-          await loadFamilySideQuestState();
+          const learners = (state.familyOverview?.learners || []).filter(p => p.linked);
+          state.sideQuestSetup = { learners, selectedIds: [] };
+          state.screen = 'side-quest';
+          cleanupSessionState();
+          rerender();
+          return;
         }
         watchFamilySideQuest();
         state.sideQuestGame = null;
@@ -310,6 +321,23 @@ const actions = {
     cleanupSessionState();
     rerender();
     window.scrollTo({ top: 0, behavior: "auto" });
+  },
+
+  toggleSideQuestParticipant: profileId => {
+    const selected = new Set(state.sideQuestSetup?.selectedIds || []);
+    selected.has(profileId) ? selected.delete(profileId) : selected.add(profileId);
+    state.sideQuestSetup.selectedIds = [...selected]; rerender();
+  },
+  startSideQuestTogether: async () => {
+    if (!state.sideQuestSetup?.selectedIds.length) return;
+    try {
+      await startFamilySideQuest({ familyId: state.families[0].family_id, packId: state.activePackId, packVersion: LANGUAGE_PACK.version, questId: state.sideQuest.id, milestone: state.sideQuest.milestone, participantProfileIds: state.sideQuestSetup.selectedIds });
+      state.sideQuestSetup = null; await loadFamilySideQuestState(); watchFamilySideQuest(); rerender();
+    } catch (error) { state.familyError = error.message; rerender(); }
+  },
+  cancelSideQuest: async () => {
+    try { if (state.familySideQuestState?.id) await cancelFamilySideQuest(state.familySideQuestState.id); state.familySideQuestState = null; state.sideQuestSetup = null; actions.goDashboard(); }
+    catch (error) { state.familyError = error.message; rerender(); }
   },
 
   selectSideQuestAnswer: answerId => {
@@ -916,6 +944,12 @@ function rerender() {
   // Family Overview is an account-level screen. A parent can arrive here
   // while a learner profile is still active (notably after completing Family
   // Play), so route it before the profile-dependent learning screens.
+  if (state.screen === 'admin-dashboard') {
+    const adminComp = new AdminDashboardComponent(appContainer, actions);
+    adminComp.loadData();
+    return;
+  }
+
   if (state.screen === 'family-overview') {
     renderFamilyOverview(appContainer, state, actions);
     mountFamilySelector();
@@ -959,9 +993,6 @@ function rerender() {
     renderCurriculum(appContainer, state, actions);
   } else if (state.screen === 'side-quest') {
     renderSideQuestView(appContainer, state, actions);
-  } else if (state.screen === 'admin-dashboard') {
-    const adminComp = new AdminDashboardComponent(appContainer);
-    adminComp.loadData();
   }
 }
 
@@ -992,6 +1023,7 @@ async function init() {
       if (session) {
         try {
           state.families = await listFamilies();
+      state.platformAdmin = await isPlatformAdmin();
           await syncCloudDataToLocal();
           selectLinkedLearnerProfile();
           await loadFamilyPlayState();
@@ -1005,6 +1037,7 @@ async function init() {
         }
       } else {
         state.families = null;
+        state.platformAdmin = false;
         state.familyPlayState = null;
         state.familySideQuestState = null;
         stopFamilySideQuestSubscription?.();
@@ -1042,6 +1075,7 @@ async function init() {
           state.familyNotice = 'Family invitation accepted.';
         }
         state.families = await listFamilies();
+      state.platformAdmin = await isPlatformAdmin();
         await syncCloudDataToLocal();
         selectLinkedLearnerProfile();
         await loadFamilyPlayState();

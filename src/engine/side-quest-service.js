@@ -35,6 +35,12 @@ export async function advanceFamilySideQuest(sessionId) {
   if (error) throw error;
 }
 
+export async function cancelFamilySideQuest(sessionId) {
+  requireCloud();
+  const { error } = await supabase.rpc('cancel_family_side_quest', { target_session: sessionId });
+  if (error) throw error;
+}
+
 export function subscribeToFamilySideQuest(familyId, onChange) {
   requireCloud();
   const sessions = supabase.channel(`family-side-quest:${familyId}`).on('postgres_changes', {

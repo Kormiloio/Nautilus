@@ -46,6 +46,26 @@ function renderDetective(container, state, actions) {
   container.querySelector('#detective-lock')?.addEventListener('click', actions.lockSideQuestAnswer);
   container.querySelector('#detective-next')?.addEventListener('click', actions.nextSideQuestCase);
   container.querySelector('#side-quest-finish')?.addEventListener('click', actions.finishSideQuest);
+  if (shared?.isController && shared.status === 'active') {
+    const cancel = document.createElement('button'); cancel.className = 'btn btn-secondary'; cancel.textContent = 'Cancel this side quest';
+    cancel.addEventListener('click', actions.cancelSideQuest); container.querySelector('.side-quest-panel')?.append(cancel);
+  }
+}
+
+
+function renderSetup(container, state, actions) {
+  const quest = state.sideQuest;
+  const setup = state.sideQuestSetup;
+  const choices = setup.learners.map(learner => {
+    const selected = setup.selectedIds.includes(learner.id);
+    return `<button class="detective-choice ${selected ? 'selected' : ''}" data-side-quest-participant="${esc(learner.id)}" aria-pressed="${selected}">${esc(learner.display_name || learner.name)}</button>`;
+  }).join('');
+  container.innerHTML = shell(quest, `<p class="side-quest-subtitle">Choose who is playing on their own device. You are included automatically.</p><div class="detective-choices">${choices || '<p>No linked learner devices are available.</p>'}</div><button class="btn btn-primary" id="start-side-quest" ${setup.selectedIds.length ? '' : 'disabled'}>Start with selected crew →</button>`);
+  const back = () => actions.goDashboard();
+  container.querySelector('#side-quest-home').addEventListener('click', back);
+  container.querySelector('#side-quest-back').addEventListener('click', back);
+  container.querySelectorAll('[data-side-quest-participant]').forEach(button => button.addEventListener('click', () => actions.toggleSideQuestParticipant(button.dataset.sideQuestParticipant)));
+  container.querySelector('#start-side-quest')?.addEventListener('click', actions.startSideQuestTogether);
 }
 
 function renderCards(container, state, actions) {
@@ -61,6 +81,7 @@ function renderCards(container, state, actions) {
 
 export function renderSideQuestView(container, state, actions) {
   if (!state.sideQuest || state.sideQuest.locked) { actions.goDashboard(); return; }
-  if (state.sideQuest.game === 'detective' && (state.sideQuestGame || state.familySideQuestState)) renderDetective(container, state, actions);
+  if (state.sideQuestSetup) renderSetup(container, state, actions);
+  else if (state.sideQuest.game === 'detective' && (state.sideQuestGame || state.familySideQuestState)) renderDetective(container, state, actions);
   else renderCards(container, state, actions);
 }
