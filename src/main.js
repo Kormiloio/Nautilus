@@ -311,6 +311,17 @@ const actions = {
     actions.goDashboard();
   },
 
+  showIndividualArrivalIfReached: () => {
+    const arrival = getVoyageArrival(state.completedLessons.length);
+    if (!arrival) return false;
+    state.arrival = { ...arrival, journeyType: "individual" };
+    state.screen = "arrival";
+    cleanupSessionState();
+    rerender();
+    window.scrollTo({ top: 0, behavior: "auto" });
+    return true;
+  },
+
   goAdminDashboard: () => { state.screen = 'admin-dashboard'; state.profile = null; rerender(); },
 
   openSideQuest: async (quest) => {
@@ -608,7 +619,9 @@ const actions = {
 
 
   exitVerifiedLesson: async () => {
+    const completedVoyageLesson = state.verifiedAttempt?.mode === "voyage" && state.verifiedAttempt?.status === "completed";
     verifiedOpenGeneration++;state.verifiedLoading=false;state.verifiedAttempt=null; state.verifiedFeedback=null; state.verifiedError=null; state.verifiedPending=null;
+    if (completedVoyageLesson && state.profile && actions.showIndividualArrivalIfReached()) return;
     await actions.goDashboard();
   },
   continueVerifiedLesson: () => {
@@ -685,6 +698,7 @@ const actions = {
     }
 
     loadProfileState(state.profile);
+    if (actions.showIndividualArrivalIfReached()) return;
     actions.goDashboard();
   },
 

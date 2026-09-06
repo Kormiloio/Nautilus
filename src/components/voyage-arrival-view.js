@@ -11,6 +11,7 @@ function escapeHtml(value) {
 export function renderVoyageArrivalView(container, state, actions) {
   const arrival = state.arrival || getVoyageArrival(0);
   if (!arrival) { actions.goDashboard(); return; }
+  const individual = arrival.journeyType === "individual";
   const nextLabel = state.sessionUser && state.families?.length
     ? 'Plan the next family lesson →'
     : 'Begin the next chapter →';
@@ -24,7 +25,7 @@ export function renderVoyageArrivalView(container, state, actions) {
         <p class="voyage-arrival__kicker">Poster added to your voyage collection</p>
         <h1 id="voyage-arrival-title">Welcome to ${escapeHtml(arrival.name)}</h1>
         <p class="voyage-arrival__chapter">${escapeHtml(arrival.chapter)}</p>
-        <p class="voyage-arrival__copy">Your family has completed ${arrival.unlock} voyage lessons and reached a new chapter together. This poster is now part of your voyage.</p>
+        <p class="voyage-arrival__copy">${individual ? "You have completed " + arrival.unlock + " voyage lessons and reached a new chapter. This poster is now part of your voyage." : "Your family has completed " + arrival.unlock + " voyage lessons and reached a new chapter together. This poster is now part of your voyage."}</p>
         <div class="voyage-arrival__actions">
           <button class="btn btn-primary" id="arrival-next">${nextLabel}</button>
           <button class="btn btn-secondary" id="arrival-home">Celebrate and return home</button>

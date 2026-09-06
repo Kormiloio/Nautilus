@@ -38,6 +38,21 @@ describe('full Family Play session', () => {
     ]));
   });
 
+  it('unlocks later authored recall prompts only after their earlier topics are learned', () => {
+    const food = getTopic('food');
+    expect(getAvailableConnectionItems(food, [])).toEqual([]);
+    expect(getAvailableConnectionItems(food, ['colors'])).toEqual(expect.arrayContaining([
+      expect.objectContaining({ targetText: 'Crvena jabuka.', supportText: 'A red apple.' }),
+      expect.objectContaining({ targetText: 'Zelena salata.', supportText: 'Green salad.' }),
+    ]));
+
+    const clothes = getTopic('clothes');
+    expect(getAvailableConnectionItems(clothes, ['family'])).toEqual([]);
+    expect(getAvailableConnectionItems(clothes, ['family', 'colors'])).toEqual(expect.arrayContaining([
+      expect.objectContaining({ targetText: 'Moja sestra ima plavu haljinu.' }),
+    ]));
+  });
+
   it('gives Build lessons a visible sentence-building round between classic activities', () => {
     const numbers = getTopic('numbers');
     const lesson = { id:'voyage-13', topicId:'numbers', title:'Numbers: Build', type:'build' };

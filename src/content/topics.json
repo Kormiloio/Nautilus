@@ -269,7 +269,10 @@
       "connections": [
         {
           "id": "greetings-family-spiral",
-          "requiresTopicIds": ["greetings", "family"],
+          "requiresTopicIds": [
+            "greetings",
+            "family"
+          ],
           "items": [
             {
               "id": "greetings-conn-001",
@@ -362,14 +365,46 @@
       "connections": [
         {
           "id": "numbers-family-connection",
-          "requiresTopicIds": ["family"],
+          "requiresTopicIds": [
+            "family"
+          ],
           "items": [
-            { "id": "connection-numbers-family-001", "targetText": "Imam jednog brata.", "supportText": "I have one brother.", "reviewStatus": "draft" },
-            { "id": "connection-numbers-family-002", "targetText": "Imam dva brata.", "supportText": "I have two brothers.", "reviewStatus": "draft" },
-            { "id": "connection-numbers-family-003", "targetText": "Imam tri sestre.", "supportText": "I have three sisters.", "reviewStatus": "draft" },
-            { "id": "connection-numbers-family-004", "targetText": "Imam četiri brata.", "supportText": "I have four brothers.", "reviewStatus": "draft" },
-            { "id": "connection-numbers-family-005", "targetText": "Imam pet sestara.", "supportText": "I have five sisters.", "reviewStatus": "draft" },
-            { "id": "connection-numbers-family-006", "targetText": "U mojoj porodici ima šest osoba.", "supportText": "There are six people in my family.", "reviewStatus": "draft" }
+            {
+              "id": "connection-numbers-family-001",
+              "targetText": "Imam jednog brata.",
+              "supportText": "I have one brother.",
+              "reviewStatus": "draft"
+            },
+            {
+              "id": "connection-numbers-family-002",
+              "targetText": "Imam dva brata.",
+              "supportText": "I have two brothers.",
+              "reviewStatus": "draft"
+            },
+            {
+              "id": "connection-numbers-family-003",
+              "targetText": "Imam tri sestre.",
+              "supportText": "I have three sisters.",
+              "reviewStatus": "draft"
+            },
+            {
+              "id": "connection-numbers-family-004",
+              "targetText": "Imam četiri brata.",
+              "supportText": "I have four brothers.",
+              "reviewStatus": "draft"
+            },
+            {
+              "id": "connection-numbers-family-005",
+              "targetText": "Imam pet sestara.",
+              "supportText": "I have five sisters.",
+              "reviewStatus": "draft"
+            },
+            {
+              "id": "connection-numbers-family-006",
+              "targetText": "U mojoj porodici ima šest osoba.",
+              "supportText": "There are six people in my family.",
+              "reviewStatus": "draft"
+            }
           ]
         }
       ]
@@ -511,6 +546,26 @@
           "supportText": "rakija (homemade brandy)",
           "emoji": "🥃"
         }
+      ],
+      "connections": [
+        {
+          "id": "drinks-greetings-connection",
+          "requiresTopicIds": [
+            "greetings"
+          ],
+          "items": [
+            {
+              "id": "connection-drinks-greetings-001",
+              "targetText": "Dobar dan, molim vodu.",
+              "supportText": "Good day, water please."
+            },
+            {
+              "id": "connection-drinks-greetings-002",
+              "targetText": "Hvala. Doviđenja.",
+              "supportText": "Thank you. Goodbye."
+            }
+          ]
+        }
       ]
     },
     {
@@ -575,6 +630,26 @@
           "supportText": "apple",
           "emoji": "🍎"
         }
+      ],
+      "connections": [
+        {
+          "id": "food-colors-connection",
+          "requiresTopicIds": [
+            "colors"
+          ],
+          "items": [
+            {
+              "id": "connection-food-colors-001",
+              "targetText": "Crvena jabuka.",
+              "supportText": "A red apple."
+            },
+            {
+              "id": "connection-food-colors-002",
+              "targetText": "Zelena salata.",
+              "supportText": "Green salad."
+            }
+          ]
+        }
       ]
     },
     {
@@ -632,6 +707,27 @@
           "targetText": "kupus",
           "supportText": "cabbage",
           "emoji": "🥬"
+        }
+      ],
+      "connections": [
+        {
+          "id": "veg-food-colors-connection",
+          "requiresTopicIds": [
+            "food",
+            "colors"
+          ],
+          "items": [
+            {
+              "id": "connection-veg-food-colors-001",
+              "targetText": "Crveni paradajz i zelena salata.",
+              "supportText": "Red tomato and green salad."
+            },
+            {
+              "id": "connection-veg-food-colors-002",
+              "targetText": "Žuta paprika i krompir.",
+              "supportText": "Yellow pepper and potato."
+            }
+          ]
         }
       ]
     },
@@ -1174,6 +1270,27 @@
           "supportText": "hat",
           "emoji": "👒"
         }
+      ],
+      "connections": [
+        {
+          "id": "clothes-family-colors-connection",
+          "requiresTopicIds": [
+            "family",
+            "colors"
+          ],
+          "items": [
+            {
+              "id": "connection-clothes-family-colors-001",
+              "targetText": "Moja sestra ima plavu haljinu.",
+              "supportText": "My sister has a blue dress."
+            },
+            {
+              "id": "connection-clothes-family-colors-002",
+              "targetText": "Moj brat ima crvenu majicu.",
+              "supportText": "My brother has a red t-shirt."
+            }
+          ]
+        }
       ]
     },
     {
@@ -1597,6 +1714,26 @@
           "id": "travel-item-006",
           "targetText": "Idemo u Crnu Goru!",
           "supportText": "We're going to Montenegro!"
+        }
+      ],
+      "connections": [
+        {
+          "id": "travel-family-connection",
+          "requiresTopicIds": [
+            "family"
+          ],
+          "items": [
+            {
+              "id": "connection-travel-family-001",
+              "targetText": "Moja porodica putuje avionom.",
+              "supportText": "My family travels by plane."
+            },
+            {
+              "id": "connection-travel-family-002",
+              "targetText": "Imamo pasoše i kofere.",
+              "supportText": "We have passports and suitcases."
+            }
+          ]
         }
       ]
     },
