@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getEarnedCompanions, getVoyageStage, renderImmersiveVoyageHero, renderVoyageExperience } from '../voyage-map.js';
+import { getEarnedCompanions, getVoyageArrival, getVoyageStage, renderImmersiveVoyageHero, renderVoyageExperience } from '../voyage-map.js';
 import { buildDayPassport } from '../../engine/learning-days.js';
 
 describe('learner voyage experience', () => {
@@ -9,6 +9,12 @@ describe('learner voyage experience', () => {
     expect(getVoyageStage(100).label).toBe('Rounding the Mark');
     expect(getVoyageStage(150).label).toBe('Flying Colors');
     expect(getVoyageStage(200).label).toBe('Shipshape · Moored');
+  });
+
+  it('creates an arrival only at a completed 20-lesson destination milestone', () => {
+    expect(getVoyageArrival(19)).toBeNull();
+    expect(getVoyageArrival(20)).toMatchObject({ label: 'Port 2', name: 'Lantern Quay', chapter: 'Greetings' });
+    expect(getVoyageArrival(200)).toMatchObject({ name: 'Homecoming Harbor' });
   });
 
   it('awards companions only at completed voyage milestones', () => {

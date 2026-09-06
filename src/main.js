@@ -66,6 +66,8 @@ import { renderSessionView } from './components/session-view.js';
 import { renderCurriculum } from './components/curriculum-view.js';
 import { renderFamilyOverview } from './components/family-overview.js';
 import { renderFamilyPlayView } from './components/family-play-view.js';
+import { renderVoyageArrivalView } from './components/voyage-arrival-view.js';
+import { getVoyageArrival } from './components/voyage-map.js';
 import { renderSideQuestView } from './components/side-quest-view.js';
 import { AdminDashboardComponent } from './components/admin-dashboard.js';
 import { isPlatformAdmin } from './engine/admin-service.js';
@@ -109,6 +111,7 @@ const state = {
   sideQuestSelection: null,
   sideQuestSetup: null,
   session: null, // Holds active session steps and indexes
+  arrival: null,
 
   // Card states
   flash: { order: null, idx: 0, flipped: false },
@@ -292,10 +295,20 @@ const actions = {
   },
 
   goDashboard: () => {
+    state.arrival = null;
     state.screen = 'dashboard';
     cleanupSessionState();
     rerender();
     window.scrollTo({ top: 0, behavior: 'auto' });
+  },
+
+  continueAfterArrival: async () => {
+    state.arrival = null;
+    if (state.sessionUser && state.families?.length) {
+      await actions.goFamilyOverview();
+      return;
+    }
+    actions.goDashboard();
   },
 
   goAdminDashboard: () => { state.screen = 'admin-dashboard'; state.profile = null; rerender(); },
@@ -479,14 +492,26 @@ const actions = {
     const sessionId = state.familyPlayState?.activeSession?.id; if (!sessionId) return;
     try {
       const result = await lockFamilyFinalChallenge(sessionId, segment); await loadFamilyPlayState();
-      if (result?.completed) { state.activeLesson = null; state.screen = 'family-overview'; state.familyNotice = 'Everyone finished—the family voyage lesson is complete.'; }
+      if (result?.completed) {
+        state.activeLesson = null;
+        const arrival = getVoyageArrival(state.familyPlayState?.completedDays);
+        if (arrival) { state.arrival = arrival; state.screen = 'arrival'; }
+        else { state.screen = 'family-overview'; }
+        state.familyNotice = 'Everyone finished—the family voyage lesson is complete.';
+      }
     } catch (error) { state.familyError = error.message; }
     rerender();
   },
 
   completeFamilySession: async () => {
     const sessionId = state.familyPlayState?.activeSession?.id; if (!sessionId) return;
-    try { await completeFamilyPlay(sessionId); await loadFamilyPlayState(); state.activeLesson = null; state.screen = 'family-overview'; state.familyNotice = 'Family voyage day completed together.'; } catch (error) { state.familyError = error.message; }
+    try {
+      await completeFamilyPlay(sessionId); await loadFamilyPlayState(); state.activeLesson = null;
+      const arrival = getVoyageArrival(state.familyPlayState?.completedDays);
+      if (arrival) { state.arrival = arrival; state.screen = 'arrival'; }
+      else { state.screen = 'family-overview'; }
+      state.familyNotice = 'Family voyage day completed together.';
+    } catch (error) { state.familyError = error.message; }
     rerender();
   },
 
@@ -815,7 +840,9 @@ function handleFamilyCompletion(sessionId) {
     if (state.profile) loadProfileState(state.profile);
     if (state.screen === 'family-play') {
       state.activeLesson = null;
-      state.screen = state.profile ? 'dashboard' : 'profile-select';
+      const arrival = getVoyageArrival(state.familyPlayState?.completedDays);
+      if (arrival) { state.arrival = arrival; state.screen = 'arrival'; }
+      else { state.screen = state.profile ? 'dashboard' : 'profile-select'; }
     }
     state.familyNotice = 'Everyone finished—the family voyage lesson is complete.';
   })().catch(error => { completionRefreshes.delete(sessionId); throw error; });
@@ -1027,6 +1054,8 @@ function rerender() {
     }
   } else if (state.screen === 'topic') {
     renderTopicView(appContainer, state, actions);
+  } else if (state.screen === 'arrival') {
+    renderVoyageArrivalView(appContainer, state, actions);
   } else if (state.screen === 'verified') {
     renderVerifiedLessonView(appContainer,state,actions);
   } else if (state.screen === 'session') {

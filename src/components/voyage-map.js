@@ -83,6 +83,13 @@ const DESTINATION_POSTERS = [
   { label: 'Voyage finale', name: 'Homecoming Harbor', chapter: 'The 200-day voyage', asset: 'poster-homecoming-v1.jpg', unlock: 200 },
 ];
 
+export function getVoyageArrival(completedDays) {
+  const day = Math.max(0, Math.min(200, Number(completedDays) || 0));
+  if (!day || day % 20 !== 0) return null;
+  if (day === 200) return DESTINATION_POSTERS.at(-1);
+  return DESTINATION_POSTERS[day / 20];
+}
+
 function getRegionalJourney(state, activePack) {
   const fallbackThemes = {
     'iraqi-arabic-en':'rivers-of-mesopotamia', 'mandaic-en':'rivers-of-mesopotamia',
