@@ -20,7 +20,12 @@ export function renderVerifiedLessonView(container,state,actions) {
   const run=(text,side='target')=>renderLanguageRun(text||'',side,LANGUAGE_PACK);
   let content='';
   if(state.verifiedLoading) content='<h2>Loading verified lesson…</h2><p>Getting your saved exercise state.</p>';
-  else if(!attempt&&!family) content='<h2>Lesson could not open</h2><p>Return to the dashboard and try again once the connection or published curriculum is available.</p>';
+  else if(!attempt&&!family) {
+    const ownershipError = /Individual progress belongs to that learner/.test(state.verifiedError || '');
+    content = ownershipError
+      ? '<h2>Open this on the learner’s device</h2><p>Individual lessons save progress only to the learner who is signed in. Use their linked Google account on their device, or start Family Play from this adult account so everyone can learn together.</p>'
+      : '<h2>Lesson could not open</h2><p>Return to the dashboard and try again once the connection or published curriculum is available.</p>';
+  }
   else if(!attempt) content='<h2>Session needs a restart</h2><p>This older session has no verified exercise record. A parent can end it and start a fresh lesson. Previously earned progress is kept.</p>';
   else if(done) content='<h2>Lesson complete!</h2><p>Your results have been saved by the server.</p>';
   else if(step?.kind==='quiz') content='<h2>'+run(step.prompt,'support')+'</h2><div class="verified-choices">'+step.choices.map((choice,i)=>{
@@ -54,7 +59,7 @@ export function renderVerifiedLessonView(container,state,actions) {
     (attempt?.mode==='practice'?'<div class="verified-card-controls">'+['flashcards','match','quiz','listen',...(getTopicForPractice(state)?.dialogue?['dialogue']:[])].map(activity=>'<button class="btn btn-secondary" data-practice="'+activity+'">'+activity+'</button>').join('')+'</div>':'')+
     (family?'<div class="verified-roster">'+people.map(p=>'<span>'+escapeHtml(p.name)+(p.locked?' ✓ Locked in':' · Choosing')+'</span>').join('')+'</div>':'')+
     (state.verifiedError?'<p role="alert" class="incorrect">'+escapeHtml(state.verifiedError)+'</p>':'')+content+status+
-    '<div class="verified-footer">'+(state.verifiedPending&&!state.verifiedBusy?'<button class="btn btn-primary" data-retry>Retry saved answer</button>':'')+(done?'<button class="btn btn-primary" data-exit>Back to dashboard</button>':!attempt?(session?.controllingAdult===state.sessionUser?.id?'<button class="btn btn-primary" data-cancel>End older session</button>':''):
+    '<div class="verified-footer">'+(state.verifiedPending&&!state.verifiedBusy?'<button class="btn btn-primary" data-retry>Retry saved answer</button>':'')+(done?'<button class="btn btn-primary" data-exit>Back to dashboard</button>':!attempt?(session?.controllingAdult===state.sessionUser?.id?'<button class="btn btn-primary" data-cancel>End older session</button>':'<button class="btn btn-primary" data-exit>Back to dashboard</button>'):
       feedback?'<button class="btn btn-primary" data-continue>Continue</button>':receipt?'<span role="status">Locked in. Waiting for everyone…</span>':step?.kind==='quiz'?'':
       '<button class="btn btn-primary" data-submit '+(disabled||(step?.kind==='match'&&Object.keys(ui.pairs).length!==step.targets.length)?'disabled':'')+'>'+(state.verifiedBusy?'Saving…':step?.kind==='match'?'Check my matches':'I finished · Lock in')+'</button>')+
     (family&&attempt&&session?.controllingAdult===state.sessionUser?.id?'<button class="btn btn-secondary" data-pause>'+ (session.status==='paused'?'Resume':'Pause')+'</button>':'')+'</div></section></main>';

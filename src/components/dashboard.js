@@ -14,6 +14,7 @@ import { getLearningDayCount } from '../engine/learning-days.js';
 import { renderVoyageExperience } from './voyage-map.js';
 import { getSideQuestForProgress } from '../content/side-quests.js';
 import { hasSideQuestBadge } from '../engine/side-quest-game.js';
+import { getLessonPreview } from '../engine/family-play-session.js';
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -34,6 +35,9 @@ export function renderDashboard(container, state, actions) {
   const nextLesson = VOYAGE_LESSONS[Math.min(learningDayCount, 199)];
   const tonightTopic = getTopic(nextLesson.topicId) || getTopics()[0];
   const tonightDone = state.completedLessons.includes(nextLesson.id);
+  const lessonPreview = getLessonPreview(nextLesson, state.completedTopicIds);
+  const previewReviews = lessonPreview.reviewTopics.slice(0, 3);
+  const previewConnection = lessonPreview.connectionItems[0];
   const sideQuest = getSideQuestForProgress(state.activePackId, state.completedLessons.length);
   const sideQuestComplete = sideQuest && !sideQuest.locked && hasSideQuestBadge(state.activePackId, state.profile, sideQuest.id);
 
@@ -150,6 +154,26 @@ export function renderDashboard(container, state, actions) {
         <button class="btn btn-primary" id="start-session-btn">
           ${state.isGuide ? 'Preview Session' : (tonightDone ? 'Replay Session' : 'Start Lesson')}
         </button>
+      </section>
+
+      <section class="up-next-card" aria-labelledby="up-next-title">
+        <div class="up-next-card__heading">
+          <div><div class="hero-tag">See the route ahead</div><h3 id="up-next-title">Up next: ${escapeHtml(nextLesson.title)}</h3></div>
+          <span class="up-next-card__kind">${escapeHtml(lessonPreview.lessonKind)}</span>
+        </div>
+        <div class="up-next-card__grid">
+          <article>
+            <span>Today’s focus</span>
+            <strong>${lessonPreview.topic ? escapeHtml(lessonPreview.topic.title) : "Mixed voyage review"}</strong>
+            <p>${lessonPreview.topic ? "Meet new language, then use it right away." : "Bring several earlier topics back into one useful session."}</p>
+          </article>
+          <article>
+            <span>Bring back</span>
+            <strong>${previewReviews.length ? previewReviews.map(topic => escapeHtml(topic.title)).join(" · ") : "Your first words"}</strong>
+            <p>${previewReviews.length ? "These familiar topics may appear in Flashcards, Match, or Quiz." : "As you travel, this space will show the words the lesson is helping you remember."}</p>
+          </article>
+          ${previewConnection ? "<article class=\"up-next-card__connection\"><span>Make a connection</span><strong>" + escapeHtml(previewConnection.targetText) + "</strong><p>" + escapeHtml(previewConnection.supportText) + "</p></article>" : ""}
+        </div>
       </section>
 
       <!-- Calendar Mount -->

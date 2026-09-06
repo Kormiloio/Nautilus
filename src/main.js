@@ -838,6 +838,9 @@ async function openVerifiedLesson(lesson) {
   try {
     const profile=getProfiles().find(p=>p.name===state.profile);
     if(!profile || String(profile.id).startsWith('local-')) throw new Error('Select a linked learner profile first.');
+    if(profile.linkedUserId !== state.sessionUser?.id) {
+      throw new Error(`Open this individual lesson while signed in as ${profile.name}. Individual progress belongs to that learner’s linked account.`);
+    }
     const attempt=await beginVerifiedLesson({packId:LANGUAGE_PACK.id,packVersion:LANGUAGE_PACK.version,lessonId:lesson.id,profileId:profile.id});
     if(generation!==verifiedOpenGeneration) return;
     state.activeLesson=lesson;hydrateVerifiedAttempt(attempt);state.screen='verified';

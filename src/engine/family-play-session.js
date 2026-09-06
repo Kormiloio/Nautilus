@@ -36,6 +36,22 @@ export function getAvailableConnectionItems(topic, learnedTopicIds = []) {
     .flatMap(connection => connection.items || []);
 }
 
+export function getLessonPreview(lesson, learnedTopicIds = []) {
+  const random = createSeededRandom(`dashboard-preview:${lesson?.id || "next"}`);
+  const learned = new Set(learnedTopicIds);
+  const topic = lesson?.topicId ? getTopic(lesson.topicId) : null;
+  const reviewTopics = getSpiralReviewTopics(lesson, random)
+    .filter(reviewTopic => !learned.size || learned.has(reviewTopic.id));
+  const connectionItems = topic ? getAvailableConnectionItems(topic, learnedTopicIds) : [];
+  return {
+    lesson,
+    topic,
+    lessonKind: String(lesson?.type || "discover").replace("integration-", ""),
+    reviewTopics,
+    connectionItems,
+  };
+}
+
 export function buildFamilyPlaySteps(lesson, topic, sessionId) {
   const random = createSeededRandom(`${sessionId}:${lesson.id}:family-full-session`);
   const lessonKind = String(lesson.type || 'discover').replace('integration-', '');
