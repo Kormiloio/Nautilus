@@ -37,17 +37,19 @@ export function renderDashboard(container, state, actions) {
   const sideQuest = getSideQuestForProgress(state.activePackId, state.completedLessons.length);
   const sideQuestComplete = sideQuest && !sideQuest.locked && hasSideQuestBadge(state.activePackId, state.profile, sideQuest.id);
 
-  // Calculate badges
+  // Voyage Honors celebrate an accomplishment; posters celebrate arriving at a place.
   const badgeDefs = [
-    { id: 'first', label: 'First Steps', cond: state.completedTopicIds.length >= 1 },
-    { id: 'getting', label: 'Getting Started', cond: state.completedTopicIds.length >= 5 },
-    { id: 'halfway', label: 'Halfway Hero', cond: state.completedTopicIds.length >= 17 },
-    { id: 'fluent', label: 'Fluent Enough', cond: state.completedTopicIds.length >= getTopics().length },
-    { id: 'chatter', label: 'Chatterbox', cond: state.dialoguesDone >= 3 },
-    { id: 'streak', label: '7-Day Streak', cond: state.streakDays >= 7 },
-    { id: 'pro', label: 'Practice Pro', cond: state.stars >= 50 },
+    { id: 'first', icon: '⚓', title: 'First Crossing', description: 'Completed your first learning chapter.', cond: state.completedTopicIds.length >= 1, progress: state.completedTopicIds.length, goal: 1 },
+    { id: 'getting', icon: '⛵', title: 'Steady Wake', description: 'Completed five learning chapters.', cond: state.completedTopicIds.length >= 5, progress: state.completedTopicIds.length, goal: 5 },
+    { id: 'detective', icon: '🔎', title: 'Context Detective', description: 'Solved a Sailor Talk case using clues.', cond: sideQuestComplete, progress: sideQuestComplete ? 1 : 0, goal: 1 },
+    { id: 'chatter', icon: '🗣️', title: 'Story Keeper', description: 'Finished three family conversations.', cond: state.dialoguesDone >= 3, progress: state.dialoguesDone, goal: 3 },
+    { id: 'streak', icon: '🔥', title: 'Crew Rhythm', description: 'Learned together for seven active days.', cond: state.streakDays >= 7, progress: state.streakDays, goal: 7 },
+    { id: 'pro', icon: '✦', title: 'Star Navigator', description: 'Earned fifty stars through practice.', cond: state.stars >= 50, progress: state.stars, goal: 50 },
+    { id: 'halfway', icon: '🧭', title: 'Open-Water Captain', description: 'Completed seventeen learning chapters.', cond: state.completedTopicIds.length >= 17, progress: state.completedTopicIds.length, goal: 17 },
+    { id: 'fluent', icon: '🏆', title: 'Homecoming Voice', description: 'Completed every core learning chapter.', cond: state.completedTopicIds.length >= getTopics().length, progress: state.completedTopicIds.length, goal: getTopics().length },
   ];
-  const earnedBadges = badgeDefs.filter(b => b.cond);
+  const earnedBadges = badgeDefs.filter(badge => badge.cond);
+  const nextHonors = badgeDefs.filter(badge => !badge.cond).slice(0, 2);
 
   // Group topics by Month
   const topicsByMonth = {};
@@ -178,16 +180,16 @@ export function renderDashboard(container, state, actions) {
         </section>
       ` : ''}
 
-      <!-- Badges summary -->
-      ${!state.isGuide && earnedBadges.length > 0 ? `
-        <section aria-label="Earned Badges">
-          <h3 class="section-title">Badges Earned</h3>
-          <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px;">
-            ${earnedBadges.map(b => `
-              <div class="badge-pill" style="border-color: var(--amber); color: var(--text-main);">
-                <span style="color: var(--amber);">🎖</span> ${b.label}
-              </div>
-            `).join('')}
+      <!-- Voyage Honors -->
+      ${!state.isGuide ? `
+        <section class="voyage-honors" aria-labelledby="voyage-honors-title">
+          <div class="voyage-honors__heading">
+            <div><div class="hero-tag">Your accomplishments</div><h3 id="voyage-honors-title">Voyage Honors</h3><p>Posters remember where you arrived. Honors remember what your family achieved.</p></div>
+            <strong>${earnedBadges.length} earned</strong>
+          </div>
+          <div class="voyage-honors__grid">
+            ${earnedBadges.length ? earnedBadges.map(badge => `<article class="voyage-honor earned"><div class="voyage-honor__medal" aria-hidden="true">${badge.icon}</div><div><span>Honor earned</span><h4>${badge.title}</h4><p>${badge.description}</p></div><b>✓</b></article>`).join('') : '<p class="voyage-honors__empty">Your first honor is waiting just beyond the next lesson.</p>'}
+            ${nextHonors.map(badge => `<article class="voyage-honor upcoming"><div class="voyage-honor__medal" aria-hidden="true">${badge.icon}</div><div><span>Next honor · ${Math.min(badge.progress, badge.goal)}/${badge.goal}</span><h4>${badge.title}</h4><p>${badge.description}</p></div></article>`).join('')}
           </div>
         </section>
       ` : ''}
