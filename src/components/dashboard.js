@@ -90,7 +90,7 @@ export function renderDashboard(container, state, actions) {
         ${syncBadgeHtml}
         ${state.platformAdmin ? '<button class="btn btn-secondary" id="platform-admin-btn" style="padding: 6px 12px; font-size: 12px;">Platform Admin</button>' : ''}
         ${!state.linkedLearnerProfileId && ['owner', 'adult_guide'].includes(state.families?.[0]?.role)
-          ? '<button class="btn btn-secondary" id="family-overview-btn" style="padding: 6px 12px; font-size: 12px;">Family Overview</button>'
+          ? '<button class="btn btn-secondary" id="activity-preview-btn" style="padding: 6px 12px; font-size: 12px;">Preview activities</button><button class="btn btn-secondary" id="family-overview-btn" style="padding: 6px 12px; font-size: 12px;">Family Overview</button>'
           : ''}
       </div>
 
@@ -318,6 +318,7 @@ export function renderDashboard(container, state, actions) {
     actions.selectLanguage(event.target.value);
   });
   container.querySelector('#family-overview-btn')?.addEventListener('click', actions.goFamilyOverview);
+  container.querySelector('#activity-preview-btn')?.addEventListener('click', actions.goActivityPreview);
   container.querySelector('#platform-admin-btn')?.addEventListener('click', actions.goAdminDashboard);
   container.querySelector('#join-family-play-btn')?.addEventListener('click', actions.openFamilySession);
   container.querySelector('#open-side-quest-btn')?.addEventListener('click', () => actions.openSideQuest(sideQuest));

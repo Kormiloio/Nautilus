@@ -69,6 +69,7 @@ import { renderFamilyPlayView } from './components/family-play-view.js';
 import { renderVoyageArrivalView } from './components/voyage-arrival-view.js';
 import { getVoyageArrival } from './components/voyage-map.js';
 import { renderSideQuestView } from './components/side-quest-view.js';
+import { renderActivityPreview } from './components/activity-preview.js';
 import { AdminDashboardComponent } from './components/admin-dashboard.js';
 import { isPlatformAdmin } from './engine/admin-service.js';
 
@@ -323,6 +324,7 @@ const actions = {
   },
 
   goAdminDashboard: () => { state.screen = 'admin-dashboard'; state.profile = null; rerender(); },
+  goActivityPreview: () => { state.activityPreview = null; state.screen = 'activity-preview'; rerender(); window.scrollTo({ top: 0, behavior: 'auto' }); },
 
   openSideQuest: async (quest) => {
     if (!quest || quest.locked) return;
@@ -1077,6 +1079,9 @@ function rerender() {
     renderVerifiedLessonView(appContainer,state,actions);
   } else if (state.screen === 'session') {
     renderSessionView(appContainer, state, actions);
+  } else if (state.screen === 'activity-preview') {
+    if (!state.linkedLearnerProfileId && ['owner', 'adult_guide'].includes(state.families?.[0]?.role)) renderActivityPreview(appContainer, state, actions);
+    else { state.screen = 'dashboard'; rerender(); }
   } else if (state.screen === 'curriculum') {
     renderCurriculum(appContainer, state, actions);
   } else if (state.screen === 'side-quest') {
