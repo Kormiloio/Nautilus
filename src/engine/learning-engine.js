@@ -255,6 +255,22 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
   if (lesson.topicId) {
     const topic = getTopic(lesson.topicId);
     const prevTopic = TOPICS[TOPICS.indexOf(topic) - 1] || null;
+    const learned = new Set(completedTopicIds || []);
+    // Sentence builders are authored in topic connections. They appear only
+    // when their prerequisite topics have already been learned.
+    const connectionItems = (topic.connections || [])
+      .filter(connection => (connection.requiresTopicIds || []).every(id => learned.has(id)))
+      .flatMap(connection => connection.items || []);
+    const reviewedSentence = buildSentenceBuilder(connectionItems, random);
+    const addSentenceBuilder = () => {
+      if (!reviewedSentence) return;
+      steps.push({
+        type: 'sentence-builder',
+        title: 'Build the Sentence',
+        subtitle: 'Put familiar words in order to make a useful sentence',
+        sentence: reviewedSentence,
+      });
+    };
 
     // Step 0: Warmup (if previous topic exists)
     if (prevTopic) {
@@ -280,6 +296,7 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
         subtitle: 'Connect the translations',
         match: buildMatch(topic.items, 4, random),
       });
+      addSentenceBuilder();
     } else if (lesson.type === 'recall') {
       // Recall Cycle: Flashcard review -> Quiz
       steps.push({
@@ -288,6 +305,7 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
         subtitle: 'Self-assess your memory',
         items: shuffle(topic.items, random),
       });
+      addSentenceBuilder();
       steps.push({
         type: 'quiz',
         title: 'Quick Quiz',
@@ -295,28 +313,14 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
         quiz: buildQuiz(topic.items, 5, random),
       });
     } else if (lesson.type === 'build') {
-      // Build Cycle: notes -> reviewed sentence builder -> recognition.
-      // Connections come from language-pack content and only appear after the
-      // prerequisite topics have been completed.
+      // Build Cycle: a short note -> a reviewed sentence -> recognition.
       steps.push({
         type: 'note',
         title: 'Sentence Pattern',
         subtitle: 'How sentences are structured',
         note: topic.note || 'Practice assembling phrases in this topic.',
       });
-      const learned = new Set(completedTopicIds || []);
-      const connectionItems = (topic.connections || [])
-        .filter(connection => (connection.requiresTopicIds || []).every(id => learned.has(id)))
-        .flatMap(connection => connection.items || []);
-      const sentence = buildSentenceBuilder(connectionItems, random);
-      if (sentence) {
-        steps.push({
-          type: 'sentence-builder',
-          title: 'Build the Sentence',
-          subtitle: 'Put the words in order to make the sentence',
-          sentence,
-        });
-      }
+      addSentenceBuilder();
       steps.push({
         type: 'quiz',
         title: 'Pattern Practice',
@@ -325,6 +329,7 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
       });
     } else if (lesson.type === 'use') {
       // Use Cycle: Role-play Dialogue (if exists) or Listen & Repeat
+      addSentenceBuilder();
       if (topic.dialogue) {
         steps.push({
           type: 'dialogue',
@@ -348,6 +353,7 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
         subtitle: 'Show what you remember',
         quiz: buildQuiz(topic.items, 8, random),
       });
+      addSentenceBuilder();
       steps.push({
         type: 'match',
         title: 'Vocabulary Match',

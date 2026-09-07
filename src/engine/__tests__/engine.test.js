@@ -113,6 +113,15 @@ describe('Learning Engine', () => {
     expect(recallSteps.map(s => s.type)).toContain('quiz');
   });
 
+  it('adds an authored reviewed sentence between recall and quiz when prerequisites are learned', () => {
+    const lesson = VOYAGE_LESSONS.find(item => item.topicId === 'numbers' && item.type === 'recall');
+    const steps = generateSession(lesson, ['family'], { random: createSeededRandom('numbers-family-review') });
+    const types = steps.map(step => step.type);
+    expect(types).toContain('sentence-builder');
+    expect(types.indexOf('sentence-builder')).toBeGreaterThan(types.indexOf('recall-flash'));
+    expect(types.indexOf('sentence-builder')).toBeLessThan(types.indexOf('quiz'));
+  });
+
   it('should generate identical Family Play content from the same session seed', () => {
     const lesson = VOYAGE_LESSONS.find(l => l.type === 'checkpoint');
     const first = generateSession(lesson, [], { random: createSeededRandom('family-session-1') });
