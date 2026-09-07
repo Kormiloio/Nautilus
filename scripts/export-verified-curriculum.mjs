@@ -8,7 +8,8 @@ try {
   const {buildFamilyPlaySteps}=await vite.ssrLoadModule('/engine/family-play-session.js');
   const {toVerifiedExercises}=await vite.ssrLoadModule('/engine/verified-curriculum.js');
   const quote=value => value==null ? 'null' : "'"+String(value).replaceAll("'","''")+"'";
-  const revision=2;
+  const revision=Number(options.revision || 2);
+  if (!Number.isInteger(revision) || revision < 1) throw new Error('Revision must be a positive integer');
   const keyFor=(pack,lesson,mode)=>[pack.id,pack.version,lesson.id,mode,revision].join(':');
   function publish(pack,lesson,mode,steps) {
     const key=keyFor(pack,lesson,mode),hash=createHash('sha256').update(key).digest('hex');
@@ -34,8 +35,12 @@ try {
       if(options.start && (lesson.number||1)<Number(options.start)) continue;
       if(options.end && (lesson.number||1)>Number(options.end)) continue;
       const key=keyFor(pack,lesson,mode);
+      const learnedTopicIds=engine.VOYAGE_LESSONS
+        .slice(0, Math.max(0, (lesson.number || 1) - 1))
+        .map(previous => previous.topicId).filter(Boolean)
+        .filter((topicId, index, ids) => ids.indexOf(topicId) === index);
       const steps=mode==='family' ? buildFamilyPlaySteps(lesson,engine.getTopic(lesson.topicId)||engine.getTopics()[0],key)
-        : engine.generateSession(lesson,[],{random:engine.createSeededRandom(key)});
+        : engine.generateSession(lesson,learnedTopicIds,{random:engine.createSeededRandom(key)});
       publish(pack,lesson,mode,steps);
     }
     if(!options.mode || options.mode==="practice") for(const topic of engine.ALL_TOPICS) for(const activity of ['flashcards','quiz','match','listen','dialogue']) {

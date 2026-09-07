@@ -44,6 +44,7 @@ describe('Server curriculum adapter',()=>{
     expect(builder.answer).toEqual(['Imam','dva','brata.']);
     expect(builder.tokens).not.toEqual([]);
     expect(buildSentenceBuilder([{targetText:'jedan',supportText:'one'}])).toBeNull();
+    expect(buildSentenceBuilder([{targetText:'dijete / djeca',supportText:'child / children'}])).toBeNull();
     const exercises=toVerifiedExercises([{type:'sentence-builder',title:'Build',subtitle:'Build it',sentence:builder}]);
     expect(exercises).toMatchObject([{kind:'sentence_builder',answer:['Imam','dva','brata.']}]);
   });

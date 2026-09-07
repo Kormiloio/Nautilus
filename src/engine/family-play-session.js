@@ -1,4 +1,4 @@
-import { VOYAGE_LESSONS, createSeededRandom, getTopic, shuffle } from './learning-engine.js';
+import { VOYAGE_LESSONS, createSeededRandom, getTopic, isBuildableSentence, shuffle } from './learning-engine.js';
 
 function takeItems(items, count, random) {
   return shuffle(items, random).slice(0, Math.min(count, items.length));
@@ -77,7 +77,7 @@ export function buildFamilyPlaySteps(lesson, topic, sessionId) {
   const quizItems = takeItems(completePool, 6, random);
   const conversationItems = takeItems(uniqueItems([...connectionItems, ...reviewItems, ...currentItems]), 6, random);
   const builderItems = takeItems(connectionItems.length ? connectionItems : uniqueItems([...reviewItems, ...currentItems]), 3, random)
-    .filter(item => String(item.targetText || '').trim().split(/\s+/).length > 1)
+    .filter(isBuildableSentence)
     .map(item => ({ ...item, tokens: shuffle(String(item.targetText).trim().split(/\s+/), random) }));
 
   const flashcards = {

@@ -224,10 +224,13 @@ export function buildQuiz(items, quizLength = 8, random = Math.random) {
 
 // Sentence builders are only created from reviewed authored phrases. The
 // engine deliberately does not try to invent grammar by concatenating items.
+export function isBuildableSentence(item) {
+  const target = String(item?.targetText || '').trim();
+  return target.split(/\s+/).length > 1 && !target.includes('/');
+}
+
 export function buildSentenceBuilder(items, random = Math.random) {
-  const item = shuffle(items, random).find(candidate =>
-    String(candidate?.targetText || '').trim().split(/\s+/).length > 1
-  );
+  const item = shuffle(items, random).find(isBuildableSentence);
   if (!item) return null;
   const answer = String(item.targetText).trim().split(/\s+/);
   return { item, prompt: item.supportText, tokens: shuffle(answer, random), answer };
