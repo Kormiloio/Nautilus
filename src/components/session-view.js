@@ -79,6 +79,8 @@ function renderStep(mount, step, state, actions) {
     renderMatchStep(mount, step, state, actions);
   } else if (step.type === 'sentence-builder') {
     renderSentenceBuilderStep(mount, step, state, actions);
+  } else if (step.type === 'sentence-completion') {
+    renderSentenceCompletionStep(mount, step, state, actions);
   } else if (step.type === 'dialogue') {
     renderDialogueStep(mount, step, state, actions);
   } else if (step.type === 'listen') {
@@ -111,6 +113,29 @@ function renderSentenceBuilderStep(mount, step, state, actions) {
   mount.querySelector('#sentence-reset')?.addEventListener('click', () => { sentenceState.selected = []; sentenceState.feedback = null; redraw(); });
   mount.querySelector('#next-step-btn')?.addEventListener('click', actions.nextSessionStep);
 }
+function renderSentenceCompletionStep(mount, step, state, actions) {
+  const completionState = state.session.completion || { selected: null };
+  state.session.completion = completionState;
+  const completion = step.completion;
+  const selected = completionState.selected;
+  const isCorrect = selected === completion.answer;
+  const hasAnswer = selected !== null;
+  const sentence = completion.displayTokens.map((token, index) => index === completion.blankIndex ? (selected || '____') : token).join(' ');
+  const feedback = !hasAnswer ? 'Choose the familiar word that completes the sentence.' : isCorrect ? '✓ Correct — say the completed sentence together.' : 'Not quite. The sentence is: ' + completion.completedSentence.join(' ');
+  mount.innerHTML = '<div class="sentence-builder-step">' +
+    '<h3 style="font-size:22px;font-weight:800;margin-bottom:6px;">' + escapeHtml(step.title) + '</h3>' +
+    '<p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">' + escapeHtml(completion.prompt) + '</p>' +
+    '<div class="sentence-builder-step__answer ' + (hasAnswer ? (isCorrect ? 'correct' : 'incorrect') : '') + '" aria-live="polite">' + escapeHtml(sentence) + '</div>' +
+    '<div class="sentence-builder-step__tokens">' + completion.choices.map((choice, index) => '<button class="btn btn-secondary" data-completion-choice="' + index + '" ' + (hasAnswer ? 'disabled' : '') + '>' + escapeHtml(choice) + '</button>').join('') + '</div>' +
+    '<p class="sentence-builder-step__feedback ' + (hasAnswer ? (isCorrect ? 'correct' : 'incorrect') : '') + '" role="status">' + escapeHtml(feedback) + '</p>' +
+    '<button class="btn btn-primary" id="next-step-btn" ' + (!hasAnswer ? 'disabled' : '') + '>Continue →</button></div>';
+  mount.querySelectorAll('[data-completion-choice]').forEach(button => button.addEventListener('click', () => {
+    completionState.selected = completion.choices[Number(button.dataset.completionChoice)];
+    renderSentenceCompletionStep(mount, step, state, actions);
+  }));
+  mount.querySelector('#next-step-btn')?.addEventListener('click', actions.nextSessionStep);
+}
+
 // 1. Warmup Step
 function renderWarmupStep(mount, step, state, actions) {
   mount.innerHTML = `

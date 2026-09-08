@@ -11,6 +11,7 @@ context: |
 
 rules:
   proposal:
+    - Before implementation, every feature or behavior change MUST amend the applicable PRD and create its OpenSpec proposal, design, specifications, and tasks.
     - State the learner or family outcome, not only the technical change.
     - Identify content, privacy, accessibility, and audio implications.
     - List unresolved product decisions explicitly.

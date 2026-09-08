@@ -2,8 +2,12 @@
 
 **Repository codename:** Nautilus  
 **Document status:** Multi-family heritage platform; Montenegrin and Albanian packs implemented, additional pilot packs in progress
-**Last updated:** 2026-09-02
+**Last updated:** 2026-09-06
 **Target:** A usable first-year learning experience spanning approximately 10 months
+
+## Change governance
+
+Before implementation, every feature or behavior change MUST amend the applicable product requirements and include an OpenSpec proposal, design, normative specifications, and task list. Implementation may begin only after those records exist; deployment updates their task status and PRD release state.
 
 ## 1. Product summary
 
@@ -267,6 +271,9 @@ Selected lesson topics extend that world into the activity itself. Their vocabul
 | FR-39 | Cross-topic applications are schema-validated language-pack content with explicit learned-topic prerequisites, not language-specific engine logic. | Must |
 | FR-40 | A platform administrator can view privacy-preserving aggregate service health, adoption, language usage, session completion, and operational errors across families. | Should |
 | FR-41 | Platform administration does not expose learner-level activity or private family content by default; exceptional support access requires least privilege, a recorded reason, and an audit event. | Must |
+
+| FR-42 | Authorized adults can preview current-pack learning activities without creating a learner attempt, progress, reward, receipt, or Family Play state change. | Must |
+| FR-43 | Reviewed cross-topic sentence builders are included only when their language-pack prerequisites are met and are server-validated against the attempt's pinned catalog revision. | Must |
 
 ## 10. Quality requirements
 

@@ -42,6 +42,10 @@ export function renderVerifiedLessonView(container,state,actions) {
       const color=n>=0?colors[n%colors.length]:null;
       return '<button class="btn btn-secondary" data-tile="'+escapeHtml(tile.id)+'" data-side="'+side+'" '+(disabled?'disabled':'')+' style="'+(color?'border-color:'+color+';background:'+color+'22;':'')+(ui.selected===tile.id?'outline:3px solid #fff;':'')+'">'+run(tile.text,side==='targets'?'target':'support')+(pair?' <small>Pair '+(n+1)+'</small>':'')+'</button>';
     }).join('')+'</div>').join('')+'</div><p>'+Object.keys(matched).length+' / '+step.targets.length+' pairs selected. Tap a paired tile to change it.</p>';
+  } else if(step?.kind==='sentence_completion') {
+    const selected=feedback?.answer??receipt?.answer;
+    const completed=(feedback?.completedSentence??receipt?.completedSentence??step.displayTokens).map((token, tokenIndex)=>tokenIndex===step.blankIndex?(selected||'____'):token);
+    content='<h2>'+run(step.prompt,'support')+'</h2><p>Choose the missing familiar word.</p><div class="verified-sentence-answer '+(selected?'complete':'')+'" aria-live="polite">'+completed.map(token=>run(token)).join(' ')+'</div><div class="verified-choices">'+step.choices.map((choice,i)=>'<button class="btn btn-secondary '+((feedback?.correctAnswer??receipt?.correctAnswer)===choice?'correct':selected===choice?'incorrect':'')+'" data-choice="'+i+'" '+(disabled?'disabled':'')+'>'+run(choice)+(selected===choice?' <small>Your answer</small>':'')+'</button>').join('')+'</div>';
   } else if(step?.kind==='sentence_builder') {
     const selectedTokens=ui.sentence.map(tokenIndex => step.tokens[tokenIndex]);
     const allChosen=ui.sentence.length===step.tokens.length;

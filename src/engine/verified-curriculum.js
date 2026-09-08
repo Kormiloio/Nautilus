@@ -36,6 +36,16 @@ export function toVerifiedExercises(steps) {
       if (!tokens.length || !answer.length) throw new Error('Family sentence builder needs reviewed tokens and answer');
       return [{...common,kind:'sentence_builder',prompt:sentence.supportText,tokens,answer,title:step.title}];
     }
+    if (step.type === 'family-sentence-completion') {
+      const completion = step.completion;
+      if (!completion?.displayTokens?.length || !completion?.choices?.length || !completion?.answer || !completion?.completedSentence?.length) throw new Error('Family sentence completion needs reviewed blank, choices, and answer');
+      return [{...common,kind:'sentence_completion',prompt:completion.prompt,displayTokens:completion.displayTokens,blankIndex:completion.blankIndex,choices:completion.choices,answer:completion.answer,completedSentence:completion.completedSentence,title:step.title}];
+    }
+    if (step.type === 'sentence-completion') {
+      const completion = step.completion;
+      if (!completion?.displayTokens?.length || !completion?.choices?.length || !completion?.answer || !completion?.completedSentence?.length) throw new Error('Sentence completion needs reviewed blank, choices, and answer');
+      return [{...common,kind:'sentence_completion',prompt:completion.prompt,displayTokens:completion.displayTokens,blankIndex:completion.blankIndex,choices:completion.choices,answer:completion.answer,completedSentence:completion.completedSentence,title:step.title}];
+    }
     if (['warmup','discover','recall-flash','note','dialogue','listen','ready','family-flashcards','family-conversation','family-reflection'].includes(step.type)) {
       return [{...common,kind:'self_report',note:step.note,
         items:words(step.items || (step.item ? [step.item] : step.dialogue?.lines || [])),

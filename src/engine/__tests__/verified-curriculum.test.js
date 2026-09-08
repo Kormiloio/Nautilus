@@ -1,5 +1,5 @@
 import { describe,it,expect } from 'vitest';
-import { getAvailableLanguagePacks,setActiveLanguagePack,VOYAGE_LESSONS,generateSession,getTopic,getTopics,createSeededRandom,buildSentenceBuilder } from '../learning-engine.js';
+import { getAvailableLanguagePacks,setActiveLanguagePack,VOYAGE_LESSONS,generateSession,getTopic,getTopics,createSeededRandom,buildSentenceBuilder,buildSentenceCompletion } from '../learning-engine.js';
 import { buildFamilyPlaySteps } from '../family-play-session.js';
 import { toVerifiedExercises } from '../verified-curriculum.js';
 
@@ -25,6 +25,10 @@ describe('Server curriculum adapter',()=>{
             } else if(exercise.kind==='sentence_builder') {
               expect(exercise.tokens).toHaveLength(exercise.answer.length);
               expect([...exercise.tokens].sort()).toEqual([...exercise.answer].sort());
+            } else if(exercise.kind==='sentence_completion') {
+              expect(exercise.choices).toContain(exercise.answer);
+              expect(exercise.displayTokens[exercise.blankIndex]).toBe('____');
+              expect(exercise.completedSentence[exercise.blankIndex]).toBe(exercise.answer);
             } else {
               expect(exercise.kind).toBe('self_report');
               expect(exercise.confirmation).toContain('self-reported');
@@ -47,5 +51,8 @@ describe('Server curriculum adapter',()=>{
     expect(buildSentenceBuilder([{targetText:'dijete / djeca',supportText:'child / children'}])).toBeNull();
     const exercises=toVerifiedExercises([{type:'sentence-builder',title:'Build',subtitle:'Build it',sentence:builder}]);
     expect(exercises).toMatchObject([{kind:'sentence_builder',answer:['Imam','dva','brata.']}]);
+    const completion=buildSentenceCompletion(builder,[{targetText:'Ne znam.',supportText:'I do not know.'}],createSeededRandom('blank'));
+    expect(completion.choices).toContain(completion.answer);
+    expect(completion.displayTokens[completion.blankIndex]).toBe('____');
   });
 });

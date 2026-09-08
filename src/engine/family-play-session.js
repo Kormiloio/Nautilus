@@ -1,4 +1,4 @@
-import { VOYAGE_LESSONS, createSeededRandom, getTopic, isBuildableSentence, shuffle } from './learning-engine.js';
+import { VOYAGE_LESSONS, buildSentenceCompletion, createSeededRandom, getTopic, isBuildableSentence, shuffle } from './learning-engine.js';
 
 function takeItems(items, count, random) {
   return shuffle(items, random).slice(0, Math.min(count, items.length));
@@ -103,12 +103,20 @@ export function buildFamilyPlaySteps(lesson, topic, sessionId) {
     type: 'family-sentence-builder', title: 'Build a Family Sentence',
     subtitle: 'Tap the words in order, then say the completed sentence together', items: builderItems,
   }] : [];
+  const familySentence = builderItems[0]
+    ? { prompt: builderItems[0].supportText, tokens: builderItems[0].tokens, answer: String(builderItems[0].targetText).trim().split(/\s+/) }
+    : null;
+  const completion = buildSentenceCompletion(familySentence, uniqueItems([...connectionItems, ...reviewItems, ...currentItems]), random);
+  const sentenceCompletion = completion ? [{
+    type: 'family-sentence-completion', title: 'Complete a Family Sentence',
+    subtitle: 'Choose the missing familiar word that completes the sentence together', completion,
+  }] : [];
   const activityOrder = {
     discover: [flashcards, match, ...quizzes, ...conversations],
     recall: [flashcards, ...quizzes, match, ...conversations],
-    build: [flashcards, ...builder, match, ...quizzes, ...conversations],
-    use: [...conversations, flashcards, ...builder, match, ...quizzes],
-    checkpoint: [...quizzes, match, flashcards, ...conversations],
+    build: [flashcards, ...builder, ...sentenceCompletion, match, ...quizzes, ...conversations],
+    use: [...conversations, flashcards, ...builder, ...sentenceCompletion, match, ...quizzes],
+    checkpoint: [...quizzes, ...sentenceCompletion, match, flashcards, ...conversations],
   }[lessonKind] || [flashcards, match, ...quizzes, ...conversations];
 
   return [

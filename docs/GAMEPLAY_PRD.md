@@ -1,7 +1,7 @@
 # Product requirements document: Nautilus Gameplay
 
 **Product:** Nautilus — Learn Your Heritage Together  
-**Status:** Proposed  
+**Status:** Active · reviewed sentence builder released; sentence completion specified
 **Last updated:** 2026-09-06
 
 ## 1. Summary
@@ -93,6 +93,13 @@ Example progression:
 - Use: “Tell your family one true or imaginary sentence using a number.”
 
 This is an example only. The curriculum engine selects reviewed connections from content metadata; it must not embed specific topic names in application logic.
+
+
+### 6.2.1 Deployed rhythm and adult preview
+
+- **Released:** Reviewed sentence builders are inserted only from authored, prerequisite-gated connections in the regular lesson rhythm. They remain server-validated against an immutable catalog revision, and the target answer is withheld until feedback.
+- **Released:** Family owners and adult guides can open a no-credit activity preview of the current language pack. Preview interactions create no attempt, progress, reward, receipt, or Family Play state.
+- **Specified, not yet released:** reviewed single-blank sentence completion is tracked in OpenSpec change `add-reviewed-sentence-completion`.
 
 ### 6.3 Cumulative recall
 
@@ -213,6 +220,7 @@ The map, destination scenes, posters, badge artwork, and lesson backgrounds need
 ### Phase 2 — authored language in context
 
 - Add structured sentence builder and sentence-completion definitions to the language-pack schema.
+- Implement reviewed single-blank sentence completion after eligible sentence builders, with server-side validation and no free-text collection.
 - Add authored recall relationships and lesson recap metadata.
 - Deliver one reviewed sentence-building path in each currently published language pack.
 - Add dashboard Up next and lesson recap consistency tests.

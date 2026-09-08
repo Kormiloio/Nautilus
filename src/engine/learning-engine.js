@@ -236,6 +236,28 @@ export function buildSentenceBuilder(items, random = Math.random) {
   return { item, prompt: item.supportText, tokens: shuffle(answer, random), answer };
 }
 
+// One blank is chosen from the same reviewed sentence. The choices are
+// constrained reviewed tokens, never generated grammar or free-form text.
+export function buildSentenceCompletion(sentence, reviewedItems = [], random = Math.random) {
+  if (!sentence?.answer?.length || sentence.answer.length < 2) return null;
+  const eligible = sentence.answer.map((token, index) => ({ token, index })).filter(({ token }) => /[\p{L}\p{N}]/u.test(token));
+  if (!eligible.length) return null;
+  const blankIndex = eligible[Math.floor(random() * eligible.length)].index;
+  const answer = sentence.answer[blankIndex];
+  const candidates = reviewedItems.flatMap(item => String(item?.targetText || '').trim().split(/\s+/))
+    .filter(token => /[\p{L}\p{N}]/u.test(token) && token !== answer);
+  const choices = shuffle([answer, ...[...new Set([...candidates, ...sentence.answer.filter(token => token !== answer)])].slice(0, 3)], random);
+  if (new Set(choices).size < 2) return null;
+  return {
+    prompt: sentence.prompt,
+    displayTokens: sentence.answer.map((token, index) => index === blankIndex ? '____' : token),
+    blankIndex,
+    choices: [...new Set(choices)],
+    answer,
+    completedSentence: sentence.answer,
+  };
+}
+
 // Builds the session steps dynamically based on the lesson
 export function createSeededRandom(seedText) {
   let seed = [...String(seedText)].reduce((value, char) => ((value * 31) + char.charCodeAt(0)) >>> 0, 2166136261);
@@ -262,13 +284,20 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
       .filter(connection => (connection.requiresTopicIds || []).every(id => learned.has(id)))
       .flatMap(connection => connection.items || []);
     const reviewedSentence = buildSentenceBuilder(connectionItems, random);
-    const addSentenceBuilder = () => {
+    const reviewedCompletion = buildSentenceCompletion(reviewedSentence, connectionItems, random);
+    const addSentencePractice = () => {
       if (!reviewedSentence) return;
       steps.push({
         type: 'sentence-builder',
         title: 'Build the Sentence',
         subtitle: 'Put familiar words in order to make a useful sentence',
         sentence: reviewedSentence,
+      });
+      if (reviewedCompletion) steps.push({
+        type: 'sentence-completion',
+        title: 'Complete the Sentence',
+        subtitle: 'Choose the missing familiar word',
+        completion: reviewedCompletion,
       });
     };
 
@@ -296,7 +325,7 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
         subtitle: 'Connect the translations',
         match: buildMatch(topic.items, 4, random),
       });
-      addSentenceBuilder();
+      addSentencePractice();
     } else if (lesson.type === 'recall') {
       // Recall Cycle: Flashcard review -> Quiz
       steps.push({
@@ -305,7 +334,7 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
         subtitle: 'Self-assess your memory',
         items: shuffle(topic.items, random),
       });
-      addSentenceBuilder();
+      addSentencePractice();
       steps.push({
         type: 'quiz',
         title: 'Quick Quiz',
@@ -320,7 +349,7 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
         subtitle: 'How sentences are structured',
         note: topic.note || 'Practice assembling phrases in this topic.',
       });
-      addSentenceBuilder();
+      addSentencePractice();
       steps.push({
         type: 'quiz',
         title: 'Pattern Practice',
@@ -329,7 +358,7 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
       });
     } else if (lesson.type === 'use') {
       // Use Cycle: Role-play Dialogue (if exists) or Listen & Repeat
-      addSentenceBuilder();
+      addSentencePractice();
       if (topic.dialogue) {
         steps.push({
           type: 'dialogue',
@@ -353,7 +382,7 @@ export function generateSession(lesson, completedTopicIds, options = {}) {
         subtitle: 'Show what you remember',
         quiz: buildQuiz(topic.items, 8, random),
       });
-      addSentenceBuilder();
+      addSentencePractice();
       steps.push({
         type: 'match',
         title: 'Vocabulary Match',

@@ -105,6 +105,15 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
       <button type="button" class="btn btn-secondary family-sentence-builder__reset" data-sentence-reset>Start over</button>
     </div>`;
   }
+  if (step.type === 'family-sentence-completion') {
+    const completion = step.completion;
+    if (!completion) return '';
+    const choices = completion.choices.map((choice, index) => '<button type="button" data-completion-choice="' + index + '">' + escapeHtml(choice) + '</button>').join('');
+    return turnPrompt + '<div class="family-sentence-builder family-sentence-completion" data-completion-answer="' + escapeHtml(completion.answer) + '" data-completion-blank="' + completion.blankIndex + '">' +
+      '<div><small>COMPLETE THE SENTENCE</small><strong>' + renderLanguageRun(completion.prompt, 'support', LANGUAGE_PACK) + '</strong><p>Choose the missing familiar word. Every device can answer for itself.</p></div>' +
+      '<div class="family-sentence-builder__answer" aria-live="polite">' + completion.displayTokens.map(token => escapeHtml(token)).join(' ') + '</div>' +
+      '<div class="family-sentence-builder__tokens">' + choices + '</div><p class="family-answer-feedback" aria-live="polite">Choose the word that completes the sentence.</p></div>';
+  }
   if (step.type === 'family-quiz') {
     const lockedAnswer = quizState?.currentAnswer?.answerId;
     const status = quizState?.answers || [];
@@ -300,6 +309,25 @@ export function renderFamilyPlayView(container, state, actions) {
     });
   }
 
+  const completion = container.querySelector('.family-sentence-completion');
+  if (completion) {
+    const answer = completion.dataset.completionAnswer;
+    const blankIndex = Number(completion.dataset.completionBlank);
+    const slots = step.completion.displayTokens;
+    const answerSlot = completion.querySelector('.family-sentence-builder__answer');
+    const feedback = completion.querySelector('.family-answer-feedback');
+    completion.querySelectorAll('[data-completion-choice]').forEach(button => button.addEventListener('click', () => {
+      if (completion.dataset.completed) return;
+      const choice = step.completion.choices[Number(button.dataset.completionChoice)];
+      const correct = choice === answer;
+      completion.dataset.completed = 'true';
+      completion.querySelectorAll('[data-completion-choice]').forEach(candidate => { candidate.disabled = true; });
+      answerSlot.textContent = slots.map((token, index) => index === blankIndex ? choice : token).join(' ');
+      answerSlot.classList.add(correct ? 'complete' : 'try-again');
+      feedback.textContent = correct ? '✓ Correct — say the completed sentence together.' : 'Not quite. The sentence is: ' + step.completion.completedSentence.join(' ');
+      feedback.classList.add(correct ? 'correct' : 'incorrect');
+    }));
+  }
   container.querySelectorAll('[data-family-match]').forEach(button => button.addEventListener('click', () => {
     if (button.classList.contains('matched')) return;
     if (!selectedMatch) {
