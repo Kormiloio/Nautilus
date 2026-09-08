@@ -1,6 +1,6 @@
 const EXPECTED = Object.freeze({
   contractVersion: 1,
-  revision: 4,
+  revision: 5,
   individual: 1400,
   family: 1400,
   practice: 954,
