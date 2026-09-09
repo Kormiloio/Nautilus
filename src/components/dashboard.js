@@ -228,13 +228,13 @@ export function renderDashboard(container, state, actions) {
       <section aria-label="Topics library">
         <h3 class="section-title">Practice on Your Own</h3>
 
-        <!-- Mixed review card -->
+        <!-- Voyage review card -->
         ${state.completedTopicIds.length >= 2 && !state.isGuide ? `
           <div style="margin-bottom: 24px;">
-            <button type="button" class="topic-card" id="mixed-review-card" style="max-width: 320px; border-color: var(--pink);">
-              <div class="topic-card__icon" style="background: var(--pink);">Mx</div>
-              <div class="topic-card__title">Mixed Review</div>
-              <div class="topic-card__subtitle">Random practice from all topics you've completed</div>
+            <button type="button" class="topic-card" id="voyage-review-card" style="max-width: 320px; border-color: var(--pink);">
+              <div class="topic-card__icon" style="background: var(--pink);">↺</div>
+              <div class="topic-card__title">Review from your voyage</div>
+              <div class="topic-card__subtitle">Bring back familiar words from completed topics</div>
             </button>
           </div>
         ` : ''}
@@ -332,9 +332,9 @@ export function renderDashboard(container, state, actions) {
   });
 
   // Mixed review click
-  const mixedCard = container.querySelector('#mixed-review-card');
-  if (mixedCard) {
-    mixedCard.addEventListener('click', actions.startMixedReview);
+  const voyageReviewCard = container.querySelector('#voyage-review-card');
+  if (voyageReviewCard) {
+    voyageReviewCard.addEventListener('click', actions.startVoyageReview);
   }
 
 }

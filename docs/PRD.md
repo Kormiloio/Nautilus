@@ -275,6 +275,8 @@ Selected lesson topics extend that world into the activity itself. Their vocabul
 | FR-42 | Authorized adults can preview current-pack learning activities without creating a learner attempt, progress, reward, receipt, or Family Play state change. | Must |
 | FR-43 | Reviewed cross-topic sentence builders are included only when their language-pack prerequisites are met and are server-validated against the attempt's pinned catalog revision. | Must |
 
+| FR-44 | Learners can optionally review previously encountered, language-scoped material through verified non-punitive practice without advancing Family Voyage progress. | Must |
+
 ## 10. Quality requirements
 
 - **Responsive:** no horizontal scrolling at supported mobile widths; touch targets are comfortably usable.

@@ -26,3 +26,5 @@ export const submitVerifiedExercise=(id,index,response)=>rpc('submit_verified_ex
 });
 
 export const getVerifiedFamilyAttempt=id=>rpc('get_verified_family_attempt',{target_session:id});
+
+export const getVoyageReviewTopic=(profileId,packId)=>rpc('get_voyage_review_topic',{target_profile:profileId,target_pack_id:packId});

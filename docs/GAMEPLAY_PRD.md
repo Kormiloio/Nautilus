@@ -126,6 +126,10 @@ A normal voyage lesson contains 3–6 short segments, not a fixed set of activit
 
 The content author chooses the shape appropriate to the lesson. A lesson cannot count as a new voyage position if it merely reuses the same deck with relabeled controls.
 
+### 6.4 Review from your voyage (specified)
+
+**Review from your voyage** is an optional, language-scoped practice choice that selects familiar published material from a learner’s verified history. It favors material answered incorrectly or not retrieved recently, while keeping a small, varied set of topics. It uses existing activity types and server validation, creates no pressure or penalty, and never advances the shared Family Voyage. Sparse history receives a supportive mixed-practice fallback. The implementation is tracked in OpenSpec change `add-voyage-review-practice`.
+
 ## 7. Feedback and answer behavior
 
 ### 7.1 Correct answers

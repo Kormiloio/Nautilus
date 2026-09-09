@@ -1,4 +1,4 @@
-import { beginVerifiedLesson, getVerifiedAttempt, submitVerifiedExercise } from './engine/verified-learning-service.js';
+import { beginVerifiedLesson, getVerifiedAttempt, submitVerifiedExercise, getVoyageReviewTopic } from './engine/verified-learning-service.js';
 import { renderVerifiedLessonView } from './components/verified-lesson-view.js';
 import { advanceDetectiveCase, createDetectiveGame, earnSideQuestBadge, lockDetectiveAnswer, selectDetectiveAnswer } from './engine/side-quest-game.js';
 import { advanceFamilySideQuest, cancelFamilySideQuest, getFamilySideQuestState, startFamilySideQuest, submitFamilySideQuestAnswer, subscribeToFamilySideQuest } from './engine/side-quest-service.js';
@@ -721,10 +721,12 @@ const actions = {
 
   speak,
 
-  startMixedReview: async () => {
+  startVoyageReview: async () => {
     if (state.sessionUser) {
-      const lesson=VOYAGE_LESSONS.find(l=>state.completedLessons.includes(l.id)&&l.type==='checkpoint') || VOYAGE_LESSONS.find(l=>state.completedLessons.includes(l.id));
-      if (lesson) await openVerifiedLesson(lesson);
+      const profileId=getProfiles().find(profile => profile.name===state.profile)?.id;
+      const selected=profileId ? await getVoyageReviewTopic(profileId,state.activePackId) : null;
+      const topicId=selected?.topicId || state.completedTopicIds[0];
+      if (topicId) await openVerifiedLesson({id:'practice:'+topicId+':quiz',topicId,title:getTopic(topicId)?.title});
       return;
     }
     // Generate an ad-hoc session representing mixed review
@@ -734,9 +736,9 @@ const actions = {
     if (pool.length === 0) return;
 
     state.activeLesson = {
-      id: 'mixed-review',
-      title: 'Mixed Review',
-      detail: 'Practice from all completed topics',
+      id: 'voyage-review',
+      title: 'Review from your voyage',
+      detail: 'Bring back familiar language from completed topics',
       topicId: null,
       month: 0,
     };
@@ -745,25 +747,25 @@ const actions = {
 
     // Set custom session steps for mixed review
     state.session = {
-      lessonId: 'mixed-review',
+      lessonId: 'voyage-review',
       stepIdx: 0,
       steps: [
         {
           type: 'quiz',
-          title: 'Review Quiz',
-          subtitle: 'Test your retention',
+          title: 'Bring It Back',
+          subtitle: 'Familiar language from earlier voyages',
           quiz: buildQuiz(pool, 8)
         },
         {
           type: 'match',
-          title: 'Review Match',
-          subtitle: 'Match terms quickly',
+          title: 'Connect Familiar Words',
+          subtitle: 'Match language you have already learned',
           match: buildMatch(pool, 8)
         },
         {
           type: 'done',
           title: 'Review Finished!',
-          subtitle: 'You completed your mixed review!'
+          subtitle: 'You brought familiar language back into view!'
         }
       ],
       flash: { idx: 0, flipped: false },
