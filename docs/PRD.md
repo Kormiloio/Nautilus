@@ -277,7 +277,7 @@ Selected lesson topics extend that world into the activity itself. Their vocabul
 
 | FR-44 | Learners can optionally review previously encountered, language-scoped material through verified non-punitive practice without advancing Family Voyage progress. | Must |
 
-| FR-45 | An authorized Family Play controller can navigate classic shared-session segments when the crew is ready; this must remain compatible with any linked verified attempt. | Must |
+| FR-45 | An authorized Family Play controller can navigate classic shared-session segments when the crew is ready, and a Family Play session completes when every required participant locks the final challenge; both behaviors must remain compatible with any linked verified attempt. | Must |
 
 ## 10. Quality requirements
 

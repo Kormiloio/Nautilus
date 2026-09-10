@@ -1,7 +1,7 @@
 \set ON_ERROR_STOP on
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(37);
+select extensions.plan(41);
 insert into auth.users(id,aud,role,email,raw_app_meta_data,raw_user_meta_data) values
 ('51000000-0000-0000-0000-000000000001','authenticated','authenticated','verified-parent@example.com','{}','{}'),
 ('51000000-0000-0000-0000-000000000002','authenticated','authenticated','verified-kid@example.com','{}','{}'),
@@ -84,5 +84,13 @@ select extensions.is(public.submit_verified_exercise(:'family_attempt',1,'true')
 select extensions.is((select status::text from public.family_voyage_sessions where id=:'family_session'),'completed','family completion persisted');
 select extensions.is(public.submit_verified_exercise(:'family_attempt',1,'true')->>'duplicate','true','family completion retry is harmless');
 select extensions.is((select stars from public.learner_language_progress where profile_id=:'profile'),1,'replaying an already credited lesson does not farm stars');
+
+-- A linked verified attempt must not prevent the classic final lock-in from completing.
+select public.start_family_review(:'family_session',array[:'profile'::uuid]) as classic_final_session \gset
+select extensions.lives_ok(format('select public.control_family_play(%L,%L,1)',:'classic_final_session','live'),'classic review session can reach its final lock');
+select extensions.is(public.lock_family_final_challenge(:'classic_final_session',1)->>'completed','false','first classic final lock waits for every participant');
+select set_config('request.jwt.claim.sub','51000000-0000-0000-0000-000000000002',true);
+select extensions.is(public.lock_family_final_challenge(:'classic_final_session',1)->>'completed','true','last classic final lock completes despite linked verified attempt');
+select extensions.is((select status::text from public.family_voyage_sessions where id=:'classic_final_session'),'completed','classic final lock completion persists');
 select * from extensions.finish();
 rollback;

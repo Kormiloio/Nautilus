@@ -2,11 +2,11 @@
 
 ## Why
 
-The Family Play presentation retains its classic ready lobby and parent-led Next controls, but a verified-attempt guard currently rejects those controls once a Family Play attempt exists. Families see “Couldn’t save that action — Verified sessions advance through exercise receipts” at the opening screen despite every learner being ready.
+The Family Play presentation retains its classic ready lobby and parent-led Next controls, but a verified-attempt guard currently rejects those controls once a Family Play attempt exists. A second guard also rejects a fully locked final challenge as an “older session,” even after every person has completed their own card.
 
 ## Outcome
 
-An authorized Family Play controller can start, pause, resume, and advance the classic shared lesson again. This repair preserves the existing cooperative lock-in behavior for quiz and final challenges and does not alter individual verified practice.
+An authorized Family Play controller can start, pause, resume, and advance the classic shared lesson again. A classic session completes when every required participant has submitted an individual final lock. The repair does not alter individual verified practice.
 
 ## Impacts
 
