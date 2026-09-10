@@ -71,9 +71,8 @@ select set_config('request.jwt.claim.sub','51000000-0000-0000-0000-000000000001'
 select public.start_family_play(:'family','montenegrin-en','0.1.0','voyage-1',1,current_date,'UTC',array[:'profile'::uuid]) as family_session \gset
 select public.begin_verified_attempt('52000000-0000-0000-0000-000000000003',null,:'family_session')->>'id' as family_attempt \gset
 select extensions.throws_ok(format('select public.complete_family_play(%L)',:'family_session'),
-'P0001','All verified exercises must be completed by everyone','a verified session cannot bypass its receipts');
-select extensions.throws_ok(format('select public.control_family_play(%L,%L,99)',:'family_session','live'),
-'P0001','Verified sessions advance through exercise receipts','legacy segment jump blocked');
+'P0001','Restart this older session to complete it with verified play','a verified session cannot bypass its receipts');
+select extensions.lives_ok(format('select public.control_family_play(%L,%L,1)',:'family_session','live'),'classic controller can advance a verified-family session');
 select extensions.is(public.submit_verified_exercise(:'family_attempt',0,'"Zdravo"')->>'correct','true','parent can submit own answer');
 select extensions.throws_ok(format('select public.submit_verified_exercise(%L,1,%L::jsonb)',:'family_attempt','true'),
 'P0001','Finish the current exercise together first','parent cannot run ahead of learner');
