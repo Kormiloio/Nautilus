@@ -1,7 +1,7 @@
 \set ON_ERROR_STOP on
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(41);
+select extensions.plan(43);
 insert into auth.users(id,aud,role,email,raw_app_meta_data,raw_user_meta_data) values
 ('51000000-0000-0000-0000-000000000001','authenticated','authenticated','verified-parent@example.com','{}','{}'),
 ('51000000-0000-0000-0000-000000000002','authenticated','authenticated','verified-kid@example.com','{}','{}'),
@@ -70,6 +70,12 @@ select extensions.throws_ok(format('select public.get_verified_attempt(%L)',:'at
 select set_config('request.jwt.claim.sub','51000000-0000-0000-0000-000000000001',true);
 select public.start_family_play(:'family','montenegrin-en','0.1.0','voyage-1',1,current_date,'UTC',array[:'profile'::uuid]) as family_session \gset
 select public.begin_verified_attempt('52000000-0000-0000-0000-000000000003',null,:'family_session')->>'id' as family_attempt \gset
+select extensions.is(public.get_family_play_state(:'family','montenegrin-en')->'activeSession'->>'catalogRevision','999','family state exposes pinned revision');
+reset role;
+insert into public.verified_lesson_catalog(id,pack_id,pack_version,lesson_id,revision,mode,voyage_position,exercises)
+select '52000000-0000-0000-0000-000000000005',pack_id,pack_version,lesson_id,1000,mode,voyage_position,exercises from public.verified_lesson_catalog where id='52000000-0000-0000-0000-000000000003';
+set local role authenticated;
+select extensions.is(public.get_family_play_state(:'family','montenegrin-en')->'activeSession'->>'catalogRevision','999','publishing a newer catalog does not change an existing session revision');
 select extensions.throws_ok(format('select public.complete_family_play(%L)',:'family_session'),
 'P0001','Restart this older session to complete it with verified play','a verified session cannot bypass its receipts');
 select extensions.lives_ok(format('select public.control_family_play(%L,%L,1)',:'family_session','live'),'classic controller can advance a verified-family session');

@@ -30,3 +30,18 @@
 - [ ] Complete live browser/device verification and publish a reviewed catalog revision.
 
 The draft registry now contains actual vocabulary and daily allocations. It is separate from the published registry, which remains empty. No production update was attempted.
+
+## Full-course authoring and live continuation
+
+- [x] Author 200 daily allocations and 2,010 distinct draft lexical entries.
+- [x] Assemble day-24–200 continuation with 1,770 new words and a legacy-compatible review baseline.
+- [x] Activate the explicit pilot in actual individual and Family Play generators.
+- [x] Expose pinned catalog revisions without changing session authorization.
+- [x] Rehearse the atomic catalog rollout locally using a backup of existing definitions.
+- [x] Pass 124 application tests, 101 database assertions, all content validation, and database lint.
+- [ ] Verify the matching production client and catalog after deployment.
+- [ ] Obtain fluent language/audio review; pilot authorization does not grant review approval.
+
+### Deployment state
+
+The session-revision metadata migration is applied. Catalog activation and the matching client remain pending: API upload size exceeded; automatic review rejected a staging-table schema/permission change and an administrator role switch. A concrete access-restricted staged upload was prepared and successfully rehearsed locally. See `docs/VOCABULARY_PRODUCTION_ROLLOUT.md`. No staging table exists in production.

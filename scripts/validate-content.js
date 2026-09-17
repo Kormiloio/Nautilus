@@ -99,3 +99,11 @@ try {
 const draftDaily = JSON.parse(readFileSync('./src/content/daily-vocabulary/montenegrin-days-24-40.json', 'utf8'));
 validateDailyPlan(draftDaily, Array.from({ length: 17 }, (_, index) => `voyage-${24 + index}`), { requireReview: false });
 console.log('✓ Draft Montenegrin days 24–40: 170 new words; 10 new + 10 review daily. Fluent review pending.');
+
+const fullDaily = JSON.parse(readFileSync('./src/content/daily-vocabulary/montenegrin-full-200.json', 'utf8'));
+validateDailyPlan(fullDaily, Array.from({ length: 200 }, (_, index) => `voyage-${1 + index}`), { requireReview: false });
+console.log('✓ Full Montenegrin draft: 200 days and 2,010 distinct vocabulary words. Fluent review pending.');
+
+const continuation = JSON.parse(readFileSync('./src/content/daily-vocabulary/montenegrin-continuation-24-200.json', 'utf8'));
+validateDailyPlan(continuation, Array.from({length:177},(_,index)=>`voyage-${24+index}`), {requireReview:false});
+console.log('✓ Live pilot continuation: days 24–200, 10 new + 10 review every day.');

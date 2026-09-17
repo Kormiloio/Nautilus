@@ -185,7 +185,7 @@ export function renderFamilyPlayView(container, state, actions) {
   }
 
   const topic = getTopic(lesson.topicId);
-  const steps = buildFamilyPlaySteps(lesson, topic, cloudSession.id);
+  const steps = buildFamilyPlaySteps(lesson, topic, cloudSession.id, { catalogRevision: cloudSession.catalogRevision ?? 5 });
   const stepIndex = Math.min(cloudSession.currentSegment || 0, steps.length - 1);
   const step = steps[stepIndex];
   const isAdult = !state.linkedLearnerProfileId && (state.families?.[0]?.role === 'owner' || state.families?.[0]?.role === 'adult_guide');
@@ -241,7 +241,7 @@ export function renderFamilyPlayView(container, state, actions) {
       </aside>
       <section class="family-play-panel" aria-labelledby="family-play-title">
         <div class="family-play-meta">
-          <span>${escapeHtml(lesson.title)}</span>
+          <span>${escapeHtml((cloudSession.catalogRevision ?? 5) < 6 ? (lesson.legacyTitle || lesson.title) : lesson.title)}</span>
           <span>Part ${stepIndex + 1} of ${steps.length}</span>
         </div>
         <div class="session-steps-bar" role="progressbar" aria-valuenow="${stepIndex + 1}" aria-valuemin="1" aria-valuemax="${steps.length}">

@@ -52,3 +52,24 @@ An authorized adult SHALL be able to select a draft expansion day and preview it
 - GIVEN an unpublished draft allocation
 - WHEN the adult selects it in activity preview
 - THEN its 10 new and 10 review words are identified, draft status is visible, and no attempt or completion is written.
+
+## Requirement: Authorized live pilot
+The Montenegrin day-24–200 continuation SHALL be available in normal individual and Family Play lessons as an explicitly labeled family pilot. Draft review metadata SHALL NOT be replaced with invented approval.
+
+### Scenario: Family starts day 24 after release
+- GIVEN revision 6 is live
+- WHEN a new Montenegrin Family Play session starts on day 24
+- THEN its first vocabulary activity teaches ten new words and its review activity contains ten previously introduced words.
+
+### Scenario: Older session resumes
+- GIVEN a Family Play session was pinned to revision 5
+- WHEN it resumes after the client update
+- THEN its original activity sequence remains unchanged.
+
+## Requirement: Full-course vocabulary draft
+The authored Montenegrin plan SHALL contain 200 ordered days with twenty distinct words each, at least ten newly introduced words daily, and an all-new opening day. It SHALL remain separate from the live continuation until its content and transition are verified.
+
+### Scenario: Family reaches day 41
+- GIVEN the family completed continuation days 24–40
+- WHEN it starts day 41 or any later day through 200
+- THEN the lesson contains ten new words and ten words from its actual preceding continuation/baseline, without resetting progress or reverting to legacy repetition.

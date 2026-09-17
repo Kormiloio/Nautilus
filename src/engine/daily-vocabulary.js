@@ -41,19 +41,20 @@ export function dailyVocabularySteps(allocation, helpers, family = false) {
   const { newItems, reviewItems } = allocation;
   const items = [...newItems, ...reviewItems];
   const title = `${newItems.length} new words · ${reviewItems.length} review words`;
+  const introduction = allocation.pilot ? 'Family pilot · language review pending. Learn today’s new vocabulary.' : 'Learn today’s new vocabulary before practicing it';
   const batches = [];
   for (let i = 0; i < newItems.length; i += 5) batches.push(newItems.slice(i, i + 5));
   if (!family) return [
-    { type: 'discover', title, subtitle: 'Learn today’s new vocabulary before practicing it', items: newItems },
-    ...(reviewItems.length ? [{ type: 'recall-flash', title: 'Bring back earlier words', items: reviewItems }] : []),
+    { type: 'discover', title, subtitle: introduction, items: newItems },
+    ...(reviewItems.length ? [{ type: 'recall-flash', title: 'Bring back earlier words', reviewCount: reviewItems.length, items: reviewItems }] : []),
     ...batches.map(batch => ({ type: 'match', title: 'Connect today’s new words', match: buildMatch(batch, batch.length, random) })),
     { type: 'quiz', title: 'Recall today’s vocabulary', quiz: buildQuiz(items, items.length, random) },
     { type: 'done', title: 'Completed!', subtitle: title },
   ];
   return [
     { type: 'ready', title: 'Is everyone ready?' },
-    { type: 'family-flashcards', title, subtitle: 'Learn today’s new vocabulary', items: newItems },
-    ...(reviewItems.length ? [{ type: 'family-flashcards', title: 'Bring back earlier words', items: reviewItems }] : []),
+    { type: 'family-flashcards', title, subtitle: introduction, items: newItems },
+    ...(reviewItems.length ? [{ type: 'family-flashcards', title: 'Bring back earlier words', reviewCount: reviewItems.length, items: reviewItems }] : []),
     ...batches.map(batch => ({ type: 'family-match', title: 'Connect today’s new words', items: batch, targetItems: shuffle(batch, random), supportItems: shuffle(batch, random) })),
     ...shuffle(items, random).map(item => ({ type: 'family-quiz', title: 'Recall today’s vocabulary', item, options: shuffle([item, ...shuffle(items.filter(other => other.id !== item.id), random).slice(0, 3)], random) })),
     { type: 'family-reflection', title: 'Bring It Home', subtitle: 'Use today’s new words together', items: newItems, recap: { newItems: newItems.slice(0, 1), recalledItems: reviewItems.slice(0, 2), connection: null } },

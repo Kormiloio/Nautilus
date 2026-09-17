@@ -1,3 +1,4 @@
+import { DAILY_PILOT_REVISION } from '../content/daily-plans.js';
 import { dailyVocabularySteps } from './daily-vocabulary.js';
 import { VOYAGE_LESSONS, getDailyVocabularyAllocation, buildQuiz, buildMatch, buildSentenceCompletion, createSeededRandom, getTopic, isBuildableSentence, shuffle } from './learning-engine.js';
 
@@ -38,6 +39,8 @@ export function getAvailableConnectionItems(topic, learnedTopicIds = []) {
 }
 
 export function getLessonPreview(lesson, learnedTopicIds = []) {
+  const daily = lesson ? getDailyVocabularyAllocation(lesson) : null;
+  if (daily) return { lesson, topic: { ...(getTopic(lesson.topicId) || {}), title: lesson.title, items: daily.newItems }, lessonKind: String(lesson.type).replace('integration-', ''), reviewTopics: [{ id: 'daily-review', title: 'Earlier voyage words', items: daily.reviewItems }], connectionItems: [] };
   const random = createSeededRandom(`dashboard-preview:${lesson?.id || "next"}`);
   const learned = new Set(learnedTopicIds);
   const topic = lesson?.topicId ? getTopic(lesson.topicId) : null;
@@ -64,9 +67,9 @@ export function getLessonRecap(lesson, learnedTopicIds = []) {
   };
 }
 
-export function buildFamilyPlaySteps(lesson, topic, sessionId) {
+export function buildFamilyPlaySteps(lesson, topic, sessionId, options = {}) {
   const random = createSeededRandom(`${sessionId}:${lesson.id}:family-full-session`);
-  const allocation = getDailyVocabularyAllocation(lesson);
+  const allocation = (options.catalogRevision ?? DAILY_PILOT_REVISION) >= DAILY_PILOT_REVISION ? getDailyVocabularyAllocation(lesson) : null;
   if (allocation) return dailyVocabularySteps(allocation, { buildQuiz, buildMatch, shuffle, random }, true);
   const lessonKind = String(lesson.type || 'discover').replace('integration-', '');
   const mix = LESSON_MIX[lessonKind] || LESSON_MIX.discover;

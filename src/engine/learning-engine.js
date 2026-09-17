@@ -1,4 +1,4 @@
-import { DAILY_PLANS } from '../content/daily-plans.js';
+import { DAILY_PLANS, PILOT_DAILY_PLANS } from '../content/daily-plans.js';
 import { validateDailyPlan, dailyVocabularySteps } from './daily-vocabulary.js';
 import montenegrin from '../content/topics.json';
 import albanian from '../content/albanian.js';
@@ -138,7 +138,10 @@ function buildVoyageLessons() {
       }
     }
   }
-  return lessons;
+  const dailyTitles = new Map((PILOT_DAILY_PLANS[content.languagePack.id]?.lessons || []).map(lesson => [lesson.id, lesson.title]));
+  return lessons.map(lesson => dailyTitles.has(lesson.id)
+    ? { ...lesson, legacyTitle: lesson.title, title: dailyTitles.get(lesson.id), detail: '10 new words and 10 review words · family pilot' }
+    : lesson);
 }
 
 export let VOYAGE_LESSONS = buildVoyageLessons();
@@ -276,10 +279,18 @@ export function getDailyVocabularyPlan() {
   return DAILY_PLANS[LANGUAGE_PACK.id] || null;
 }
 
+export function getPilotDailyVocabularyPlan() {
+  return PILOT_DAILY_PLANS[LANGUAGE_PACK.id] || null;
+}
+
 export function getDailyVocabularyAllocation(lesson) {
-  const plan = getDailyVocabularyPlan();
-  if (!plan || !VOYAGE_LESSONS.some(candidate => candidate.id === lesson.id)) return null;
-  return validateDailyPlan(plan, VOYAGE_LESSONS.map(candidate => candidate.id)).get(lesson.id);
+  if (!VOYAGE_LESSONS.some(candidate => candidate.id === lesson.id)) return null;
+  const approved = getDailyVocabularyPlan();
+  if (approved) return validateDailyPlan(approved, VOYAGE_LESSONS.map(candidate => candidate.id)).get(lesson.id);
+  const pilot = getPilotDailyVocabularyPlan();
+  if (!pilot || !pilot.lessons.some(candidate => candidate.id === lesson.id)) return null;
+  const ids = Array.from({ length: pilot.endDay - pilot.startDay + 1 }, (_, index) => `voyage-${pilot.startDay + index}`);
+  return { ...validateDailyPlan(pilot, ids, { requireReview: false }).get(lesson.id), pilot: true };
 }
 
 export function generateSession(lesson, completedTopicIds, options = {}) {

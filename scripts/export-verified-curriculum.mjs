@@ -33,7 +33,13 @@ try {
     if (!packs.length) throw new Error('Unknown language pack');
     for (const pack of packs) {
       engine.setActiveLanguagePack(pack.id);
-      try { validateDailyPlan(engine.getDailyVocabularyPlan(), engine.VOYAGE_LESSONS.map(lesson => lesson.id)); }
+      try {
+        if (options['pilot-vocabulary'] === 'true') {
+          const pilot = engine.getPilotDailyVocabularyPlan();
+          if (!pilot || revision < 6 || !options.pack || Number(options.start) !== pilot.startDay || Number(options.end) !== pilot.endDay) throw new Error('Pilot export requires the exact registered pack/range and revision >= 6');
+          validateDailyPlan(pilot, Array.from({ length: pilot.endDay - pilot.startDay + 1 }, (_, index) => `voyage-${pilot.startDay + index}`), { requireReview: false });
+        } else validateDailyPlan(engine.getDailyVocabularyPlan(), engine.VOYAGE_LESSONS.map(lesson => lesson.id));
+      }
       catch (error) { throw new Error(`${pack.id}: ${error.message}. Author the reviewed daily plan before exporting a replacement voyage. Legacy maintenance only: --legacy-vocabulary=true`); }
     }
   }

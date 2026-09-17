@@ -27,3 +27,7 @@ Both lesson modes teach the new allocation first, then review, matching in small
 Export using a new immutable catalog revision. The exporter validates all 200 allocations before emitting SQL, even for a partial export. Practice exports remain independent. For intentional maintenance of historical content only, `--legacy-vocabulary=true` preserves the legacy exporter. This bypass does not certify compliance. Publishing or changing the release gate requires a separate reviewed catalog rollout.
 
 Existing progress and attempt records are not changed by this implementation. Families at day 23 require an explicit content transition review: new-plan words must be checked against what the family already saw in the legacy course before rollout.
+
+## September 17 live-pilot rollout
+
+The family explicitly authorized use in actual lessons. `PILOT_DAILY_PLANS` now registers the continuation from day 24 through 200 with truthful draft language metadata. The strict reviewed registry is still separate. `scripts/assemble-full-vocabulary.mjs` reproducibly assembles the 2,010-word full-course draft and 1,770-new-word continuation. `scripts/build-pilot-release.mjs` emits the atomic revision-6 rollout, copying unchanged definitions and replacing only 354 Montenegrin individual/family lessons. Never run a legacy export to silently certify a daily plan.
