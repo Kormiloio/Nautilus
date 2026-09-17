@@ -39,13 +39,15 @@ export function validateDailyPlan(plan, lessonIds, { requireReview = true } = {}
 export function dailyVocabularySteps(allocation, helpers, family = false) {
   const { buildQuiz, buildMatch, shuffle, random } = helpers;
   const { newItems, reviewItems } = allocation;
-  const items = [...newItems, ...reviewItems];
-  const title = `${newItems.length} new words · ${reviewItems.length} review words`;
+  const catchUpItems = allocation.catchUpItems || [];
+  const items = [...newItems, ...reviewItems, ...catchUpItems];
+  const title = `${newItems.length} new words · ${reviewItems.length} review words${catchUpItems.length ? ` · ${catchUpItems.length} catch-up words` : ''}`;
   const introduction = allocation.pilot ? 'Family pilot · language review pending. Learn today’s new vocabulary.' : 'Learn today’s new vocabulary before practicing it';
   const batches = [];
   for (let i = 0; i < newItems.length; i += 5) batches.push(newItems.slice(i, i + 5));
   if (!family) return [
     { type: 'discover', title, subtitle: introduction, items: newItems },
+    ...(catchUpItems.length ? [{ type: 'recall-flash', title: 'Catch up on earlier words', reviewCount: catchUpItems.length, items: catchUpItems, catchUp: true }] : []),
     ...(reviewItems.length ? [{ type: 'recall-flash', title: 'Bring back earlier words', reviewCount: reviewItems.length, items: reviewItems }] : []),
     ...batches.map(batch => ({ type: 'match', title: 'Connect today’s new words', match: buildMatch(batch, batch.length, random) })),
     { type: 'quiz', title: 'Recall today’s vocabulary', quiz: buildQuiz(items, items.length, random) },
@@ -54,6 +56,7 @@ export function dailyVocabularySteps(allocation, helpers, family = false) {
   return [
     { type: 'ready', title: 'Is everyone ready?' },
     { type: 'family-flashcards', title, subtitle: introduction, items: newItems },
+    ...(catchUpItems.length ? [{ type: 'family-flashcards', title: 'Catch up on earlier words', reviewCount: catchUpItems.length, items: catchUpItems, catchUp: true }] : []),
     ...(reviewItems.length ? [{ type: 'family-flashcards', title: 'Bring back earlier words', reviewCount: reviewItems.length, items: reviewItems }] : []),
     ...batches.map(batch => ({ type: 'family-match', title: 'Connect today’s new words', items: batch, targetItems: shuffle(batch, random), supportItems: shuffle(batch, random) })),
     ...shuffle(items, random).map(item => ({ type: 'family-quiz', title: 'Recall today’s vocabulary', item, options: shuffle([item, ...shuffle(items.filter(other => other.id !== item.id), random).slice(0, 3)], random) })),

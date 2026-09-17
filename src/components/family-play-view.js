@@ -185,7 +185,10 @@ export function renderFamilyPlayView(container, state, actions) {
   }
 
   const topic = getTopic(lesson.topicId);
-  const steps = buildFamilyPlaySteps(lesson, topic, cloudSession.id, { catalogRevision: cloudSession.catalogRevision ?? 5 });
+  const steps = buildFamilyPlaySteps(lesson, topic, cloudSession.id, {
+    catalogRevision: cloudSession.catalogRevision ?? 5,
+    familyId: state.families?.[0]?.family_id,
+  });
   const stepIndex = Math.min(cloudSession.currentSegment || 0, steps.length - 1);
   const step = steps[stepIndex];
   const isAdult = !state.linkedLearnerProfileId && (state.families?.[0]?.role === 'owner' || state.families?.[0]?.role === 'adult_guide');

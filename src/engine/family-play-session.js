@@ -18,6 +18,19 @@ const LESSON_MIX = {
   checkpoint: { current: 5, review: 5, connection: 2, title: 'Voyage Checkpoint', subtitle: 'Mix new and older language without studying one list again' },
 };
 
+const CAMAJ_FAMILY_ID = 'ae060d7c-8c44-49f3-b825-54e5f8a84946';
+
+function getCamajCatchUpItems(lesson, familyId) {
+  if (familyId !== CAMAJ_FAMILY_ID) return [];
+  const day = Number(String(lesson?.id || '').replace('voyage-', ''));
+  if (!Number.isInteger(day) || day < 24) return [];
+  const earlier = VOYAGE_LESSONS
+    .filter(candidate => Number(String(candidate.id).replace('voyage-', '')) < 24)
+    .flatMap(candidate => getTopic(candidate.topicId)?.items || []);
+  const unique = uniqueItems(earlier);
+  return unique.slice((day - 24) * 5, (day - 23) * 5);
+}
+
 export function getSpiralReviewTopics(lesson, random = Math.random, limit = 4) {
   const lessonIndex = VOYAGE_LESSONS.findIndex(candidate => candidate.id === lesson.id);
   if (lessonIndex < 1) return [];
@@ -70,7 +83,10 @@ export function getLessonRecap(lesson, learnedTopicIds = []) {
 export function buildFamilyPlaySteps(lesson, topic, sessionId, options = {}) {
   const random = createSeededRandom(`${sessionId}:${lesson.id}:family-full-session`);
   const allocation = (options.catalogRevision ?? DAILY_PILOT_REVISION) >= DAILY_PILOT_REVISION ? getDailyVocabularyAllocation(lesson) : null;
-  if (allocation) return dailyVocabularySteps(allocation, { buildQuiz, buildMatch, shuffle, random }, true);
+  if (allocation) {
+    const catchUpItems = getCamajCatchUpItems(lesson, options.familyId);
+    return dailyVocabularySteps({ ...allocation, catchUpItems }, { buildQuiz, buildMatch, shuffle, random }, true);
+  }
   const lessonKind = String(lesson.type || 'discover').replace('integration-', '');
   const mix = LESSON_MIX[lessonKind] || LESSON_MIX.discover;
   const reviewTopics = getSpiralReviewTopics(lesson, random);
