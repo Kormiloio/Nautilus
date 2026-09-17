@@ -40,6 +40,7 @@ export function dailyVocabularySteps(allocation, helpers, family = false) {
   const { buildQuiz, buildMatch, shuffle, random } = helpers;
   const { newItems, reviewItems } = allocation;
   const catchUpItems = allocation.catchUpItems || [];
+  const grammarItems = allocation.grammarItems || [];
   const items = [...newItems, ...reviewItems, ...catchUpItems];
   const title = `${newItems.length} new words · ${reviewItems.length} review words${catchUpItems.length ? ` · ${catchUpItems.length} catch-up words` : ''}`;
   const introduction = allocation.pilot ? 'Family pilot · language review pending. Learn today’s new vocabulary.' : 'Learn today’s new vocabulary before practicing it';
@@ -57,6 +58,7 @@ export function dailyVocabularySteps(allocation, helpers, family = false) {
     { type: 'ready', title: 'Is everyone ready?' },
     { type: 'family-flashcards', title, subtitle: introduction, items: newItems },
     ...(catchUpItems.length ? [{ type: 'family-flashcards', title: 'Catch up on earlier words', reviewCount: catchUpItems.length, items: catchUpItems, catchUp: true }] : []),
+    ...(grammarItems.length ? [{ type: 'family-grammar', title: 'Play the “Who is it?” game', subtitle: 'Practice I am, you are, we are, they are, I have, and you have.', items: grammarItems }] : []),
     ...(reviewItems.length ? [{ type: 'family-flashcards', title: 'Bring back earlier words', reviewCount: reviewItems.length, items: reviewItems }] : []),
     ...batches.map(batch => ({ type: 'family-match', title: 'Connect today’s new words', items: batch, targetItems: shuffle(batch, random), supportItems: shuffle(batch, random) })),
     ...shuffle(items, random).map(item => ({ type: 'family-quiz', title: 'Recall today’s vocabulary', item, options: shuffle([item, ...shuffle(items.filter(other => other.id !== item.id), random).slice(0, 3)], random) })),

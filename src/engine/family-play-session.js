@@ -85,7 +85,8 @@ export function buildFamilyPlaySteps(lesson, topic, sessionId, options = {}) {
   const allocation = (options.catalogRevision ?? DAILY_PILOT_REVISION) >= DAILY_PILOT_REVISION ? getDailyVocabularyAllocation(lesson) : null;
   if (allocation) {
     const catchUpItems = getCamajCatchUpItems(lesson, options.familyId);
-    return dailyVocabularySteps({ ...allocation, catchUpItems }, { buildQuiz, buildMatch, shuffle, random }, true);
+    const grammarItems = options.familyId === CAMAJ_FAMILY_ID ? (getTopic('verbs1')?.items || []) : [];
+    return dailyVocabularySteps({ ...allocation, catchUpItems, grammarItems }, { buildQuiz, buildMatch, shuffle, random }, true);
   }
   const lessonKind = String(lesson.type || 'discover').replace('integration-', '');
   const mix = LESSON_MIX[lessonKind] || LESSON_MIX.discover;
