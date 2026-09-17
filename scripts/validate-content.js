@@ -1,3 +1,4 @@
+import { validateDailyPlan } from '../src/engine/daily-vocabulary.js';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import Ajv from 'ajv';
@@ -93,3 +94,8 @@ try {
   console.error('Content validation failed:', error.message);
   process.exit(1);
 }
+
+// Authoring check only: draft validation never grants publication approval.
+const draftDaily = JSON.parse(readFileSync('./src/content/daily-vocabulary/montenegrin-days-24-40.json', 'utf8'));
+validateDailyPlan(draftDaily, Array.from({ length: 17 }, (_, index) => `voyage-${24 + index}`), { requireReview: false });
+console.log('✓ Draft Montenegrin days 24–40: 170 new words; 10 new + 10 review daily. Fluent review pending.');

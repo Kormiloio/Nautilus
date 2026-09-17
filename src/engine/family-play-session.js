@@ -1,4 +1,5 @@
-import { VOYAGE_LESSONS, buildSentenceCompletion, createSeededRandom, getTopic, isBuildableSentence, shuffle } from './learning-engine.js';
+import { dailyVocabularySteps } from './daily-vocabulary.js';
+import { VOYAGE_LESSONS, getDailyVocabularyAllocation, buildQuiz, buildMatch, buildSentenceCompletion, createSeededRandom, getTopic, isBuildableSentence, shuffle } from './learning-engine.js';
 
 function takeItems(items, count, random) {
   return shuffle(items, random).slice(0, Math.min(count, items.length));
@@ -53,6 +54,8 @@ export function getLessonPreview(lesson, learnedTopicIds = []) {
 }
 
 export function getLessonRecap(lesson, learnedTopicIds = []) {
+  const allocation = lesson ? getDailyVocabularyAllocation(lesson) : null;
+  if (allocation) return { newItems: allocation.newItems.slice(0, 1), recalledItems: allocation.reviewItems.slice(0, 2), connection: null };
   const preview = getLessonPreview(lesson, learnedTopicIds);
   return {
     newItems: (preview.topic?.items || []).slice(0, 1),
@@ -63,6 +66,8 @@ export function getLessonRecap(lesson, learnedTopicIds = []) {
 
 export function buildFamilyPlaySteps(lesson, topic, sessionId) {
   const random = createSeededRandom(`${sessionId}:${lesson.id}:family-full-session`);
+  const allocation = getDailyVocabularyAllocation(lesson);
+  if (allocation) return dailyVocabularySteps(allocation, { buildQuiz, buildMatch, shuffle, random }, true);
   const lessonKind = String(lesson.type || 'discover').replace('integration-', '');
   const mix = LESSON_MIX[lessonKind] || LESSON_MIX.discover;
   const reviewTopics = getSpiralReviewTopics(lesson, random);

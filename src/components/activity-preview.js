@@ -1,7 +1,10 @@
+import { getDraftVocabularyLessons, getDraftVocabularyPreview } from '../engine/draft-vocabulary-preview.js';
 import { buildMatch, buildQuiz, createSeededRandom, getTopics, LANGUAGE_PACK, shuffle } from '../engine/learning-engine.js';
 import { escapeHtml, renderLanguageRun } from '../engine/language-runs.js';
 
-function sourceForPreview() {
+function sourceForPreview(lessonId = '') {
+  const draft = getDraftVocabularyPreview(LANGUAGE_PACK.id, lessonId);
+  if (draft) return draft;
   const topic = getTopics().find(candidate => candidate.items?.length >= 4) || getTopics()[0];
   const items = (topic?.items || []).slice(0, 6);
   const dialogueLine = topic?.dialogue?.lines?.find(line => {
@@ -11,11 +14,11 @@ function sourceForPreview() {
   return { topic, items, sentence: dialogueLine || { targetText: items.slice(0, 2).map(item => item.targetText).join(' '), supportText: items.slice(0, 2).map(item => item.supportText).join(' · ') } };
 }
 
-function freshPreview() {
-  const source = sourceForPreview();
-  const random = createSeededRandom('activity-preview:' + LANGUAGE_PACK.id);
-  const answer = String(source.sentence.targetText).trim().split(/\s+/);
-  return { source, tab: 'flashcards', flashIndex: 0, flipped: false, match: buildMatch(source.items, Math.min(4, source.items.length), random), selectedMatch: null, matchMessage: '', quiz: buildQuiz(source.items, 1, random).questions[0], quizMessage: '', sentence: { answer, tokens: shuffle(answer, random), selected: [], message: '' } };
+function freshPreview(lessonId = '', round = 0) {
+  const source = sourceForPreview(lessonId);
+  const random = createSeededRandom('activity-preview:' + LANGUAGE_PACK.id + ':' + lessonId + ':' + round);
+  const answer = String(source.sentence?.targetText || '').trim().split(/\s+/);
+  return { round, lessonId, source, tab: 'flashcards', flashIndex: 0, flipped: false, match: buildMatch(source.items, Math.min(4, source.items.length), random), selectedMatch: null, matchMessage: '', quiz: buildQuiz(source.items, source.items.length, createSeededRandom('preview-quiz:' + LANGUAGE_PACK.id + ':' + lessonId)).questions[round % source.items.length], quizMessage: '', sentence: { answer, tokens: shuffle(answer, random), selected: [], message: '' } };
 }
 
 function currentPreview(state) {
@@ -54,9 +57,13 @@ function sentence(preview) {
 export function renderActivityPreview(container, state, actions) {
   const preview = currentPreview(state);
   const content = { flashcards, match, quiz, sentence }[preview.tab](preview);
-  const tabs = Object.entries(label).map(([id, title]) => '<button class="btn btn-secondary btn-pill ' + (preview.tab === id ? 'btn-active' : '') + '" data-preview-tab="' + id + '">' + title + '</button>').join('');
-  container.innerHTML = '<header class="navbar"><button class="logo" id="preview-home" aria-label="Back to dashboard"><div class="logo-icon">' + escapeHtml(LANGUAGE_PACK.targetLanguage.code.toUpperCase()) + '</div><div class="logo-title">Nautilus</div></button><button class="btn btn-secondary" id="preview-back">← Dashboard</button></header><main class="container activity-preview"><div class="hero-tag">Parent preview</div><h1>Try the activities</h1><p class="preview-intro">Explore the current ' + escapeHtml(LANGUAGE_PACK.targetLanguage.name) + ' activity styles. This does not open a lesson, write progress, or affect Family Play.</p><div class="topic-activity-tabs" role="tablist" aria-label="Preview activities">' + tabs + '</div><section class="preview-panel card"><div><span class="hero-tag">' + escapeHtml(preview.source.topic.title) + '</span><h2>' + escapeHtml(label[preview.tab]) + '</h2></div>' + content + '</section></main>';
+  const tabs = Object.entries(label).filter(([id]) => id !== 'sentence' || preview.source.sentence).map(([id, title]) => '<button class="btn btn-secondary btn-pill ' + (preview.tab === id ? 'btn-active' : '') + '" data-preview-tab="' + id + '">' + title + '</button>').join('');
+  const draftLessons = getDraftVocabularyLessons(LANGUAGE_PACK.id);
+  const dayPicker = draftLessons.length ? '<label for="preview-day">Vocabulary set</label><select id="preview-day" class="btn btn-secondary"><option value="">Current course preview</option>' + draftLessons.map(lesson => '<option value="' + escapeHtml(lesson.id) + '" ' + (preview.lessonId === lesson.id ? 'selected' : '') + '>Day ' + escapeHtml(lesson.id.replace('voyage-', '')) + ' · ' + escapeHtml(lesson.title) + '</option>').join('') + '</select>' : '';
+  const inventory = preview.source.draft ? '<p role="status"><strong>Draft vocabulary — pending fluent review.</strong> 10 new words + 10 review words. No progress is recorded.</p><details><summary>See all 20 words and meanings</summary><ul>' + preview.source.items.map(item => '<li><strong>' + escapeHtml(item.targetText) + '</strong> — ' + escapeHtml(item.supportText) + ' <span>(' + (preview.source.newWordIds.includes(item.id) ? 'New' : 'Review') + ')</span></li>').join('') + '</ul></details>' : '';
+  container.innerHTML = '<header class="navbar"><button class="logo" id="preview-home" aria-label="Back to dashboard"><div class="logo-icon">' + escapeHtml(LANGUAGE_PACK.targetLanguage.code.toUpperCase()) + '</div><div class="logo-title">Nautilus</div></button><button class="btn btn-secondary" id="preview-back">← Dashboard</button></header><main class="container activity-preview"><div class="hero-tag">Parent preview</div><h1>Try the activities</h1><p class="preview-intro">Explore the current ' + escapeHtml(LANGUAGE_PACK.targetLanguage.name) + ' activity styles. This does not open a lesson, write progress, or affect Family Play.</p>' + dayPicker + inventory + '<div class="topic-activity-tabs" role="tablist" aria-label="Preview activities">' + tabs + '</div><section class="preview-panel card"><div><span class="hero-tag">' + escapeHtml(preview.source.topic.title) + '</span><h2>' + escapeHtml(label[preview.tab]) + '</h2></div>' + content + '</section></main>';
   const redraw = () => renderActivityPreview(container, state, actions);
+  container.querySelector('#preview-day')?.addEventListener('change', event => { state.activityPreview = { packId: LANGUAGE_PACK.id, ...freshPreview(event.target.value) }; redraw(); });
   container.querySelector('#preview-home').addEventListener('click', actions.goDashboard);
   container.querySelector('#preview-back').addEventListener('click', actions.goDashboard);
   container.querySelectorAll('[data-preview-tab]').forEach(button => button.addEventListener('click', () => { preview.tab = button.dataset.previewTab; redraw(); }));
@@ -74,5 +81,5 @@ export function renderActivityPreview(container, state, actions) {
   container.querySelectorAll('[data-preview-quiz]').forEach(button => button.addEventListener('click', () => { preview.quizMessage = button.dataset.previewQuiz === preview.quiz.correctAnswer ? '✓ Correct!' : 'Not quite. The answer is ' + preview.quiz.correctAnswer + '.'; redraw(); }));
   container.querySelectorAll('[data-preview-sentence]').forEach(button => button.addEventListener('click', () => { preview.sentence.selected.push(Number(button.dataset.previewSentence)); preview.sentence.message = ''; redraw(); }));
   container.querySelector('[data-preview-check]')?.addEventListener('click', () => { const actual = preview.sentence.selected.map(index => preview.sentence.tokens[index]); preview.sentence.message = actual.every((token, index) => token === preview.sentence.answer[index]) ? '✓ Correct — that is the sentence.' : 'Not quite. The sentence is: ' + preview.sentence.answer.join(' '); redraw(); });
-  container.querySelectorAll('[data-preview-reset]').forEach(button => button.addEventListener('click', () => { const kind = button.dataset.previewReset; if (kind === 'match' || kind === 'quiz') { const fresh = freshPreview(); preview[kind] = fresh[kind]; preview[kind + 'Message'] = ''; if (kind === 'match') preview.selectedMatch = null; } if (kind === 'sentence') { preview.sentence.selected = []; preview.sentence.message = ''; } redraw(); }));
+  container.querySelectorAll('[data-preview-reset]').forEach(button => button.addEventListener('click', () => { const kind = button.dataset.previewReset; if (kind === 'match' || kind === 'quiz') { const fresh = freshPreview(preview.lessonId, (preview.round || 0) + 1); preview.round = fresh.round; preview[kind] = fresh[kind]; preview[kind + 'Message'] = ''; if (kind === 'match') preview.selectedMatch = null; } if (kind === 'sentence') { preview.sentence.selected = []; preview.sentence.message = ''; } redraw(); }));
 }

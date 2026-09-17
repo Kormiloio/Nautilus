@@ -26,6 +26,17 @@ try {
       on conflict(pack_id,pack_version,lesson_id,revision,mode) do nothing;
     end $catalog$;`);
   }
+  // Preflight every selected core pack before producing any SQL.
+  if (options.mode !== 'practice' && options['legacy-vocabulary'] !== 'true') {
+    const { validateDailyPlan } = await vite.ssrLoadModule('/engine/daily-vocabulary.js');
+    const packs = engine.getAvailableLanguagePacks().filter(pack => !options.pack || pack.id === options.pack);
+    if (!packs.length) throw new Error('Unknown language pack');
+    for (const pack of packs) {
+      engine.setActiveLanguagePack(pack.id);
+      try { validateDailyPlan(engine.getDailyVocabularyPlan(), engine.VOYAGE_LESSONS.map(lesson => lesson.id)); }
+      catch (error) { throw new Error(`${pack.id}: ${error.message}. Author the reviewed daily plan before exporting a replacement voyage. Legacy maintenance only: --legacy-vocabulary=true`); }
+    }
+  }
   console.log('begin;');
   for(const pack of engine.getAvailableLanguagePacks()) {
     if(options.pack && pack.id!==options.pack) continue;

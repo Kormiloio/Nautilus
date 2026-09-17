@@ -1,0 +1,2650 @@
+{
+  "version": 1,
+  "packId": "montenegrin-en",
+  "status": "draft",
+  "wordsPerDay": 20,
+  "startDay": 24,
+  "endDay": 40,
+  "baseline": "Legacy Family, Numbers, and Colors words encountered by voyage day 23. Verify family-specific exposure before publication.",
+  "priorWordIds": [
+    "prior-family-item-001",
+    "prior-family-item-002",
+    "prior-family-item-003",
+    "prior-family-item-004",
+    "prior-family-item-005",
+    "prior-family-item-006",
+    "prior-family-item-007",
+    "prior-family-item-008",
+    "prior-family-item-009",
+    "prior-family-item-010",
+    "prior-family-item-012",
+    "prior-numbers-item-001",
+    "prior-numbers-item-002",
+    "prior-numbers-item-003",
+    "prior-numbers-item-004",
+    "prior-numbers-item-005",
+    "prior-numbers-item-006",
+    "prior-numbers-item-007",
+    "prior-numbers-item-008",
+    "prior-numbers-item-009",
+    "prior-numbers-item-010",
+    "prior-numbers-item-011",
+    "prior-numbers-item-012",
+    "prior-numbers-item-013",
+    "prior-numbers-item-014",
+    "prior-colors-item-001",
+    "prior-colors-item-002",
+    "prior-colors-item-003",
+    "prior-colors-item-004",
+    "prior-colors-item-005",
+    "prior-colors-item-006",
+    "prior-colors-item-007",
+    "prior-colors-item-008",
+    "prior-colors-item-009",
+    "prior-colors-item-010",
+    "prior-colors-item-011"
+  ],
+  "vocabulary": [
+    {
+      "id": "prior-family-item-001",
+      "kind": "word",
+      "targetText": "mama",
+      "supportText": "mom",
+      "reviewStatus": "draft",
+      "sourceItemId": "family-item-001",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-family-item-002",
+      "kind": "word",
+      "targetText": "tata",
+      "supportText": "dad",
+      "reviewStatus": "draft",
+      "sourceItemId": "family-item-002",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-family-item-003",
+      "kind": "word",
+      "targetText": "brat",
+      "supportText": "brother",
+      "reviewStatus": "draft",
+      "sourceItemId": "family-item-003",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-family-item-004",
+      "kind": "word",
+      "targetText": "sestra",
+      "supportText": "sister",
+      "reviewStatus": "draft",
+      "sourceItemId": "family-item-004",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-family-item-005",
+      "kind": "word",
+      "targetText": "baba",
+      "supportText": "grandma",
+      "reviewStatus": "draft",
+      "sourceItemId": "family-item-005",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-family-item-006",
+      "kind": "word",
+      "targetText": "dida",
+      "supportText": "grandpa (Montenegrin: deda)",
+      "reviewStatus": "draft",
+      "sourceItemId": "family-item-006",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-family-item-007",
+      "kind": "word",
+      "targetText": "sin",
+      "supportText": "son",
+      "reviewStatus": "draft",
+      "sourceItemId": "family-item-007",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-family-item-008",
+      "kind": "word",
+      "targetText": "kćerka",
+      "supportText": "daughter (also: kći)",
+      "reviewStatus": "draft",
+      "sourceItemId": "family-item-008",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-family-item-009",
+      "kind": "word",
+      "targetText": "porodica",
+      "supportText": "family",
+      "reviewStatus": "draft",
+      "sourceItemId": "family-item-009",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-family-item-010",
+      "kind": "word",
+      "targetText": "roditelji",
+      "supportText": "parents",
+      "reviewStatus": "draft",
+      "sourceItemId": "family-item-010",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-family-item-012",
+      "kind": "word",
+      "targetText": "ko",
+      "supportText": "who",
+      "reviewStatus": "draft",
+      "sourceItemId": "family-item-012",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-001",
+      "kind": "word",
+      "targetText": "jedan",
+      "supportText": "one (1)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-001",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-002",
+      "kind": "word",
+      "targetText": "dva",
+      "supportText": "two (2)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-002",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-003",
+      "kind": "word",
+      "targetText": "tri",
+      "supportText": "three (3)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-003",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-004",
+      "kind": "word",
+      "targetText": "četiri",
+      "supportText": "four (4)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-004",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-005",
+      "kind": "word",
+      "targetText": "pet",
+      "supportText": "five (5)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-005",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-006",
+      "kind": "word",
+      "targetText": "šest",
+      "supportText": "six (6)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-006",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-007",
+      "kind": "word",
+      "targetText": "sedam",
+      "supportText": "seven (7)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-007",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-008",
+      "kind": "word",
+      "targetText": "osam",
+      "supportText": "eight (8)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-008",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-009",
+      "kind": "word",
+      "targetText": "devet",
+      "supportText": "nine (9)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-009",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-010",
+      "kind": "word",
+      "targetText": "deset",
+      "supportText": "ten (10)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-010",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-011",
+      "kind": "word",
+      "targetText": "dvadeset",
+      "supportText": "twenty (20)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-011",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-012",
+      "kind": "word",
+      "targetText": "trideset",
+      "supportText": "thirty (30)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-012",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-013",
+      "kind": "word",
+      "targetText": "pedeset",
+      "supportText": "fifty (50)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-013",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-numbers-item-014",
+      "kind": "word",
+      "targetText": "sto",
+      "supportText": "one hundred (100)",
+      "reviewStatus": "draft",
+      "sourceItemId": "numbers-item-014",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-colors-item-001",
+      "kind": "word",
+      "targetText": "crvena",
+      "supportText": "red",
+      "reviewStatus": "draft",
+      "sourceItemId": "colors-item-001",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-colors-item-002",
+      "kind": "word",
+      "targetText": "plava",
+      "supportText": "blue",
+      "reviewStatus": "draft",
+      "sourceItemId": "colors-item-002",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-colors-item-003",
+      "kind": "word",
+      "targetText": "zelena",
+      "supportText": "green",
+      "reviewStatus": "draft",
+      "sourceItemId": "colors-item-003",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-colors-item-004",
+      "kind": "word",
+      "targetText": "žuta",
+      "supportText": "yellow",
+      "reviewStatus": "draft",
+      "sourceItemId": "colors-item-004",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-colors-item-005",
+      "kind": "word",
+      "targetText": "crna",
+      "supportText": "black",
+      "reviewStatus": "draft",
+      "sourceItemId": "colors-item-005",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-colors-item-006",
+      "kind": "word",
+      "targetText": "bijela",
+      "supportText": "white",
+      "reviewStatus": "draft",
+      "sourceItemId": "colors-item-006",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-colors-item-007",
+      "kind": "word",
+      "targetText": "narandžasta",
+      "supportText": "orange",
+      "reviewStatus": "draft",
+      "sourceItemId": "colors-item-007",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-colors-item-008",
+      "kind": "word",
+      "targetText": "ljubičasta",
+      "supportText": "purple",
+      "reviewStatus": "draft",
+      "sourceItemId": "colors-item-008",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-colors-item-009",
+      "kind": "word",
+      "targetText": "roze",
+      "supportText": "pink",
+      "reviewStatus": "draft",
+      "sourceItemId": "colors-item-009",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-colors-item-010",
+      "kind": "word",
+      "targetText": "smeđa",
+      "supportText": "brown",
+      "reviewStatus": "draft",
+      "sourceItemId": "colors-item-010",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "prior-colors-item-011",
+      "kind": "word",
+      "targetText": "siva",
+      "supportText": "gray",
+      "reviewStatus": "draft",
+      "sourceItemId": "colors-item-011",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day024-word01",
+      "kind": "word",
+      "targetText": "džemper",
+      "supportText": "sweater",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day024-word02",
+      "kind": "word",
+      "targetText": "suknja",
+      "supportText": "skirt",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day024-word03",
+      "kind": "word",
+      "targetText": "čarape",
+      "supportText": "socks",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day024-word04",
+      "kind": "word",
+      "targetText": "patike",
+      "supportText": "sneakers",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day024-word05",
+      "kind": "word",
+      "targetText": "čizme",
+      "supportText": "boots",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day024-word06",
+      "kind": "word",
+      "targetText": "rukavice",
+      "supportText": "gloves",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day024-word07",
+      "kind": "word",
+      "targetText": "šal",
+      "supportText": "scarf",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day024-word08",
+      "kind": "word",
+      "targetText": "kapa",
+      "supportText": "cap",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day024-word09",
+      "kind": "word",
+      "targetText": "kaiš",
+      "supportText": "belt",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day024-word10",
+      "kind": "word",
+      "targetText": "dugme",
+      "supportText": "button",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day025-word01",
+      "kind": "word",
+      "targetText": "krug",
+      "supportText": "circle",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day025-word02",
+      "kind": "word",
+      "targetText": "kvadrat",
+      "supportText": "square",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day025-word03",
+      "kind": "word",
+      "targetText": "trougao",
+      "supportText": "triangle",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day025-word04",
+      "kind": "word",
+      "targetText": "pravougaonik",
+      "supportText": "rectangle",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day025-word05",
+      "kind": "word",
+      "targetText": "linija",
+      "supportText": "line",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day025-word06",
+      "kind": "word",
+      "targetText": "tačka",
+      "supportText": "dot",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day025-word07",
+      "kind": "word",
+      "targetText": "pruga",
+      "supportText": "stripe",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day025-word08",
+      "kind": "word",
+      "targetText": "drvo",
+      "supportText": "wood",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day025-word09",
+      "kind": "word",
+      "targetText": "staklo",
+      "supportText": "glass (material)",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day025-word10",
+      "kind": "word",
+      "targetText": "plastika",
+      "supportText": "plastic",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day026-word01",
+      "kind": "word",
+      "targetText": "čaša",
+      "supportText": "drinking glass",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day026-word02",
+      "kind": "word",
+      "targetText": "šolja",
+      "supportText": "cup",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day026-word03",
+      "kind": "word",
+      "targetText": "flaša",
+      "supportText": "bottle",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day026-word04",
+      "kind": "word",
+      "targetText": "bokal",
+      "supportText": "jug",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day026-word05",
+      "kind": "word",
+      "targetText": "slamka",
+      "supportText": "drinking straw",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day026-word06",
+      "kind": "word",
+      "targetText": "poklopac",
+      "supportText": "lid",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day026-word07",
+      "kind": "word",
+      "targetText": "tacna",
+      "supportText": "saucer",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day026-word08",
+      "kind": "word",
+      "targetText": "termos",
+      "supportText": "thermos",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day026-word09",
+      "kind": "word",
+      "targetText": "gutljaj",
+      "supportText": "sip",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day026-word10",
+      "kind": "word",
+      "targetText": "kap",
+      "supportText": "drop",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day027-word01",
+      "kind": "word",
+      "targetText": "limun",
+      "supportText": "lemon",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day027-word02",
+      "kind": "word",
+      "targetText": "narandža",
+      "supportText": "orange (fruit)",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day027-word03",
+      "kind": "word",
+      "targetText": "jagoda",
+      "supportText": "strawberry",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day027-word04",
+      "kind": "word",
+      "targetText": "malina",
+      "supportText": "raspberry",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day027-word05",
+      "kind": "word",
+      "targetText": "breskva",
+      "supportText": "peach",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day027-word06",
+      "kind": "word",
+      "targetText": "kajsija",
+      "supportText": "apricot",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day027-word07",
+      "kind": "word",
+      "targetText": "kruška",
+      "supportText": "pear",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day027-word08",
+      "kind": "word",
+      "targetText": "šljiva",
+      "supportText": "plum",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day027-word09",
+      "kind": "word",
+      "targetText": "trešnja",
+      "supportText": "sweet cherry",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day027-word10",
+      "kind": "word",
+      "targetText": "višnja",
+      "supportText": "sour cherry",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day028-word01",
+      "kind": "word",
+      "targetText": "šećer",
+      "supportText": "sugar",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day028-word02",
+      "kind": "word",
+      "targetText": "med",
+      "supportText": "honey",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day028-word03",
+      "kind": "word",
+      "targetText": "led",
+      "supportText": "ice",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day028-word04",
+      "kind": "word",
+      "targetText": "pavlaka",
+      "supportText": "cream",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day028-word05",
+      "kind": "word",
+      "targetText": "cimet",
+      "supportText": "cinnamon",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day028-word06",
+      "kind": "word",
+      "targetText": "nana",
+      "supportText": "mint",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day028-word07",
+      "kind": "word",
+      "targetText": "kakao",
+      "supportText": "cocoa",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day028-word08",
+      "kind": "word",
+      "targetText": "jogurt",
+      "supportText": "yogurt",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day028-word09",
+      "kind": "word",
+      "targetText": "limunada",
+      "supportText": "lemonade",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day028-word10",
+      "kind": "word",
+      "targetText": "kompot",
+      "supportText": "fruit compote",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day029-word01",
+      "kind": "word",
+      "targetText": "piti",
+      "supportText": "to drink",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr",
+      "legacyAliases": [
+        "pijem",
+        "piješ",
+        "pije"
+      ]
+    },
+    {
+      "id": "cnr-day029-word02",
+      "kind": "word",
+      "targetText": "sipati",
+      "supportText": "to pour",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day029-word03",
+      "kind": "word",
+      "targetText": "miješati",
+      "supportText": "to stir",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day029-word04",
+      "kind": "word",
+      "targetText": "dodati",
+      "supportText": "to add",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day029-word05",
+      "kind": "word",
+      "targetText": "probati",
+      "supportText": "to taste / try",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day029-word06",
+      "kind": "word",
+      "targetText": "naručiti",
+      "supportText": "to order",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr",
+      "legacyAliases": [
+        "naručim",
+        "naručiš"
+      ]
+    },
+    {
+      "id": "cnr-day029-word07",
+      "kind": "word",
+      "targetText": "donijeti",
+      "supportText": "to bring",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day029-word08",
+      "kind": "word",
+      "targetText": "napuniti",
+      "supportText": "to fill",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day029-word09",
+      "kind": "word",
+      "targetText": "prosuti",
+      "supportText": "to spill",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day029-word10",
+      "kind": "word",
+      "targetText": "ohladiti",
+      "supportText": "to cool",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day030-word01",
+      "kind": "word",
+      "targetText": "sladak",
+      "supportText": "sweet",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day030-word02",
+      "kind": "word",
+      "targetText": "kiseo",
+      "supportText": "sour",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day030-word03",
+      "kind": "word",
+      "targetText": "gorak",
+      "supportText": "bitter",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day030-word04",
+      "kind": "word",
+      "targetText": "slan",
+      "supportText": "salty",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day030-word05",
+      "kind": "word",
+      "targetText": "vruć",
+      "supportText": "hot",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day030-word06",
+      "kind": "word",
+      "targetText": "mlak",
+      "supportText": "lukewarm",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day030-word07",
+      "kind": "word",
+      "targetText": "svjež",
+      "supportText": "fresh",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day030-word08",
+      "kind": "word",
+      "targetText": "gaziran",
+      "supportText": "carbonated",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day030-word09",
+      "kind": "word",
+      "targetText": "pun",
+      "supportText": "full",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day030-word10",
+      "kind": "word",
+      "targetText": "prazan",
+      "supportText": "empty",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day031-word01",
+      "kind": "word",
+      "targetText": "tanjir",
+      "supportText": "plate",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day031-word02",
+      "kind": "word",
+      "targetText": "činija",
+      "supportText": "bowl",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day031-word03",
+      "kind": "word",
+      "targetText": "kašika",
+      "supportText": "spoon",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day031-word04",
+      "kind": "word",
+      "targetText": "viljuška",
+      "supportText": "fork",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day031-word05",
+      "kind": "word",
+      "targetText": "nož",
+      "supportText": "knife",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day031-word06",
+      "kind": "word",
+      "targetText": "salveta",
+      "supportText": "napkin",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day031-word07",
+      "kind": "word",
+      "targetText": "stolnjak",
+      "supportText": "tablecloth",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day031-word08",
+      "kind": "word",
+      "targetText": "poslužavnik",
+      "supportText": "serving tray",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day031-word09",
+      "kind": "word",
+      "targetText": "šerpa",
+      "supportText": "saucepan",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day031-word10",
+      "kind": "word",
+      "targetText": "tiganj",
+      "supportText": "frying pan",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day032-word01",
+      "kind": "word",
+      "targetText": "pirinač",
+      "supportText": "rice",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day032-word02",
+      "kind": "word",
+      "targetText": "tjestenina",
+      "supportText": "pasta",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day032-word03",
+      "kind": "word",
+      "targetText": "piletina",
+      "supportText": "chicken meat",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day032-word04",
+      "kind": "word",
+      "targetText": "govedina",
+      "supportText": "beef",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day032-word05",
+      "kind": "word",
+      "targetText": "svinjetina",
+      "supportText": "pork",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day032-word06",
+      "kind": "word",
+      "targetText": "ćuretina",
+      "supportText": "turkey meat",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day032-word07",
+      "kind": "word",
+      "targetText": "pasulj",
+      "supportText": "beans",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day032-word08",
+      "kind": "word",
+      "targetText": "grašak",
+      "supportText": "peas",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day032-word09",
+      "kind": "word",
+      "targetText": "sočivo",
+      "supportText": "lentils",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day032-word10",
+      "kind": "word",
+      "targetText": "pečurka",
+      "supportText": "mushroom",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day033-word01",
+      "kind": "word",
+      "targetText": "pecivo",
+      "supportText": "bread roll / baked bread item",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day033-word02",
+      "kind": "word",
+      "targetText": "kifla",
+      "supportText": "crescent-shaped bread roll",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day033-word03",
+      "kind": "word",
+      "targetText": "palačinka",
+      "supportText": "pancake",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day033-word04",
+      "kind": "word",
+      "targetText": "džem",
+      "supportText": "jam",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day033-word05",
+      "kind": "word",
+      "targetText": "maslac",
+      "supportText": "butter",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day033-word06",
+      "kind": "word",
+      "targetText": "kajgana",
+      "supportText": "scrambled eggs",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day033-word07",
+      "kind": "word",
+      "targetText": "omlet",
+      "supportText": "omelet",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day033-word08",
+      "kind": "word",
+      "targetText": "žitarice",
+      "supportText": "cereals (grains)",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day033-word09",
+      "kind": "word",
+      "targetText": "brašno",
+      "supportText": "flour",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day033-word10",
+      "kind": "word",
+      "targetText": "kvasac",
+      "supportText": "yeast",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day034-word01",
+      "kind": "word",
+      "targetText": "jesti",
+      "supportText": "to eat",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr",
+      "legacyAliases": [
+        "jedem",
+        "jedeš",
+        "jede"
+      ]
+    },
+    {
+      "id": "cnr-day034-word02",
+      "kind": "word",
+      "targetText": "kuvati",
+      "supportText": "to cook",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day034-word03",
+      "kind": "word",
+      "targetText": "peći",
+      "supportText": "to bake / roast",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day034-word04",
+      "kind": "word",
+      "targetText": "pržiti",
+      "supportText": "to fry",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day034-word05",
+      "kind": "word",
+      "targetText": "sjeći",
+      "supportText": "to cut",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day034-word06",
+      "kind": "word",
+      "targetText": "oprati",
+      "supportText": "to wash",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day034-word07",
+      "kind": "word",
+      "targetText": "oljuštiti",
+      "supportText": "to peel",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day034-word08",
+      "kind": "word",
+      "targetText": "posoliti",
+      "supportText": "to add salt",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day034-word09",
+      "kind": "word",
+      "targetText": "ocijediti",
+      "supportText": "to drain",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day034-word10",
+      "kind": "word",
+      "targetText": "podijeliti",
+      "supportText": "to share / divide",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day035-word01",
+      "kind": "word",
+      "targetText": "doručak",
+      "supportText": "breakfast",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day035-word02",
+      "kind": "word",
+      "targetText": "tijesto",
+      "supportText": "dough",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day035-word03",
+      "kind": "word",
+      "targetText": "večera",
+      "supportText": "dinner",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day035-word04",
+      "kind": "word",
+      "targetText": "užina",
+      "supportText": "snack",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day035-word05",
+      "kind": "word",
+      "targetText": "obrok",
+      "supportText": "meal",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day035-word06",
+      "kind": "word",
+      "targetText": "porcija",
+      "supportText": "portion",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day035-word07",
+      "kind": "word",
+      "targetText": "zalogaj",
+      "supportText": "bite (of food)",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day035-word08",
+      "kind": "word",
+      "targetText": "prilog",
+      "supportText": "side dish",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day035-word09",
+      "kind": "word",
+      "targetText": "desert",
+      "supportText": "dessert",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day035-word10",
+      "kind": "word",
+      "targetText": "recept",
+      "supportText": "recipe",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day036-word01",
+      "kind": "word",
+      "targetText": "pijaca",
+      "supportText": "market",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day036-word02",
+      "kind": "word",
+      "targetText": "tezga",
+      "supportText": "market stall",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day036-word03",
+      "kind": "word",
+      "targetText": "prodavac",
+      "supportText": "seller",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day036-word04",
+      "kind": "word",
+      "targetText": "kupac",
+      "supportText": "customer",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day036-word05",
+      "kind": "word",
+      "targetText": "vaga",
+      "supportText": "scales",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day036-word06",
+      "kind": "word",
+      "targetText": "kilogram",
+      "supportText": "kilogram",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day036-word07",
+      "kind": "word",
+      "targetText": "gram",
+      "supportText": "gram",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day036-word08",
+      "kind": "word",
+      "targetText": "litar",
+      "supportText": "liter",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day036-word09",
+      "kind": "word",
+      "targetText": "cijena",
+      "supportText": "price",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day036-word10",
+      "kind": "word",
+      "targetText": "kusur",
+      "supportText": "change (money returned)",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day037-word01",
+      "kind": "word",
+      "targetText": "kutija",
+      "supportText": "box",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day037-word02",
+      "kind": "word",
+      "targetText": "kesa",
+      "supportText": "bag",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day037-word03",
+      "kind": "word",
+      "targetText": "korpa",
+      "supportText": "basket",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day037-word04",
+      "kind": "word",
+      "targetText": "tegla",
+      "supportText": "jar",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day037-word05",
+      "kind": "word",
+      "targetText": "paket",
+      "supportText": "package",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day037-word06",
+      "kind": "word",
+      "targetText": "omot",
+      "supportText": "wrapper",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day037-word07",
+      "kind": "word",
+      "targetText": "folija",
+      "supportText": "foil",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day037-word08",
+      "kind": "word",
+      "targetText": "posuda",
+      "supportText": "container",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day037-word09",
+      "kind": "word",
+      "targetText": "pregrada",
+      "supportText": "compartment",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day037-word10",
+      "kind": "word",
+      "targetText": "naljepnica",
+      "supportText": "sticker / label",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day038-word01",
+      "kind": "word",
+      "targetText": "tikvica",
+      "supportText": "zucchini",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day038-word02",
+      "kind": "word",
+      "targetText": "patlidžan",
+      "supportText": "eggplant",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day038-word03",
+      "kind": "word",
+      "targetText": "bundeva",
+      "supportText": "pumpkin",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day038-word04",
+      "kind": "word",
+      "targetText": "spanać",
+      "supportText": "spinach",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day038-word05",
+      "kind": "word",
+      "targetText": "brokoli",
+      "supportText": "broccoli",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day038-word06",
+      "kind": "word",
+      "targetText": "karfiol",
+      "supportText": "cauliflower",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day038-word07",
+      "kind": "word",
+      "targetText": "cvekla",
+      "supportText": "beetroot",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day038-word08",
+      "kind": "word",
+      "targetText": "rotkvica",
+      "supportText": "radish",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day038-word09",
+      "kind": "word",
+      "targetText": "peršun",
+      "supportText": "parsley",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day038-word10",
+      "kind": "word",
+      "targetText": "celer",
+      "supportText": "celery",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day039-word01",
+      "kind": "word",
+      "targetText": "tražiti",
+      "supportText": "to look for / ask for",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr",
+      "legacyAliases": [
+        "tražim",
+        "tražiš"
+      ]
+    },
+    {
+      "id": "cnr-day039-word02",
+      "kind": "word",
+      "targetText": "izabrati",
+      "supportText": "to choose",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day039-word03",
+      "kind": "word",
+      "targetText": "platiti",
+      "supportText": "to pay",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr",
+      "legacyAliases": [
+        "platim",
+        "platiš"
+      ]
+    },
+    {
+      "id": "cnr-day039-word04",
+      "kind": "word",
+      "targetText": "spakovati",
+      "supportText": "to pack",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr",
+      "legacyAliases": [
+        "spakujem",
+        "spakuješ",
+        "spakuje"
+      ]
+    },
+    {
+      "id": "cnr-day039-word05",
+      "kind": "word",
+      "targetText": "ponijeti",
+      "supportText": "to take along",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day039-word06",
+      "kind": "word",
+      "targetText": "vratiti",
+      "supportText": "to return something",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day039-word07",
+      "kind": "word",
+      "targetText": "otvoriti",
+      "supportText": "to open",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day039-word08",
+      "kind": "word",
+      "targetText": "zatvoriti",
+      "supportText": "to close",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day039-word09",
+      "kind": "word",
+      "targetText": "pronaći",
+      "supportText": "to find",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day039-word10",
+      "kind": "word",
+      "targetText": "zaboraviti",
+      "supportText": "to forget",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day040-word01",
+      "kind": "word",
+      "targetText": "dovoljan",
+      "supportText": "sufficient",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day040-word02",
+      "kind": "word",
+      "targetText": "spreman",
+      "supportText": "ready",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day040-word03",
+      "kind": "word",
+      "targetText": "dostupan",
+      "supportText": "available",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day040-word04",
+      "kind": "word",
+      "targetText": "zreo",
+      "supportText": "ripe",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day040-word05",
+      "kind": "word",
+      "targetText": "sirov",
+      "supportText": "raw",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day040-word06",
+      "kind": "word",
+      "targetText": "sezonski",
+      "supportText": "seasonal",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day040-word07",
+      "kind": "word",
+      "targetText": "domaći",
+      "supportText": "homemade / local",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day040-word08",
+      "kind": "word",
+      "targetText": "omiljen",
+      "supportText": "favorite",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day040-word09",
+      "kind": "word",
+      "targetText": "mastan",
+      "supportText": "fatty / greasy",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    },
+    {
+      "id": "cnr-day040-word10",
+      "kind": "word",
+      "targetText": "ljut",
+      "supportText": "spicy / hot (taste)",
+      "reviewStatus": "draft",
+      "languageTag": "cnr",
+      "script": "Latn",
+      "direction": "ltr"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "voyage-24",
+      "title": "Clothing and accessories",
+      "newWordIds": [
+        "cnr-day024-word01",
+        "cnr-day024-word02",
+        "cnr-day024-word03",
+        "cnr-day024-word04",
+        "cnr-day024-word05",
+        "cnr-day024-word06",
+        "cnr-day024-word07",
+        "cnr-day024-word08",
+        "cnr-day024-word09",
+        "cnr-day024-word10"
+      ],
+      "reviewWordIds": [
+        "prior-family-item-001",
+        "prior-family-item-002",
+        "prior-family-item-003",
+        "prior-family-item-004",
+        "prior-family-item-005",
+        "prior-family-item-006",
+        "prior-family-item-007",
+        "prior-family-item-008",
+        "prior-family-item-009",
+        "prior-family-item-010"
+      ]
+    },
+    {
+      "id": "voyage-25",
+      "title": "Shapes and materials",
+      "newWordIds": [
+        "cnr-day025-word01",
+        "cnr-day025-word02",
+        "cnr-day025-word03",
+        "cnr-day025-word04",
+        "cnr-day025-word05",
+        "cnr-day025-word06",
+        "cnr-day025-word07",
+        "cnr-day025-word08",
+        "cnr-day025-word09",
+        "cnr-day025-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day024-word06",
+        "cnr-day024-word07",
+        "cnr-day024-word08",
+        "cnr-day024-word09",
+        "cnr-day024-word10",
+        "prior-family-item-006",
+        "prior-family-item-007",
+        "prior-family-item-008",
+        "prior-family-item-009",
+        "prior-family-item-010"
+      ]
+    },
+    {
+      "id": "voyage-26",
+      "title": "Serving drinks",
+      "newWordIds": [
+        "cnr-day026-word01",
+        "cnr-day026-word02",
+        "cnr-day026-word03",
+        "cnr-day026-word04",
+        "cnr-day026-word05",
+        "cnr-day026-word06",
+        "cnr-day026-word07",
+        "cnr-day026-word08",
+        "cnr-day026-word09",
+        "cnr-day026-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day025-word06",
+        "cnr-day025-word07",
+        "cnr-day025-word08",
+        "cnr-day025-word09",
+        "cnr-day025-word10",
+        "prior-family-item-012",
+        "prior-numbers-item-001",
+        "prior-numbers-item-002",
+        "prior-numbers-item-003",
+        "prior-numbers-item-004"
+      ]
+    },
+    {
+      "id": "voyage-27",
+      "title": "Fruit for drinks",
+      "newWordIds": [
+        "cnr-day027-word01",
+        "cnr-day027-word02",
+        "cnr-day027-word03",
+        "cnr-day027-word04",
+        "cnr-day027-word05",
+        "cnr-day027-word06",
+        "cnr-day027-word07",
+        "cnr-day027-word08",
+        "cnr-day027-word09",
+        "cnr-day027-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day026-word06",
+        "cnr-day026-word07",
+        "cnr-day026-word08",
+        "cnr-day026-word09",
+        "cnr-day026-word10",
+        "prior-numbers-item-005",
+        "prior-numbers-item-006",
+        "prior-numbers-item-007",
+        "prior-numbers-item-008",
+        "prior-numbers-item-009"
+      ]
+    },
+    {
+      "id": "voyage-28",
+      "title": "Flavors and ingredients",
+      "newWordIds": [
+        "cnr-day028-word01",
+        "cnr-day028-word02",
+        "cnr-day028-word03",
+        "cnr-day028-word04",
+        "cnr-day028-word05",
+        "cnr-day028-word06",
+        "cnr-day028-word07",
+        "cnr-day028-word08",
+        "cnr-day028-word09",
+        "cnr-day028-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day027-word06",
+        "cnr-day027-word07",
+        "cnr-day027-word08",
+        "cnr-day027-word09",
+        "cnr-day027-word10",
+        "prior-numbers-item-010",
+        "prior-numbers-item-011",
+        "prior-numbers-item-012",
+        "prior-numbers-item-013",
+        "prior-numbers-item-014"
+      ]
+    },
+    {
+      "id": "voyage-29",
+      "title": "Preparing drinks",
+      "newWordIds": [
+        "cnr-day029-word01",
+        "cnr-day029-word02",
+        "cnr-day029-word03",
+        "cnr-day029-word04",
+        "cnr-day029-word05",
+        "cnr-day029-word06",
+        "cnr-day029-word07",
+        "cnr-day029-word08",
+        "cnr-day029-word09",
+        "cnr-day029-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day028-word06",
+        "cnr-day028-word07",
+        "cnr-day028-word08",
+        "cnr-day028-word09",
+        "cnr-day028-word10",
+        "prior-colors-item-001",
+        "prior-colors-item-002",
+        "prior-colors-item-003",
+        "prior-colors-item-004",
+        "prior-colors-item-005"
+      ]
+    },
+    {
+      "id": "voyage-30",
+      "title": "Describing a drink",
+      "newWordIds": [
+        "cnr-day030-word01",
+        "cnr-day030-word02",
+        "cnr-day030-word03",
+        "cnr-day030-word04",
+        "cnr-day030-word05",
+        "cnr-day030-word06",
+        "cnr-day030-word07",
+        "cnr-day030-word08",
+        "cnr-day030-word09",
+        "cnr-day030-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day029-word06",
+        "cnr-day029-word07",
+        "cnr-day029-word08",
+        "cnr-day029-word09",
+        "cnr-day029-word10",
+        "prior-colors-item-006",
+        "prior-colors-item-007",
+        "prior-colors-item-008",
+        "prior-colors-item-009",
+        "prior-colors-item-010"
+      ]
+    },
+    {
+      "id": "voyage-31",
+      "title": "At the table",
+      "newWordIds": [
+        "cnr-day031-word01",
+        "cnr-day031-word02",
+        "cnr-day031-word03",
+        "cnr-day031-word04",
+        "cnr-day031-word05",
+        "cnr-day031-word06",
+        "cnr-day031-word07",
+        "cnr-day031-word08",
+        "cnr-day031-word09",
+        "cnr-day031-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day030-word06",
+        "cnr-day030-word07",
+        "cnr-day030-word08",
+        "cnr-day030-word09",
+        "cnr-day030-word10",
+        "prior-colors-item-011",
+        "prior-family-item-001",
+        "prior-family-item-002",
+        "prior-family-item-003",
+        "prior-family-item-004"
+      ]
+    },
+    {
+      "id": "voyage-32",
+      "title": "A more varied meal",
+      "newWordIds": [
+        "cnr-day032-word01",
+        "cnr-day032-word02",
+        "cnr-day032-word03",
+        "cnr-day032-word04",
+        "cnr-day032-word05",
+        "cnr-day032-word06",
+        "cnr-day032-word07",
+        "cnr-day032-word08",
+        "cnr-day032-word09",
+        "cnr-day032-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day031-word06",
+        "cnr-day031-word07",
+        "cnr-day031-word08",
+        "cnr-day031-word09",
+        "cnr-day031-word10",
+        "prior-family-item-005",
+        "prior-family-item-006",
+        "prior-family-item-007",
+        "prior-family-item-008",
+        "prior-family-item-009"
+      ]
+    },
+    {
+      "id": "voyage-33",
+      "title": "Breakfast and baking",
+      "newWordIds": [
+        "cnr-day033-word01",
+        "cnr-day033-word02",
+        "cnr-day033-word03",
+        "cnr-day033-word04",
+        "cnr-day033-word05",
+        "cnr-day033-word06",
+        "cnr-day033-word07",
+        "cnr-day033-word08",
+        "cnr-day033-word09",
+        "cnr-day033-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day032-word06",
+        "cnr-day032-word07",
+        "cnr-day032-word08",
+        "cnr-day032-word09",
+        "cnr-day032-word10",
+        "prior-family-item-010",
+        "prior-family-item-012",
+        "prior-numbers-item-001",
+        "prior-numbers-item-002",
+        "prior-numbers-item-003"
+      ]
+    },
+    {
+      "id": "voyage-34",
+      "title": "Kitchen actions",
+      "newWordIds": [
+        "cnr-day034-word01",
+        "cnr-day034-word02",
+        "cnr-day034-word03",
+        "cnr-day034-word04",
+        "cnr-day034-word05",
+        "cnr-day034-word06",
+        "cnr-day034-word07",
+        "cnr-day034-word08",
+        "cnr-day034-word09",
+        "cnr-day034-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day033-word06",
+        "cnr-day033-word07",
+        "cnr-day033-word08",
+        "cnr-day033-word09",
+        "cnr-day033-word10",
+        "prior-numbers-item-004",
+        "prior-numbers-item-005",
+        "prior-numbers-item-006",
+        "prior-numbers-item-007",
+        "prior-numbers-item-008"
+      ]
+    },
+    {
+      "id": "voyage-35",
+      "title": "Planning a meal",
+      "newWordIds": [
+        "cnr-day035-word01",
+        "cnr-day035-word02",
+        "cnr-day035-word03",
+        "cnr-day035-word04",
+        "cnr-day035-word05",
+        "cnr-day035-word06",
+        "cnr-day035-word07",
+        "cnr-day035-word08",
+        "cnr-day035-word09",
+        "cnr-day035-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day034-word06",
+        "cnr-day034-word07",
+        "cnr-day034-word08",
+        "cnr-day034-word09",
+        "cnr-day034-word10",
+        "prior-numbers-item-009",
+        "prior-numbers-item-010",
+        "prior-numbers-item-011",
+        "prior-numbers-item-012",
+        "prior-numbers-item-013"
+      ]
+    },
+    {
+      "id": "voyage-36",
+      "title": "At the market",
+      "newWordIds": [
+        "cnr-day036-word01",
+        "cnr-day036-word02",
+        "cnr-day036-word03",
+        "cnr-day036-word04",
+        "cnr-day036-word05",
+        "cnr-day036-word06",
+        "cnr-day036-word07",
+        "cnr-day036-word08",
+        "cnr-day036-word09",
+        "cnr-day036-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day035-word06",
+        "cnr-day035-word07",
+        "cnr-day035-word08",
+        "cnr-day035-word09",
+        "cnr-day035-word10",
+        "prior-numbers-item-014",
+        "prior-colors-item-001",
+        "prior-colors-item-002",
+        "prior-colors-item-003",
+        "prior-colors-item-004"
+      ]
+    },
+    {
+      "id": "voyage-37",
+      "title": "Packing the shopping",
+      "newWordIds": [
+        "cnr-day037-word01",
+        "cnr-day037-word02",
+        "cnr-day037-word03",
+        "cnr-day037-word04",
+        "cnr-day037-word05",
+        "cnr-day037-word06",
+        "cnr-day037-word07",
+        "cnr-day037-word08",
+        "cnr-day037-word09",
+        "cnr-day037-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day036-word06",
+        "cnr-day036-word07",
+        "cnr-day036-word08",
+        "cnr-day036-word09",
+        "cnr-day036-word10",
+        "prior-colors-item-005",
+        "prior-colors-item-006",
+        "prior-colors-item-007",
+        "prior-colors-item-008",
+        "prior-colors-item-009"
+      ]
+    },
+    {
+      "id": "voyage-38",
+      "title": "More vegetables and herbs",
+      "newWordIds": [
+        "cnr-day038-word01",
+        "cnr-day038-word02",
+        "cnr-day038-word03",
+        "cnr-day038-word04",
+        "cnr-day038-word05",
+        "cnr-day038-word06",
+        "cnr-day038-word07",
+        "cnr-day038-word08",
+        "cnr-day038-word09",
+        "cnr-day038-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day037-word06",
+        "cnr-day037-word07",
+        "cnr-day037-word08",
+        "cnr-day037-word09",
+        "cnr-day037-word10",
+        "prior-colors-item-010",
+        "prior-colors-item-011",
+        "prior-family-item-001",
+        "prior-family-item-002",
+        "prior-family-item-003"
+      ]
+    },
+    {
+      "id": "voyage-39",
+      "title": "Getting things done",
+      "newWordIds": [
+        "cnr-day039-word01",
+        "cnr-day039-word02",
+        "cnr-day039-word03",
+        "cnr-day039-word04",
+        "cnr-day039-word05",
+        "cnr-day039-word06",
+        "cnr-day039-word07",
+        "cnr-day039-word08",
+        "cnr-day039-word09",
+        "cnr-day039-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day038-word06",
+        "cnr-day038-word07",
+        "cnr-day038-word08",
+        "cnr-day038-word09",
+        "cnr-day038-word10",
+        "prior-family-item-004",
+        "prior-family-item-005",
+        "prior-family-item-006",
+        "prior-family-item-007",
+        "prior-family-item-008"
+      ]
+    },
+    {
+      "id": "voyage-40",
+      "title": "Choosing ingredients",
+      "newWordIds": [
+        "cnr-day040-word01",
+        "cnr-day040-word02",
+        "cnr-day040-word03",
+        "cnr-day040-word04",
+        "cnr-day040-word05",
+        "cnr-day040-word06",
+        "cnr-day040-word07",
+        "cnr-day040-word08",
+        "cnr-day040-word09",
+        "cnr-day040-word10"
+      ],
+      "reviewWordIds": [
+        "cnr-day039-word06",
+        "cnr-day039-word07",
+        "cnr-day039-word08",
+        "cnr-day039-word09",
+        "cnr-day039-word10",
+        "prior-family-item-009",
+        "prior-family-item-010",
+        "prior-family-item-012",
+        "prior-numbers-item-001",
+        "prior-numbers-item-002"
+      ]
+    }
+  ]
+}

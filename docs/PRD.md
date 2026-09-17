@@ -391,3 +391,19 @@ The technical product scaffold passes structural content validation, engine/unit
 - completion and verification of optional family-account migration, authorization, synchronization, recovery, and deletion behavior before cloud sync is deployed;
 - completion of keyboard, screen-reader, zoom, contrast, reduced-motion, storage-failure, and supported-device verification;
 - a four-week family pilot before treating the full 200-day sequence as release-ready.
+
+## Daily vocabulary progression — September 17, 2026
+
+Family feedback at day 23 establishes a new release requirement: every core voyage lesson, including integration and checkpoint days, must introduce at least 50% net-new distinct vocabulary. New means never introduced in an earlier lesson of the same language curriculum. Repeated appearances, alternate activities, script variants, inflections, and new sentences containing familiar words do not create new vocabulary credit. Canonical lexical identities must be authored per language, not inferred by splitting sentences.
+
+The initial authoring target is 20 distinct vocabulary words per lesson, at least 10 new; this quantity is configurable, but the 50% minimum is mandatory. The opening lesson may contain entirely new vocabulary. Review words must have appeared earlier. Lessons must explicitly teach their new words before asking learners to retrieve them. Session length is not a completion criterion.
+
+Every lesson declares an ordered, reviewed vocabulary allocation, independently of its topic/week label. Individual and family activities use that same allocation. All target vocabulary exposed by a lesson must belong to its declared allocation; authored sentences must declare their lexical dependencies. Newness is curriculum-relative, not a claim that a learner has never encountered a word outside Nautilus. Independent practice and repeats do not advance or rewrite this introduction schedule.
+
+Existing progress and immutable attempts remain intact. A replacement curriculum requires a new catalog revision; historical lessons must not be rewritten in place. Existing draft packs are not automatically approved. Publication of a replacement voyage fails if any lesson lacks a reviewed allocation, has insufficient new vocabulary, or reuses a lexical identity as new. The 200-day target requires at least 2,000 new lexical identities at the default daily minimum (2,010 with a full 20-word first lesson).
+
+Delivery separates the enforced engine/content contract from human-reviewed curriculum authoring. No release may describe the existing word decks as satisfying this requirement.
+
+### First vocabulary expansion: Montenegrin days 24–40
+
+Author 17 daily allocations following the family's reported day-23 position: 20 distinct words per day, exactly 10 new lexical entries and 10 previously introduced review words. Scope includes clothing/material descriptions, drinks, food, and practical market/kitchen integration. An explicit prior-word inventory seeds review from the original first 23 days. New words must also be checked against the existing pack to avoid relabeling familiar words or inflections as new. The draft expansion must be inspectable in the adult no-credit activity preview, clearly labeled pending fluent review. It does not replace immutable live catalogs or fabricate approval metadata. Later days and other packs retain their separate expansion backlog.

@@ -1,3 +1,5 @@
+import { DAILY_PLANS } from '../content/daily-plans.js';
+import { validateDailyPlan, dailyVocabularySteps } from './daily-vocabulary.js';
 import montenegrin from '../content/topics.json';
 import albanian from '../content/albanian.js';
 import iraqiArabic from '../content/iraqi-arabic.js';
@@ -270,7 +272,19 @@ export function createSeededRandom(seedText) {
   };
 }
 
+export function getDailyVocabularyPlan() {
+  return DAILY_PLANS[LANGUAGE_PACK.id] || null;
+}
+
+export function getDailyVocabularyAllocation(lesson) {
+  const plan = getDailyVocabularyPlan();
+  if (!plan || !VOYAGE_LESSONS.some(candidate => candidate.id === lesson.id)) return null;
+  return validateDailyPlan(plan, VOYAGE_LESSONS.map(candidate => candidate.id)).get(lesson.id);
+}
+
 export function generateSession(lesson, completedTopicIds, options = {}) {
+  const allocation = getDailyVocabularyAllocation(lesson);
+  if (allocation) return dailyVocabularySteps(allocation, { buildQuiz, buildMatch, shuffle, random: options.random || Math.random });
   const steps = [];
   const random = options.random || Math.random;
 
