@@ -32,3 +32,32 @@ export function getWeeklyGrammarTopicId(lessonId, familyId) {
 export function getWeeklyGrammarGame(lessonId, familyId) {
   return WEEKLY_GRAMMAR_GAMES[getWeeklyGrammarWeek(lessonId, familyId) - 1];
 }
+
+export function buildWeeklyFamilyStory(items, lessonId, familyId) {
+  return {
+    type: 'family-story',
+    title: 'Tell a three-card family story',
+    subtitle: 'Put the cards in order and tell the story together.',
+    cards: (items || []).slice(0, 3).map((item, index) => ({
+      number: index + 1,
+      targetText: item.targetText,
+      supportText: item.supportText,
+      prompt: index === 0 ? 'Start the story' : index === 1 ? 'Add what happens next' : 'Finish the story',
+    })),
+    week: getWeeklyGrammarWeek(lessonId, familyId),
+  };
+}
+
+export function buildWeeklyFamilyRoleplay(items, lessonId, familyId) {
+  return {
+    type: 'family-roleplay',
+    title: 'Act out the family scene',
+    subtitle: getWeeklyGrammarGame(lessonId, familyId),
+    turns: (items || []).slice(0, 3).map((item, index) => ({
+      role: index === 0 ? 'Parent' : index === 1 ? 'Child' : 'Everyone',
+      targetText: item.targetText,
+      supportText: item.supportText,
+    })),
+    week: getWeeklyGrammarWeek(lessonId, familyId),
+  };
+}

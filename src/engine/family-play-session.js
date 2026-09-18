@@ -1,7 +1,7 @@
 import { DAILY_PILOT_REVISION } from '../content/daily-plans.js';
 import { dailyVocabularySteps } from './daily-vocabulary.js';
 import { VOYAGE_LESSONS, getDailyVocabularyAllocation, buildQuiz, buildMatch, buildSentenceCompletion, createSeededRandom, getTopic, isBuildableSentence, shuffle } from './learning-engine.js';
-import { getWeeklyGrammarTopicId, getWeeklyGrammarGame } from './weekly-grammar.js';
+import { getWeeklyGrammarTopicId, getWeeklyGrammarGame, buildWeeklyFamilyStory, buildWeeklyFamilyRoleplay } from './weekly-grammar.js';
 
 function takeItems(items, count, random) {
   return shuffle(items, random).slice(0, Math.min(count, items.length));
@@ -87,11 +87,13 @@ export function buildFamilyPlaySteps(lesson, topic, sessionId, options = {}) {
   if (allocation) {
     const catchUpItems = getCamajCatchUpItems(lesson, options.familyId);
     const grammarItems = getTopic(getWeeklyGrammarTopicId(lesson.id, options.familyId))?.items || [];
-    return dailyVocabularySteps({ ...allocation, catchUpItems, grammarItems, grammarGame: getWeeklyGrammarGame(lesson.id, options.familyId) }, { buildQuiz, buildMatch, shuffle, random }, true);
+    return dailyVocabularySteps({ ...allocation, catchUpItems, grammarItems, grammarGame: getWeeklyGrammarGame(lesson.id, options.familyId), grammarStory: buildWeeklyFamilyStory(grammarItems, lesson.id, options.familyId), grammarRoleplay: buildWeeklyFamilyRoleplay(grammarItems, lesson.id, options.familyId) }, { buildQuiz, buildMatch, shuffle, random }, true);
   }
   const lessonKind = String(lesson.type || 'discover').replace('integration-', '');
   const grammarItems = getTopic(getWeeklyGrammarTopicId(lesson.id, options.familyId))?.items || [];
   const grammarStep = grammarItems.length ? [{ type: 'family-grammar', title: 'Weekly grammar mission', subtitle: getWeeklyGrammarGame(lesson.id, options.familyId), items: grammarItems }] : [];
+  const grammarStory = grammarItems.length ? [buildWeeklyFamilyStory(grammarItems, lesson.id, options.familyId)] : [];
+  const grammarRoleplay = grammarItems.length ? [buildWeeklyFamilyRoleplay(grammarItems, lesson.id, options.familyId)] : [];
   const mix = LESSON_MIX[lessonKind] || LESSON_MIX.discover;
   const reviewTopics = getSpiralReviewTopics(lesson, random);
   const reviewPool = reviewTopics.flatMap(reviewTopic => reviewTopic.items || []);
@@ -140,12 +142,12 @@ export function buildFamilyPlaySteps(lesson, topic, sessionId, options = {}) {
     subtitle: 'Choose the missing familiar word that completes the sentence together', completion,
   }] : [];
   const activityOrder = {
-    discover: [...grammarStep, flashcards, match, ...quizzes, ...conversations],
-    recall: [...grammarStep, flashcards, ...quizzes, match, ...conversations],
-    build: [...grammarStep, flashcards, ...builder, ...sentenceCompletion, match, ...quizzes, ...conversations],
-    use: [...grammarStep, ...conversations, flashcards, ...builder, ...sentenceCompletion, match, ...quizzes],
-    checkpoint: [...grammarStep, ...quizzes, ...sentenceCompletion, match, flashcards, ...conversations],
-  }[lessonKind] || [...grammarStep, flashcards, match, ...quizzes, ...conversations];
+    discover: [...grammarStep, ...grammarStory, ...grammarRoleplay, flashcards, match, ...quizzes, ...conversations],
+    recall: [...grammarStep, ...grammarStory, ...grammarRoleplay, flashcards, ...quizzes, match, ...conversations],
+    build: [...grammarStep, ...grammarStory, ...grammarRoleplay, flashcards, ...builder, ...sentenceCompletion, match, ...quizzes, ...conversations],
+    use: [...grammarStep, ...grammarStory, ...grammarRoleplay, ...conversations, flashcards, ...builder, ...sentenceCompletion, match, ...quizzes],
+    checkpoint: [...grammarStep, ...grammarStory, ...grammarRoleplay, ...quizzes, ...sentenceCompletion, match, flashcards, ...conversations],
+  }[lessonKind] || [...grammarStep, ...grammarStory, ...grammarRoleplay, flashcards, match, ...quizzes, ...conversations];
 
   return [
     { type: 'ready', title: 'Is everyone ready?', subtitle: 'Join on each device before setting sail together.' },

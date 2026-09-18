@@ -60,6 +60,8 @@ export function dailyVocabularySteps(allocation, helpers, family = false) {
     ...(catchUpItems.length ? [{ type: 'family-flashcards', title: 'Catch up on earlier words', reviewCount: catchUpItems.length, items: catchUpItems, catchUp: true }] : []),
     ...(reviewItems.length ? [{ type: 'family-flashcards', title: 'Bring back earlier words', reviewCount: reviewItems.length, items: reviewItems }] : []),
     ...(grammarItems.length ? [{ type: 'family-grammar', title: 'Weekly grammar mission', subtitle: allocation.grammarGame || 'Play with this week’s sentence pattern together.', items: grammarItems }] : []),
+    ...(allocation.grammarStory ? [allocation.grammarStory] : []),
+    ...(allocation.grammarRoleplay ? [allocation.grammarRoleplay] : []),
     ...batches.map(batch => ({ type: 'family-match', title: 'Connect today’s new words', items: batch, targetItems: shuffle(batch, random), supportItems: shuffle(batch, random) })),
     ...shuffle(items, random).map(item => ({ type: 'family-quiz', title: 'Recall today’s vocabulary', item, options: shuffle([item, ...shuffle(items.filter(other => other.id !== item.id), random).slice(0, 3)], random) })),
     { type: 'family-reflection', title: 'Bring It Home', subtitle: 'Use today’s new words together', items: newItems, recap: { newItems: newItems.slice(0, 1), recalledItems: reviewItems.slice(0, 2), connection: null } },
