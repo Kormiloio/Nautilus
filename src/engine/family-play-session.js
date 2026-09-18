@@ -1,7 +1,7 @@
 import { DAILY_PILOT_REVISION } from '../content/daily-plans.js';
 import { dailyVocabularySteps } from './daily-vocabulary.js';
 import { VOYAGE_LESSONS, getDailyVocabularyAllocation, buildQuiz, buildMatch, buildSentenceCompletion, createSeededRandom, getTopic, isBuildableSentence, shuffle } from './learning-engine.js';
-import { getWeeklyGrammarTopicId } from './weekly-grammar.js';
+import { getWeeklyGrammarTopicId, getWeeklyGrammarGame } from './weekly-grammar.js';
 
 function takeItems(items, count, random) {
   return shuffle(items, random).slice(0, Math.min(count, items.length));
@@ -87,11 +87,11 @@ export function buildFamilyPlaySteps(lesson, topic, sessionId, options = {}) {
   if (allocation) {
     const catchUpItems = getCamajCatchUpItems(lesson, options.familyId);
     const grammarItems = getTopic(getWeeklyGrammarTopicId(lesson.id, options.familyId))?.items || [];
-    return dailyVocabularySteps({ ...allocation, catchUpItems, grammarItems }, { buildQuiz, buildMatch, shuffle, random }, true);
+    return dailyVocabularySteps({ ...allocation, catchUpItems, grammarItems, grammarGame: getWeeklyGrammarGame(lesson.id, options.familyId) }, { buildQuiz, buildMatch, shuffle, random }, true);
   }
   const lessonKind = String(lesson.type || 'discover').replace('integration-', '');
   const grammarItems = getTopic(getWeeklyGrammarTopicId(lesson.id, options.familyId))?.items || [];
-  const grammarStep = grammarItems.length ? [{ type: 'family-grammar', title: 'Weekly grammar mission', subtitle: 'Play with this week’s sentence pattern together.', items: grammarItems }] : [];
+  const grammarStep = grammarItems.length ? [{ type: 'family-grammar', title: 'Weekly grammar mission', subtitle: getWeeklyGrammarGame(lesson.id, options.familyId), items: grammarItems }] : [];
   const mix = LESSON_MIX[lessonKind] || LESSON_MIX.discover;
   const reviewTopics = getSpiralReviewTopics(lesson, random);
   const reviewPool = reviewTopics.flatMap(reviewTopic => reviewTopic.items || []);

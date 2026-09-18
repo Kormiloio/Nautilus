@@ -4,6 +4,18 @@ const WEEKLY_GRAMMAR_TOPICS = [
   'verbs1', 'questionwords', 'smalltalk', 'plans', 'aboutme',
   'emotions', 'pasttense', 'futuretense', 'shopping', 'restaurant',
 ];
+const WEEKLY_GRAMMAR_GAMES = [
+  'Point to the person, act it out, and say the answer together.',
+  'Take turns asking a question and answering it.',
+  'Role-play a tiny conversation with a partner.',
+  'Plan a pretend family outing and agree together.',
+  'Tell three facts about yourself using the pattern.',
+  'Use faces and gestures to show the feeling, then say it.',
+  'Tell a three-card story about what happened.',
+  'Make a three-card plan for tomorrow.',
+  'Act out a shop and ask for what you need.',
+  'Act out a restaurant order from greeting to goodbye.',
+];
 
 export function getWeeklyGrammarWeek(lessonId, familyId) {
   const day = Number(String(lessonId || '').replace('voyage-', ''));
@@ -17,3 +29,6 @@ export function getWeeklyGrammarTopicId(lessonId, familyId) {
   return WEEKLY_GRAMMAR_TOPICS[getWeeklyGrammarWeek(lessonId, familyId) - 1];
 }
 
+export function getWeeklyGrammarGame(lessonId, familyId) {
+  return WEEKLY_GRAMMAR_GAMES[getWeeklyGrammarWeek(lessonId, familyId) - 1];
+}

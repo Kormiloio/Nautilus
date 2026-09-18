@@ -76,8 +76,8 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
   }
   const turnPrompt = turnPerson ? `<div class="family-turn-prompt"><span>${escapeHtml(turnPerson.name).slice(0, 1)}</span><div><small>It’s your turn</small><strong>${escapeHtml(turnPerson.name)}, lead this round—then everyone joins in.</strong></div></div>` : '';
   if (step.type === 'family-grammar') {
-    const cards = step.items.map((item, index) => `<article class="family-grammar-card"><span>${index + 1}</span><strong>${renderLanguageRun(item.targetText, 'target', LANGUAGE_PACK, item)}</strong><small>${renderLanguageRun(item.supportText, 'support', LANGUAGE_PACK, item)}</small><em>Act it out, then say it together</em></article>`).join('');
-    return `${turnPrompt}<div class="family-activity-instructions"><strong>Grammar charades</strong><span>Point to the right person, act out the meaning, and have everyone say the Montenegrin form together.</span></div><div class="family-grammar-grid">${cards}</div>`;
+    const cards = step.items.map((item, index) => `<article class="family-grammar-card"><span>${index + 1}</span><strong>${renderLanguageRun(item.targetText, 'target', LANGUAGE_PACK, item)}</strong><small>${renderLanguageRun(item.supportText, 'support', LANGUAGE_PACK, item)}</small><button class="dialogue-play-btn" data-family-audio="${index}" aria-label="Play ${escapeHtml(item.targetText)}">► Hear it</button><em>Say it together, then switch roles</em></article>`).join('');
+    return `${turnPrompt}<div class="family-activity-instructions"><strong>Family speaking game</strong><span>${escapeHtml(step.subtitle || 'Act it out, then say the answer together.')}</span><em>Nautilus does not record anyone. Your family does the speaking together.</em></div><div class="family-grammar-grid">${cards}</div>`;
   }
   if (step.type === 'family-flashcards') {
     const spiralNote = step.reviewCount || step.connectionCount
