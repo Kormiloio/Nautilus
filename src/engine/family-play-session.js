@@ -1,6 +1,7 @@
 import { DAILY_PILOT_REVISION } from '../content/daily-plans.js';
 import { dailyVocabularySteps } from './daily-vocabulary.js';
 import { VOYAGE_LESSONS, getDailyVocabularyAllocation, buildQuiz, buildMatch, buildSentenceCompletion, createSeededRandom, getTopic, isBuildableSentence, shuffle } from './learning-engine.js';
+import { getWeeklyGrammarTopicId } from './weekly-grammar.js';
 
 function takeItems(items, count, random) {
   return shuffle(items, random).slice(0, Math.min(count, items.length));
@@ -85,10 +86,12 @@ export function buildFamilyPlaySteps(lesson, topic, sessionId, options = {}) {
   const allocation = (options.catalogRevision ?? DAILY_PILOT_REVISION) >= DAILY_PILOT_REVISION ? getDailyVocabularyAllocation(lesson) : null;
   if (allocation) {
     const catchUpItems = getCamajCatchUpItems(lesson, options.familyId);
-    const grammarItems = options.familyId === CAMAJ_FAMILY_ID ? (getTopic('verbs1')?.items || []) : [];
+    const grammarItems = getTopic(getWeeklyGrammarTopicId(lesson.id, options.familyId))?.items || [];
     return dailyVocabularySteps({ ...allocation, catchUpItems, grammarItems }, { buildQuiz, buildMatch, shuffle, random }, true);
   }
   const lessonKind = String(lesson.type || 'discover').replace('integration-', '');
+  const grammarItems = getTopic(getWeeklyGrammarTopicId(lesson.id, options.familyId))?.items || [];
+  const grammarStep = grammarItems.length ? [{ type: 'family-grammar', title: 'Weekly grammar mission', subtitle: 'Play with this week’s sentence pattern together.', items: grammarItems }] : [];
   const mix = LESSON_MIX[lessonKind] || LESSON_MIX.discover;
   const reviewTopics = getSpiralReviewTopics(lesson, random);
   const reviewPool = reviewTopics.flatMap(reviewTopic => reviewTopic.items || []);
@@ -137,12 +140,12 @@ export function buildFamilyPlaySteps(lesson, topic, sessionId, options = {}) {
     subtitle: 'Choose the missing familiar word that completes the sentence together', completion,
   }] : [];
   const activityOrder = {
-    discover: [flashcards, match, ...quizzes, ...conversations],
-    recall: [flashcards, ...quizzes, match, ...conversations],
-    build: [flashcards, ...builder, ...sentenceCompletion, match, ...quizzes, ...conversations],
-    use: [...conversations, flashcards, ...builder, ...sentenceCompletion, match, ...quizzes],
-    checkpoint: [...quizzes, ...sentenceCompletion, match, flashcards, ...conversations],
-  }[lessonKind] || [flashcards, match, ...quizzes, ...conversations];
+    discover: [...grammarStep, flashcards, match, ...quizzes, ...conversations],
+    recall: [...grammarStep, flashcards, ...quizzes, match, ...conversations],
+    build: [...grammarStep, flashcards, ...builder, ...sentenceCompletion, match, ...quizzes, ...conversations],
+    use: [...grammarStep, ...conversations, flashcards, ...builder, ...sentenceCompletion, match, ...quizzes],
+    checkpoint: [...grammarStep, ...quizzes, ...sentenceCompletion, match, flashcards, ...conversations],
+  }[lessonKind] || [...grammarStep, flashcards, match, ...quizzes, ...conversations];
 
   return [
     { type: 'ready', title: 'Is everyone ready?', subtitle: 'Join on each device before setting sail together.' },
