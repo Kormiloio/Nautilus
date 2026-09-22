@@ -42,8 +42,8 @@ export function dailyVocabularySteps(allocation, helpers, family = false) {
   const catchUpItems = allocation.catchUpItems || [];
   const grammarItems = allocation.grammarItems || [];
   const items = [...newItems, ...reviewItems, ...catchUpItems];
-  const title = `${newItems.length} new words · ${reviewItems.length} review words${catchUpItems.length ? ` · ${catchUpItems.length} catch-up words` : ''}`;
-  const introduction = allocation.pilot ? 'Family pilot · language review pending. Learn today’s new vocabulary.' : 'Learn today’s new vocabulary before practicing it';
+  const title = allocation.focusTitle || `${newItems.length} new words · ${reviewItems.length} review words${catchUpItems.length ? ` · ${catchUpItems.length} catch-up words` : ''}`;
+  const introduction = allocation.focusDescription || (allocation.pilot ? 'Family pilot · language review pending. Learn today’s new vocabulary.' : 'Learn today’s new vocabulary before practicing it');
   const batches = [];
   for (let i = 0; i < newItems.length; i += 5) batches.push(newItems.slice(i, i + 5));
   if (!family) return [

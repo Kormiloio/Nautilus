@@ -1,4 +1,4 @@
-import { DAILY_PLANS, PILOT_DAILY_PLANS } from '../content/daily-plans.js';
+import { DAILY_PLANS, PILOT_DAILY_PLANS, getFocusedPilotMetadata } from '../content/daily-plans.js';
 import { validateDailyPlan, dailyVocabularySteps } from './daily-vocabulary.js';
 import montenegrin from '../content/topics.json';
 import albanian from '../content/albanian.js';
@@ -138,10 +138,19 @@ function buildVoyageLessons() {
       }
     }
   }
-  const dailyTitles = new Map((PILOT_DAILY_PLANS[content.languagePack.id]?.lessons || []).map(lesson => [lesson.id, lesson.title]));
-  return lessons.map(lesson => dailyTitles.has(lesson.id)
-    ? { ...lesson, legacyTitle: lesson.title, title: dailyTitles.get(lesson.id), detail: '10 new words and 10 review words · family pilot' }
-    : lesson);
+  const pilotPlan = PILOT_DAILY_PLANS[content.languagePack.id];
+  const dailyTitles = new Map((pilotPlan?.lessons || []).map(lesson => [lesson.id, lesson.title]));
+  return lessons.map(lesson => {
+    if (!dailyTitles.has(lesson.id)) return lesson;
+    const focus = getFocusedPilotMetadata(pilotPlan, lesson.id);
+    return {
+      ...lesson,
+      legacyTitle: lesson.title,
+      pilotTitle: dailyTitles.get(lesson.id),
+      title: focus?.title || dailyTitles.get(lesson.id),
+      detail: focus ? 'One subject at a time · focused family pilot' : '10 new words and 10 review words · family pilot',
+    };
+  });
 }
 
 export let VOYAGE_LESSONS = buildVoyageLessons();
@@ -283,14 +292,31 @@ export function getPilotDailyVocabularyPlan() {
   return PILOT_DAILY_PLANS[LANGUAGE_PACK.id] || null;
 }
 
-export function getDailyVocabularyAllocation(lesson) {
+export function getDailyVocabularyAllocation(lesson, { focused = true } = {}) {
   if (!VOYAGE_LESSONS.some(candidate => candidate.id === lesson.id)) return null;
   const approved = getDailyVocabularyPlan();
   if (approved) return validateDailyPlan(approved, VOYAGE_LESSONS.map(candidate => candidate.id)).get(lesson.id);
   const pilot = getPilotDailyVocabularyPlan();
   if (!pilot || !pilot.lessons.some(candidate => candidate.id === lesson.id)) return null;
   const ids = Array.from({ length: pilot.endDay - pilot.startDay + 1 }, (_, index) => `voyage-${pilot.startDay + index}`);
-  return { ...validateDailyPlan(pilot, ids, { requireReview: false }).get(lesson.id), pilot: true };
+  const allocations = validateDailyPlan(pilot, ids, { requireReview: false });
+  const base = allocations.get(lesson.id);
+  const metadata = focused ? getFocusedPilotMetadata(pilot, lesson.id) : null;
+  if (!metadata) return { ...base, pilot: true };
+  const primary = allocations.get(metadata.primary.id)?.newItems || [];
+  const secondary = allocations.get(metadata.secondary.id)?.newItems || [];
+  const focusItems = metadata.phase === 'bridge'
+    ? metadata.step === 1 ? [...primary.slice(0, 7), ...secondary.slice(0, 3)] : [...primary.slice(5), ...secondary.slice(0, 5)]
+    : primary;
+  return {
+    newItems: focusItems,
+    reviewItems: [],
+    pilot: true,
+    focused: true,
+    focusPhase: metadata.phase,
+    focusTitle: metadata.title,
+    focusDescription: metadata.description,
+  };
 }
 
 export function generateSession(lesson, completedTopicIds, options = {}) {

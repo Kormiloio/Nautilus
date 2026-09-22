@@ -1,4 +1,4 @@
-import { DAILY_PILOT_REVISION } from '../content/daily-plans.js';
+import { DAILY_PILOT_REVISION, DAILY_VOCABULARY_REVISION } from '../content/daily-plans.js';
 import { dailyVocabularySteps } from './daily-vocabulary.js';
 import { VOYAGE_LESSONS, getDailyVocabularyAllocation, buildQuiz, buildMatch, buildSentenceCompletion, createSeededRandom, getTopic, isBuildableSentence, shuffle } from './learning-engine.js';
 import { getWeeklyGrammarTopicId, getWeeklyGrammarGame, buildWeeklyFamilyStory, buildWeeklyFamilyRoleplay } from './weekly-grammar.js';
@@ -83,11 +83,14 @@ export function getLessonRecap(lesson, learnedTopicIds = []) {
 
 export function buildFamilyPlaySteps(lesson, topic, sessionId, options = {}) {
   const random = createSeededRandom(`${sessionId}:${lesson.id}:family-full-session`);
-  const allocation = (options.catalogRevision ?? DAILY_PILOT_REVISION) >= DAILY_PILOT_REVISION ? getDailyVocabularyAllocation(lesson) : null;
+  const catalogRevision = options.catalogRevision ?? DAILY_PILOT_REVISION;
+  const allocation = catalogRevision >= DAILY_VOCABULARY_REVISION
+    ? getDailyVocabularyAllocation(lesson, { focused: catalogRevision >= DAILY_PILOT_REVISION })
+    : null;
   if (allocation) {
-    const catchUpItems = getCamajCatchUpItems(lesson, options.familyId);
-    const grammarItems = getTopic(getWeeklyGrammarTopicId(lesson.id, options.familyId))?.items || [];
-    return dailyVocabularySteps({ ...allocation, catchUpItems, grammarItems, grammarGame: getWeeklyGrammarGame(lesson.id, options.familyId), grammarStory: buildWeeklyFamilyStory(grammarItems, lesson.id, options.familyId), grammarRoleplay: buildWeeklyFamilyRoleplay(grammarItems, lesson.id, options.familyId) }, { buildQuiz, buildMatch, shuffle, random }, true);
+    const catchUpItems = allocation.focused ? [] : getCamajCatchUpItems(lesson, options.familyId);
+    const grammarItems = allocation.focused ? [] : getTopic(getWeeklyGrammarTopicId(lesson.id, options.familyId))?.items || [];
+    return dailyVocabularySteps({ ...allocation, catchUpItems, grammarItems, grammarGame: getWeeklyGrammarGame(lesson.id, options.familyId), grammarStory: grammarItems.length ? buildWeeklyFamilyStory(grammarItems, lesson.id, options.familyId) : null, grammarRoleplay: grammarItems.length ? buildWeeklyFamilyRoleplay(grammarItems, lesson.id, options.familyId) : null }, { buildQuiz, buildMatch, shuffle, random }, true);
   }
   const lessonKind = String(lesson.type || 'discover').replace('integration-', '');
   const grammarItems = getTopic(getWeeklyGrammarTopicId(lesson.id, options.familyId))?.items || [];

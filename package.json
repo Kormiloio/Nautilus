@@ -12,7 +12,9 @@
     "validate": "node scripts/validate-content.js",
     "db:reset": "supabase db reset --local",
     "test:db": "supabase test db --local supabase/tests/rls.sql supabase/tests/atomic-progress.sql supabase/tests/verified-attempts.sql supabase/tests/verified-practice.sql",
-    "lint:db": "supabase db lint --local --level warning"
+    "lint:db": "supabase db lint --local --level warning",
+    "build:focused-release": "node scripts/build-focused-release.mjs",
+    "prepare:focused-release": "node scripts/prepare-focused-upload.mjs"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^5.0.0",

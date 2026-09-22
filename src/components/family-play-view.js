@@ -256,7 +256,7 @@ export function renderFamilyPlayView(container, state, actions) {
       </aside>
       <section class="family-play-panel" aria-labelledby="family-play-title">
         <div class="family-play-meta">
-          <span>${escapeHtml((cloudSession.catalogRevision ?? 5) < 6 ? (lesson.legacyTitle || lesson.title) : lesson.title)}</span>
+          <span>${escapeHtml((cloudSession.catalogRevision ?? 5) < 6 ? (lesson.legacyTitle || lesson.title) : (cloudSession.catalogRevision ?? 5) < 7 ? (lesson.pilotTitle || lesson.title) : lesson.title)}</span>
           <span>Part ${stepIndex + 1} of ${steps.length}</span>
         </div>
         <div class="session-steps-bar" role="progressbar" aria-valuenow="${stepIndex + 1}" aria-valuemin="1" aria-valuemax="${steps.length}">
