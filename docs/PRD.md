@@ -9,6 +9,16 @@
 
 Before implementation, every feature or behavior change MUST amend the applicable product requirements and include an OpenSpec proposal, design, normative specifications, and task list. Implementation may begin only after those records exist; deployment updates their task status and PRD release state.
 
+## Data
+
+Nautilus stores only the data needed for its documented product behavior.
+
+- Local profiles store practice progress, stars, streaks, topic progress, and voyage state.
+- When cloud features are enabled, family workspaces may store Google account identity, memberships, invitations, learner progress, and Family Play history.
+- Microphone recordings are not retained by default.
+- Nautilus does not use behavioral advertising or sell learner data.
+- Platform administration is limited to privacy-preserving aggregate service health and usage information. Learner-level activity and private family content are restricted.
+
 ## 1. Product summary
 
 Nautilus — Learn Your Heritage Together is a responsive, multi-family heritage language-learning platform. Families use it to help teenage learners build practical skills in their heritage language through short, repeatable activities with audio and practical role-play. Each family selects the language they are learning, and each learner receives an independent curriculum and progress track for that language.
