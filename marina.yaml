@@ -1,0 +1,12 @@
+version: 1
+build:
+  profile: static-v1
+  dependencies: none
+  commands:
+    build: ["marina-static-package", "web", "dist"]
+    test: ["marina-static-check", "web/index.html"]
+  output: dist
+  limits:
+    cpus: 1
+    memory_mib: 128
+  gpu: false
