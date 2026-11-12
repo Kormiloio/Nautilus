@@ -6,7 +6,7 @@ Nautilus is the project repository for **Učimo crnogorski**, a responsive web a
 
 Nautilus now uses a modular, dependency-light Vite architecture. Application screens live in `src/components/`, voyage and progress rules live in `src/engine/`, and all 33 topics plus the Alphabet bonus live in `src/content/topics.json`. Ajv validates content and the curriculum map before release, while Vitest covers lesson generation, weekday scheduling, topic coverage, session generation, and streak calculations.
 
-Vite builds the deployable site into `web/`, preserving the original generated concept as `web/prototype.html`. The 200-day voyage is implemented as 30 core topics across ten learning months, with Past Tense, Future Tense, and Arriving in Montenegro retained as optional advanced/capstone topics. Content expansion and fluent language/audio review remain incomplete.
+Vite builds the deployable site into `web/` (the original generated concept page is no longer published; it remains in git history at `2918c96:web/prototype.html`). The 200-day voyage is implemented as 30 core topics across ten learning months, with Past Tense, Future Tense, and Arriving in Montenegro retained as optional advanced/capstone topics. Content expansion and fluent language/audio review remain incomplete.
 
 ## Product direction
 
@@ -28,7 +28,6 @@ Vite builds the deployable site into `web/`, preserving the original generated c
 - [`src/content/topics.json`](src/content/topics.json) — content and curriculum map
 - [`src/content/schema.json`](src/content/schema.json) — Ajv content contract
 - [`web/index.html`](web/index.html) — generated production entry point
-- [`web/prototype.html`](web/prototype.html) — preserved original prototype
 
 ## Local development
 

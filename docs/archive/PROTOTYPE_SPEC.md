@@ -2,7 +2,7 @@
 
 **Status:** Archived baseline; non-normative
 
-This document records the observable behavior of the original Claude-generated export preserved at `web/prototype.html`. It is retained for historical comparison only. It does not describe approved production behavior and must not be used as a current product contract.
+This document records the observable behavior of the original Claude-generated export formerly preserved at `web/prototype.html` (removed from the published site; retrievable with `git show 2918c96:web/prototype.html`). It is retained for historical comparison only. It does not describe approved production behavior and must not be used as a current product contract.
 
 ## Historical behaviors
 
