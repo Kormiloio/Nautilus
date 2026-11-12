@@ -46,6 +46,10 @@ export function toVerifiedExercises(steps) {
       if (!completion?.displayTokens?.length || !completion?.choices?.length || !completion?.answer || !completion?.completedSentence?.length) throw new Error('Sentence completion needs reviewed blank, choices, and answer');
       return [{...common,kind:'sentence_completion',prompt:completion.prompt,displayTokens:completion.displayTokens,blankIndex:completion.blankIndex,choices:completion.choices,answer:completion.answer,completedSentence:completion.completedSentence,title:step.title}];
     }
+    if (step.type === 'listening-meaning') return [{...common,kind:'quiz',prompt:'What does this sentence mean?',
+      audioText:step.item.targetText,languageTag:step.item.languageTag,choices:step.choices,answer:step.item.supportText}];
+    if (step.type === 'listening-order') return [{...common,kind:'sentence_builder',prompt:'Put the words in the order you hear them.',
+      audioText:step.item.targetText,languageTag:step.item.languageTag,writtenPrompt:step.item.supportText,tokens:step.tokens,answer:step.answer}];
     if (['warmup','discover','recall-flash','note','dialogue','listen','ready','family-flashcards','family-conversation','family-reflection','family-grammar','family-story','family-roleplay'].includes(step.type)) {
       return [{...common,kind:'self_report',note:step.note,
         items:words(step.items || (step.item ? [step.item] : step.dialogue?.lines || [])),

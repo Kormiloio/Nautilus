@@ -1,6 +1,6 @@
 # Montenegrin fluent review: cumulative sentences, sentence lessons, Detective case packs
 
-Status: **draft, not reviewed.** These lines have been live in production since catalog revision 9 was published (between 2026-10-28 and 2026-11-11). OpenSpec change `add-cumulative-sentence-practice` tracks the review.
+Status: **approved by the owner (Mario Camaj) on 2026-11-12, with no corrections.** Content `reviewStatus` changed from `draft` to `reviewed`. Revision 9 in production is unchanged: its lesson rows don't store review status.
 
 How to review: for every row, mark **OK** or write the corrected Montenegrin / English in the last two columns. Check spelling, ijekavian forms, case endings, natural word order, and that the English is a faithful meaning. When a section is fully approved, the content file's `reviewStatus` can change from `draft` to `reviewed` (that change, and a new catalog revision, are separate steps).
 

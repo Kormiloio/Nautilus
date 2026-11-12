@@ -134,3 +134,32 @@ describe('Listening audio lifecycle', () => {
     audio.dispose();
   });
 });
+
+describe('Verified listening sets (catalog revision 10)', () => {
+  it('builds a deterministic, server-gradable set for each voyage day with sentences', async () => {
+    const { VOYAGE_LESSONS } = await import('../learning-engine.js');
+    const { buildVerifiedListeningSteps } = await import('../listening-practice.js');
+    const { toVerifiedExercises } = await import('../verified-curriculum.js');
+    let sets = 0;
+    for (const lesson of VOYAGE_LESSONS) {
+      const steps = buildVerifiedListeningSteps(lesson);
+      expect(buildVerifiedListeningSteps(lesson)).toEqual(steps);
+      if (!steps.length) continue;
+      sets++;
+      expect(steps[0]).toMatchObject({ type: 'discover', title: 'Read and hear first' });
+      const exercises = toVerifiedExercises(steps);
+      expect(exercises[0].kind).toBe('self_report');
+      for (const exercise of exercises.slice(1)) {
+        expect(exercise.audioText).toBeTruthy();
+        if (exercise.kind === 'quiz') expect(exercise.choices).toContain(exercise.answer);
+        else {
+          expect(exercise.kind).toBe('sentence_builder');
+          expect([...exercise.tokens].sort()).toEqual([...exercise.answer].sort());
+          expect(exercise.tokens.join(' ')).not.toBe(exercise.answer.join(' '));
+          expect(exercise.writtenPrompt).toBeTruthy();
+        }
+      }
+    }
+    expect(sets).toBe(185);
+  });
+});

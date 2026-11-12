@@ -1,10 +1,10 @@
 {
-  "_comment": "Draft Montenegrin cumulative sentence frames and noun allow-list (catalog revision 9). Nouns use their taught nominative form; grammar is never inferred from spelling. Pending fluent review.",
+  "_comment": "Montenegrin cumulative sentence frames and noun allow-list (catalog revision 9). Nouns use their taught nominative form; grammar is never inferred from spelling. Owner review sign-off 2026-11-12.",
   "packId": "montenegrin-en",
   "languageTag": "cnr",
   "script": "Latn",
   "direction": "ltr",
-  "reviewStatus": "draft",
+  "reviewStatus": "reviewed",
   "startDay": 27,
   "frames": [
     {

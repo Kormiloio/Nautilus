@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { validateCatalogStatus, verifyRelease } from '../../../scripts/verify-verified-release.mjs';
 
-const ready = { contractVersion: 1, revision: 9, individual: 1400, family: 1400, practice: 954 };
+const ready = { contractVersion: 1, revision: 10, individual: 1400, family: 1400, practice: 1139 };
 
 describe('verified release gate', () => {
   it('accepts the exact deployed catalog contract', () => {

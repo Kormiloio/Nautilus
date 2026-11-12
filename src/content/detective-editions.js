@@ -1,4 +1,4 @@
-// Draft context puzzles; each later milestone has different sentences.
+// Context puzzles; each later milestone has different sentences. Owner review sign-off: 2026-11-12.
 const caseOf = (word, sentence, answerId, choices, explanation) => ({
   word, sentence, answerId, choices: choices.map(([id, label]) => ({ id, label })), explanation,
 });

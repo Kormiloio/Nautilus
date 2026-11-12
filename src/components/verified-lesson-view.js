@@ -1,6 +1,19 @@
 import {escapeHtml,renderLanguageRun} from '../engine/language-runs.js';
 import {LANGUAGE_PACK,getTopic} from '../engine/learning-engine.js';
 import {getImmersiveLessonScene} from './lesson-visuals.js';
+import {createListeningAudio} from '../engine/listening-practice.js';
+// One device-speech player for verified listening exercises; replaced when the exercise changes.
+let listening=null;
+export function disposeVerifiedListening(){listening?.audio.dispose();listening=null;}
+function listeningBlock(step,ui,disabled,run){
+  if(!step?.audioText) return '';
+  const written=ui.written;
+  const text=step.kind==='quiz'?run(step.audioText):run(step.writtenPrompt||'','support');
+  return '<div class="listening-audio verified-listening"><button type="button" class="btn btn-primary" data-listen-play aria-label="Play sentence" title="Play sentence">►</button>'+
+    '<button type="button" class="btn btn-secondary" data-listen-slow>Slow</button></div>'+
+    '<p role="status" data-listen-status></p>'+
+    (written?'<p class="listening-transcript"><strong>'+text+'</strong></p>':'<button type="button" class="btn btn-secondary" data-listen-written hidden>Written practice</button>');
+}
 function getTopicForPractice(state){return getTopic(state.verifiedAttempt?.topicId);}
 const interactions=new Map();
 const colors=['#b6e746','#71d8dc','#8db8ff','#c8a4ff','#ffafd3','#ffd380'];
@@ -13,7 +26,7 @@ export function renderVerifiedLessonView(container,state,actions) {
   const done=attempt?.status==='completed'&&!feedback;
   const receipt=attempt?.receipts.find(r=>r.index===index);
   const key=attempt?.id+':'+index+':'+state.sessionUser?.id;
-  if(!interactions.has(key)) interactions.set(key,{pairs:{},selected:null,card:0,revealed:false,sentence:[]});
+  if(!interactions.has(key)) interactions.set(key,{pairs:{},selected:null,card:0,revealed:false,sentence:[],heard:false,written:false});
   const ui=interactions.get(key);
   const scene=getImmersiveLessonScene(attempt?.topicId||state.activeLesson?.topicId);
   const disabled=state.verifiedBusy||Boolean(state.verifiedPending)||Boolean(receipt)||Boolean(feedback)||session?.status==='paused';
@@ -28,7 +41,7 @@ export function renderVerifiedLessonView(container,state,actions) {
   }
   else if(!attempt) content='<h2>Session needs a restart</h2><p>This older session has no verified exercise record. A parent can end it and start a fresh lesson. Previously earned progress is kept.</p>';
   else if(done) content='<h2>Lesson complete!</h2><p>Your results have been saved by the server.</p>';
-  else if(step?.kind==='quiz') content='<h2>'+run(step.prompt,'support')+'</h2><div class="verified-choices">'+step.choices.map((choice,i)=>{
+  else if(step?.kind==='quiz') content='<h2>'+run(step.prompt,'support')+'</h2>'+listeningBlock(step,ui,disabled,run)+'<div class="verified-choices">'+step.choices.map((choice,i)=>{
     const selected=(feedback?.answer??receipt?.answer)===choice;
     const correctAnswer=feedback?.correctAnswer??receipt?.correctAnswer;
     const result=correctAnswer===choice?'correct':selected?'incorrect':'';
@@ -49,7 +62,7 @@ export function renderVerifiedLessonView(container,state,actions) {
   } else if(step?.kind==='sentence_builder') {
     const selectedTokens=ui.sentence.map(tokenIndex => step.tokens[tokenIndex]);
     const allChosen=ui.sentence.length===step.tokens.length;
-    content='<h2>'+run(step.prompt,'support')+'</h2><p>Tap the words in the order that makes the sentence.</p>'+
+    content='<h2>'+run(step.prompt,'support')+'</h2>'+listeningBlock(step,ui,disabled,run)+(step.audioText?'':'<p>Tap the words in the order that makes the sentence.</p>')+
       '<div class="verified-sentence-answer '+(allChosen?'complete':'')+'" aria-live="polite">'+
       (selectedTokens.length ? selectedTokens.map(token => run(token)).join(' ') : 'Tap a word to begin')+'</div>'+
       '<div class="verified-sentence-tokens">'+step.tokens.map((token,tokenIndex)=>
@@ -68,10 +81,10 @@ export function renderVerifiedLessonView(container,state,actions) {
   const status=showResult?'<p role="status" class="verified-feedback '+(feedbackCorrect?'correct':'incorrect')+'">'+(feedbackCorrect?'Correct!':step?.kind==='match'?'Not quite—check your pairs and try again.':'Not quite. Correct answer: '+answerText)+'</p>':'';
   const people=attempt?.people||[];
   container.innerHTML='<style>.verified-world{min-height:calc(100dvh - 72px);padding:24px 16px 100px;background-size:cover;background-position:center}.verified-panel{max-width:900px;margin:auto;padding:clamp(16px,4vw,38px);background:#091822ed;border:1px solid #66818e;border-radius:24px}.verified-panel h2{font-size:clamp(24px,5vw,40px);margin:16px 0}.verified-panel p{margin:14px 0}.verified-choices,.verified-match{display:grid;grid-template-columns:1fr 1fr;gap:12px}.verified-match>div{display:grid;gap:10px}.verified-choices button,.verified-match button{white-space:normal;min-height:56px}.verified-sentence-answer{min-height:64px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;margin:18px 0;padding:14px;border:1px dashed #66818e;border-radius:16px;font-size:clamp(19px,3vw,28px);text-align:center}.verified-sentence-answer.complete{border-color:#b6e746;background:#b6e74618}.verified-sentence-tokens{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}.verified-sentence-tokens .btn{min-height:48px}.verified-card{display:block;width:100%;min-height:180px;background:#172534;color:white;border:1px solid #66818e;border-radius:20px;padding:20px;font-size:30px}.verified-card small{display:block;font-size:18px;margin-top:18px}.verified-card-controls,.verified-roster{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}.verified-footer{position:sticky;bottom:0;background:#0a141fee;padding:14px 0 calc(14px + env(safe-area-inset-bottom));display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.verified-panel .correct{border-color:#b6e746;color:#b6e746}.verified-panel .incorrect{border-color:#ff91ab;color:#ff91ab}.verified-panel small{display:block}.verified-roster span{border:1px solid #66818e;padding:6px 12px;border-radius:18px}.verified-panel button:focus-visible{outline:3px solid white}@media(max-width:500px){.verified-world{padding:12px 8px 40px}.verified-card-controls .btn{font-size:13px;padding:10px}.verified-match .btn{font-size:14px;padding:10px}.verified-footer>.btn{flex:1}}</style>'+
-    '<header class="navbar"><strong>Nautilus · '+(family?'Family Play':attempt?.mode==='practice'?'Practice':'Voyage lesson')+'</strong><button class="btn btn-secondary" data-exit>Dashboard</button></header>'+
-    '<main class="verified-world" '+(scene?'style="background-image:url('+escapeHtml(scene.src)+')"':'')+'><section class="verified-panel">'+
+    '<header class="navbar"><strong>Nautilus · '+(family?'Family Play':/:listening$/.test(attempt?.lessonId||'')?'Listening practice':attempt?.mode==='practice'?'Practice':'Voyage lesson')+'</strong><button class="btn btn-secondary" data-exit>Dashboard</button></header>'+
+    '<main class="verified-world" '+(scene?'style="background-image:url('+escapeHtml(scene.src)+')"':'')+'><section class="verified-panel">'+'<h1 class="sr-only">'+escapeHtml(family?'Family Play':/:listening$/.test(attempt?.lessonId||'')?'Listening practice':attempt?.mode==='practice'?'Practice':'Voyage lesson')+'</h1>'+
     (attempt&&!done?'<p>Exercise '+(Math.min(index+1,attempt.exercises.length))+' of '+attempt.exercises.length+'</p>':'')+
-    (attempt?.mode==='practice'?'<div class="verified-card-controls">'+['flashcards','match','quiz','listen',...(getTopicForPractice(state)?.dialogue?['dialogue']:[])].map(activity=>'<button class="btn btn-secondary" data-practice="'+activity+'">'+activity+'</button>').join('')+'</div>':'')+
+    (attempt?.mode==='practice'&&!/:listening$/.test(attempt?.lessonId||'')?'<div class="verified-card-controls">'+['flashcards','match','quiz','listen',...(getTopicForPractice(state)?.dialogue?['dialogue']:[])].map(activity=>'<button class="btn btn-secondary" data-practice="'+activity+'">'+activity+'</button>').join('')+'</div>':'')+
     (family?'<div class="verified-roster">'+people.map(p=>'<span>'+escapeHtml(p.name)+(p.locked?' ✓ Locked in':' · Choosing')+'</span>').join('')+'</div>':'')+
     (state.verifiedError?'<p role="alert" class="incorrect">'+escapeHtml(state.verifiedError)+'</p>':'')+content+status+
     '<div class="verified-footer">'+(state.verifiedPending&&!state.verifiedBusy?'<button class="btn btn-primary" data-retry>Retry saved answer</button>':'')+(done?'<button class="btn btn-primary" data-exit>Back to dashboard</button>':!attempt?(session?.controllingAdult===state.sessionUser?.id?'<button class="btn btn-primary" data-cancel>End older session</button>':'<button class="btn btn-primary" data-exit>Back to dashboard</button>'):
@@ -87,6 +100,28 @@ export function renderVerifiedLessonView(container,state,actions) {
   container.querySelector('[data-submit]')?.addEventListener('click',()=>actions.submitVerifiedAnswer(index,step.kind==='match'?{...ui.pairs}:step.kind==='sentence_builder'?ui.sentence.map(tokenIndex=>step.tokens[tokenIndex]):true));
   container.querySelector('[data-continue]')?.addEventListener('click',actions.continueVerifiedLesson);
   const redraw=()=>renderVerifiedLessonView(container,state,actions);
+  if(step?.audioText&&!done){
+    const audioKey=key;
+    if(listening?.key!==audioKey){disposeVerifiedListening();
+      listening={key:audioKey,audio:createListeningAudio(LANGUAGE_PACK.targetLanguage.code,globalThis.speechSynthesis,globalThis.SpeechSynthesisUtterance,()=>updateVoice())};}
+    const status=container.querySelector('[data-listen-status]');
+    const written=container.querySelector('[data-listen-written]');
+    function updateVoice(){
+      const voice=listening?.audio.getVoice();
+      container.querySelectorAll('[data-listen-play],[data-listen-slow]').forEach(b=>{b.disabled=!voice;});
+      if(written) written.hidden=Boolean(voice)&&!ui.audioFailed;
+      if(status&&!voice) status.textContent='No compatible voice is available on this device. Use written practice.';
+    }
+    const play=slow=>{
+      status.textContent=slow?'Playing slowly…':'Playing…';
+      listening.audio.play(step.audioText,slow,()=>{ui.heard=true;status.textContent='Played. Answer when you are ready.';},
+        message=>{ui.audioFailed=true;status.textContent=message;if(written)written.hidden=false;});
+    };
+    container.querySelector('[data-listen-play]')?.addEventListener('click',()=>play(false));
+    container.querySelector('[data-listen-slow]')?.addEventListener('click',()=>play(true));
+    written?.addEventListener('click',()=>{ui.written=true;redraw();});
+    updateVoice();
+  } else if(listening&&!step?.audioText) disposeVerifiedListening();
   container.querySelector('[data-reveal]')?.addEventListener('click',()=>{ui.revealed=!ui.revealed;redraw();});
   container.querySelector('[data-prev]')?.addEventListener('click',()=>{ui.card--;ui.revealed=false;redraw();});
   container.querySelector('[data-next]')?.addEventListener('click',()=>{ui.card++;ui.revealed=false;redraw();});

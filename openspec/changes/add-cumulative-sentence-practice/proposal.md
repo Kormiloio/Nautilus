@@ -32,19 +32,20 @@ From voyage day 27 the focused pilot teaches a subject's words across several da
 
 ## Content, privacy, accessibility, and audio
 
-- **Content is draft.** Every new Montenegrin sentence, frame, gloss, and Detective case is marked `reviewStatus: 'draft'` and has **not** had fluent human review. Nothing in this change may be described as reviewed.
+- **Content review.** Every new Montenegrin sentence, frame, gloss, and Detective case was listed in `docs/reviews/montenegrin-cumulative-content-review.md`. The owner signed it off with no corrections on 2026-11-12, and content `reviewStatus` is now `reviewed`.
 - **Privacy.** Sentence review stores sentence text, support text, miss counts, and due times in browser `localStorage`, keyed by user and pack, capped at 100 items. It is never sent to the server and is not shared between devices. Listening practice stores nothing. Detective answers use the existing family side-quest tables.
 - **Accessibility.** New controls are buttons with `aria-label`/`aria-pressed`, status regions use `role="status"`/`aria-live`, and every audio activity has a written alternative.
 - **Audio.** Uses on-device speech synthesis only. Voice selection now prefers `cnr-ME`/`cnr` before Croatian, Serbian, and Bosnian fallbacks. Without a compatible voice the app explains this and offers written practice; it never pronounces target text with an English voice. No microphone is used.
 
 ## Conflicts with existing rules (still open after release)
 
-1. **Reviewed content rule.** GAMEPLAY PRD §11.5 forbids publishing a sentence activity without reviewed language data. `scripts/prepare-sentence-release.mjs` would publish draft sentences in catalog revision 9.
+1. **Reviewed content rule.** GAMEPLAY PRD §11.5 forbids publishing a sentence activity without reviewed language data. Revision 9 went live before review. *Resolved 2026-11-12* by the owner's review sign-off.
 2. **No hard-coded language in the engine.** *Resolved 2026-11-12.* Frames and nouns moved to `src/content/daily-vocabulary/montenegrin-sentence-frames.json`, registered per pack in `PILOT_SENTENCE_FRAMES`; the engine contains no language and generates byte-identical revision-9 content for days 27–200.
 3. **Client default revision.** `generateSession` and `buildFamilyPlaySteps` default to revision 9, and `verify-verified-release.mjs` expects revision 9. Production has served revision 9 since it was published, so this now matches.
 
-## Unresolved product decisions
+## Product decisions (resolved 2026-11-12)
 
-- Who performs fluent review of the sentence frames, nine topic packs, and Detective cases? Release already happened, so review is post-release; the checklist is `docs/reviews/montenegrin-cumulative-content-review.md`.
-- Should sentence review sync across a learner's devices (server-side) or stay device-local?
-- Should listening-practice results count toward any progress, or stay unrecorded practice?
+- Fluent review: owner sign-off recorded in `docs/reviews/montenegrin-cumulative-content-review.md`.
+- Sentence review **syncs across a learner's devices**.
+- Listening practice results **count toward progress**.
+- The last two are specified and built in OpenSpec change `add-sentence-review-sync-and-listening-progress`.

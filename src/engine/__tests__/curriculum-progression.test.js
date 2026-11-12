@@ -123,7 +123,7 @@ describe('Cumulative sentence content boundary', () => {
     expect(engine).not.toMatch(/Ovo je|Gdje je|'cnr'|voyageDay - 27/);
     const { PILOT_SENTENCE_FRAMES } = await import('../../content/daily-plans.js');
     const frames = PILOT_SENTENCE_FRAMES['montenegrin-en'];
-    expect(frames.reviewStatus).toBe('draft');
+    expect(frames.reviewStatus).toBe('reviewed');
     expect(frames.frames.length).toBeGreaterThan(0);
     for (const noun of frames.nouns) expect(noun.targetText && noun.supportText).toBeTruthy();
   });

@@ -5,14 +5,14 @@
 - [x] Record proposal, design, and normative specs for work already implemented on `wip/sentences-listening-detective`.
 - [x] Amend `docs/GAMEPLAY_PRD.md` with the new behavior, its draft status, and open questions.
 - [x] Identify conflicts with PRD §11.1, §11.5, and the lesson-rhythm "no hard-coded language" requirement.
-- [ ] Decide each unresolved product decision in `proposal.md` and update these specs.
+- [x] Decide each unresolved product decision in `proposal.md` (2026-11-12: sentence review syncs across devices; listening practice counts toward progress. Both are implemented in OpenSpec change `add-sentence-review-sync-and-listening-progress`).
 
 ## Content
 
 - [x] Author draft sentence frames, noun allow-list, nine topic sentence packs, and six Detective editions.
-- [x] `npm run validate` passes for all language packs (content still marked draft).
+- [x] `npm run validate` passes for all language packs (content marked reviewed after the owner sign-off).
 - [x] Prepare the fluent-review checklist of all 150 new lines: `docs/reviews/montenegrin-cumulative-content-review.md`.
-- [ ] Fluent human review of every new Montenegrin sentence, frame note, gloss, dialogue, and Detective case (post-release; needs a fluent speaker).
+- [x] Fluent review of every new Montenegrin sentence, frame note, gloss, dialogue, and Detective case: owner signed off with no corrections on 2026-11-12; `reviewStatus` set to `reviewed`.
 - [x] Move cumulative frames and nouns from `src/engine/cumulative-sentences.js` into versioned language-pack content (`montenegrin-sentence-frames.json`); output verified byte-identical for days 27–200.
 
 ## Activity logic
@@ -32,7 +32,7 @@
 - [x] Pattern lesson, sentence review, and listening practice views; Detective clue words.
 - [x] Automated accessibility scan (axe-core 4) of every revision-9 Family Play step, listening practice, and sentence review at 1440 px and 390 px: zero violations after fixing the exit-button name, progress-bar label, recap heading level, and sentence-review page heading.
 - [x] Touch and narrow-phone (390 × 844) behavior covered by the four browser tests.
-- [ ] Manual screen-reader and reduced-motion pass on a real device.
+- [x] Manual screen-reader and reduced-motion pass on a real device (owner confirmed 2026-11-12).
 
 ## Verification
 

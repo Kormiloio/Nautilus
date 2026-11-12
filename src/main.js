@@ -1,10 +1,10 @@
 import { beginVerifiedLesson, getVerifiedAttempt, submitVerifiedExercise, getVoyageReviewTopic } from './engine/verified-learning-service.js';
-import { renderVerifiedLessonView } from './components/verified-lesson-view.js';
+import { renderVerifiedLessonView, disposeVerifiedListening } from './components/verified-lesson-view.js';
 import { renderSentenceReviewView } from './components/sentence-review-view.js';
 import { renderListeningPracticeView } from './components/listening-practice-view.js';
 import { getSideQuestForProgress } from './content/side-quests.js';
 import { buildListeningExercises, getListeningItems } from './engine/listening-practice.js';
-import { getSentenceReviews, recordSentenceMistake, sentenceMistakeFromExercise, sentenceMistakeFromFamilyStep } from './engine/sentence-review.js';
+import { getSentenceReviews, recordSentenceMistake, sentenceMistakeFromExercise, sentenceMistakeFromFamilyStep, syncSentenceReviews } from './engine/sentence-review.js';
 import { advanceDetectiveCase, createDetectiveGame, earnSideQuestBadge, lockDetectiveAnswer, selectDetectiveAnswer } from './engine/side-quest-game.js';
 import { advanceFamilySideQuest, cancelFamilySideQuest, getFamilySideQuestState, startFamilySideQuest, submitFamilySideQuestAnswer, subscribeToFamilySideQuest } from './engine/side-quest-service.js';
 import {
@@ -33,7 +33,7 @@ import {
   setActiveLanguagePack,
   VOYAGE_LESSONS,
 } from './engine/learning-engine.js';
-import { onAuthStateChange, getSession, isConfigured } from './engine/supabase-client.js';
+import { onAuthStateChange, getSession, isConfigured, supabase } from './engine/supabase-client.js';
 import { speakWithBestDeviceVoice } from './engine/speech-engine.js';
 import { applyDocumentLanguage } from './engine/language-runs.js';
 import {
@@ -189,6 +189,7 @@ const actions = {
       selectLinkedLearnerProfile();
       await loadFamilyPlayState();
       watchFamilyPlay();
+      actions.syncSentenceReviewsInBackground();
     } catch (error) { state.familyError = error.message; }
     rerender();
   },
@@ -504,6 +505,7 @@ const actions = {
     try {
       recordSentenceMistake(state.sessionUser.id, packId, { ...mistake, eventId });
       state.sentenceReviewError = null;
+      actions.syncSentenceReviewsInBackground(packId);
     } catch {
       state.sentenceReviewError = 'This device could not save sentence review. Check that browser storage is available.';
     }
@@ -515,8 +517,19 @@ const actions = {
     actions.rememberSentenceMistake(sentenceMistakeFromFamilyStep(step), `${session.id}:${segment}:${JSON.stringify(response)}`);
   },
 
-  openSentenceReview: () => {
+  // Cross-device review queue: push queued changes, then pull the server queue. Never blocks practice.
+  syncSentenceReviewsInBackground: (packId = state.activePackId) => {
+    if (!state.sessionUser || !isConfigured) return Promise.resolve(null);
+    const userId = state.sessionUser.id;
+    return syncSentenceReviews(userId, packId, supabase).then(result => {
+      if (result?.synced && state.screen === 'dashboard' && state.sessionUser?.id === userId) rerender();
+      return result;
+    }).catch(() => null);
+  },
+
+  openSentenceReview: async () => {
     if (!state.sessionUser) return;
+    await actions.syncSentenceReviewsInBackground();
     state.sentenceReviews = getSentenceReviews(state.sessionUser.id, state.activePackId, { dueOnly: true }).slice(0, 5);
     state.sentenceReviewIndex = 0;
     state.sentenceReviewFeedback = null;
@@ -525,16 +538,26 @@ const actions = {
     rerender();
   },
 
-  openListeningPractice: () => {
+  openListeningPractice: async () => {
     if (!state.sessionUser) return;
     const active = state.familyPlayState?.activeSession;
     const lesson = VOYAGE_LESSONS.find(item => item.id === active?.lessonId)
       || VOYAGE_LESSONS[Math.min(state.familyPlayState?.completedDays ?? state.completedLessons.length, 199)];
+    // Signed-in linked learners get the server-graded set that earns stars and an active day.
+    const profile = getProfiles().find(p => p.name === state.profile);
+    const linked = isConfigured && profile && !String(profile.id).startsWith('local-') && profile.linkedUserId === state.sessionUser.id;
+    let unsavedReason = linked ? null : 'Practice only, not saved. Sign in as the learner to earn stars and an active day.';
+    if (linked) {
+      await openVerifiedLesson({ id: `practice:${lesson.id}:listening`, topicId: lesson.topicId, title: 'Listening practice' });
+      if (state.verifiedAttempt) return;
+      unsavedReason = 'Practice only, not saved. This listening set could not be loaded from the server right now.';
+      state.verifiedError = null; state.familyError = null;
+    }
     const id = `listening:${Date.now()}`;
     const exercises = buildListeningExercises(getListeningItems(lesson), id);
     if (!exercises.length) return;
     state.listeningPractice?.cleanup?.();
-    state.listeningPractice = { id, userId: state.sessionUser.id, packId: state.activePackId, exercises, index: 0, results: [] };
+    state.listeningPractice = { id, userId: state.sessionUser.id, packId: state.activePackId, exercises, index: 0, results: [], unsavedReason };
     state.screen = 'listening-practice';
     rerender();
   },
@@ -672,6 +695,7 @@ const actions = {
 
   exitVerifiedLesson: async () => {
     const completedVoyageLesson = state.verifiedAttempt?.mode === "voyage" && state.verifiedAttempt?.status === "completed";
+    disposeVerifiedListening();
     verifiedOpenGeneration++;state.verifiedLoading=false;state.verifiedAttempt=null; state.verifiedFeedback=null; state.verifiedError=null; state.verifiedPending=null;
     if (completedVoyageLesson && state.profile && actions.showIndividualArrivalIfReached()) return;
     await actions.goDashboard();
@@ -906,6 +930,9 @@ async function openVerifiedLesson(lesson) {
   finally {if(generation===verifiedOpenGeneration)state.verifiedLoading=false;}
   rerender();
 }
+
+// Send review changes made offline as soon as the device reconnects.
+globalThis.addEventListener?.('online', () => actions.syncSentenceReviewsInBackground());
 
 const completionRefreshes = new Map();
 function handleFamilyCompletion(sessionId) {

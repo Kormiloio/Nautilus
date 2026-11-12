@@ -33,6 +33,7 @@ export function renderSentenceReviewView(container, state, actions) {
     try {
       const result = submitSentenceReview(state.sessionUser.id, state.activePackId, review.id, tokens);
       state.sentenceReviewFeedback = result;
+      actions.syncSentenceReviewsInBackground?.();
       container.querySelector('[data-review-feedback]').textContent = result.correct
         ? result.mastered ? 'Correct. You remembered this sentence on two review days.' : 'Correct. This sentence will return tomorrow.'
         : `The sentence is: ${result.targetText}. It will return in ten minutes.`;

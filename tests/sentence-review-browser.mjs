@@ -49,7 +49,7 @@ try {
     await page.locator('[data-review-next]').click();
     assert.ok((await page.locator('h1').textContent()).includes('Review complete'));
     await page.reload();
-    assert.equal(await page.evaluate(() => [...Object.keys(localStorage)].filter(key => key.includes('sentence-review')).length), 1, 'queue survives reload');
+    assert.equal(await page.evaluate(() => [...Object.keys(localStorage)].filter(key => key.startsWith('nautilus:sentence-review:v1:')).length), 1, 'queue survives reload');
     assert.deepEqual(errors, []);
     await page.close();
   }

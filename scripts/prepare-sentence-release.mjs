@@ -66,7 +66,7 @@ select public.get_verified_catalog_status();
 writeFileSync(resolve(directory, 'manifest.json'), JSON.stringify({
   revision, sourceRevision, definitions: blocks.length, chunks,
   scope: 'Montenegrin voyage days 24–200, individual and family; focused sentence activities from day 27',
-  reviewStatus: 'Draft Montenegrin sentence content; fluent review pending',
+  reviewStatus: 'Montenegrin sentence content; owner review sign-off 2026-11-12',
   productionChanges: false,
 }, null, 2) + '\n');
 console.log(`Prepared ${chunks + 3} files in ${directory}. No production connection made.`);
