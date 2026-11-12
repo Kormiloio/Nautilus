@@ -10,7 +10,7 @@ vi.mock('../supabase-client.js', () => ({
 import { enqueueTransaction, triggerSync, getPendingProgressTransactions, getSyncRecoveryItems, loadProfileData, setActiveProgressPack } from '../progress-store.js';
 import { listFamilies } from '../family-service.js';
 import { setActiveLanguagePack } from '../learning-engine.js';
-import { renderProfilePill } from '../../components/dashboard.js';
+import { renderGuideProgressCard, renderProfilePill } from '../../components/dashboard.js';
 
 const values = new Map();
 beforeEach(async () => {
@@ -72,6 +72,13 @@ describe('Code review regressions', () => {
     const html = renderProfilePill({name:'"><img src=x onerror=alert(1)>'}, 'Lena');
     expect(html).not.toContain('<img');
     expect(html).toContain('&quot;&gt;&lt;img');
+  });
+
+  it('escapes learner names on the guide progress dashboard', () => {
+    const html = renderGuideProgressCard({ name: '<img src=x onerror=alert(1)>', stars: 3, streak: 2, completed: 1 });
+    expect(html).not.toContain('<img');
+    expect(html).toContain('&lt;img src=x onerror=alert(1)&gt;');
+    expect(html).toContain('⭐ 3 stars');
   });
 
   it('does not starve the controller heartbeat during five-second refreshes', () => {
