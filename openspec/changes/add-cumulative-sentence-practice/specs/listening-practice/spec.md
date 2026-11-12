@@ -14,7 +14,8 @@ A signed-in learner SHALL be able to open listening practice with up to six mult
 
 #### Scenario: No sentences
 
-- **GIVEN** the lesson has no multi-word sentences
+- **GIVEN** neither the active nor the next lesson has any multi-word sentence, item, connection, or dialogue line
+- **WHEN** the learner opens the dashboard
 - **THEN** no Listening practice entry is shown
 
 ### Requirement: Hear before answering
