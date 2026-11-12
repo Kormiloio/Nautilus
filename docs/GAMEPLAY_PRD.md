@@ -110,7 +110,7 @@ Tracked in OpenSpec change `add-cumulative-sentence-practice`. Catalog revision 
 - **Sentence review:** missed multi-word sentences are kept on the learner's device per language pack (max 100) and come back for review after 10 minutes, then after 24 hours once answered correctly. They leave the queue after two correct reviews in a row. Review grants no progress and is never sent to the server.
 - **Listening practice:** up to six sentences from the current or next lesson. The learner hears each one (normal or slow) and then picks its meaning or puts its words in order. A written path is offered when no compatible target-language voice is available. Results are not stored.
 - **Detective case packs:** each Detective milestone (10, 40, … 190 family lessons) has its own three-case pack with clue-word glosses and its own badge. After 190 the packs repeat in the same order on app and server, and each repeat earns its own new badge. The server pins the cases when a game starts.
-- **Known deviation:** the cumulative frames and noun list currently live in engine code rather than in versioned language-pack content (§11.1). Before release they must either be moved into the pack or approved as a pilot exception.
+- **Content boundary:** cumulative frames and nouns are versioned pack content (`src/content/daily-vocabulary/montenegrin-sentence-frames.json`), in line with §11.1. Fluent-review checklist: `docs/reviews/montenegrin-cumulative-content-review.md`.
 
 ### 6.3 Cumulative recall
 

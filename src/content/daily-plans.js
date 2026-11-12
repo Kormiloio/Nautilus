@@ -1,8 +1,11 @@
 import montenegrinPilot from './daily-vocabulary/montenegrin-continuation-24-200.json';
+import montenegrinSentenceFrames from './daily-vocabulary/montenegrin-sentence-frames.json';
 
 // Explicitly authorized family pilot; metadata remains draft, not human-approved.
 export const DAILY_PLANS = Object.freeze({});
 export const PILOT_DAILY_PLANS = Object.freeze({ 'montenegrin-en': montenegrinPilot });
+// Cumulative sentence frames are pack content; a pack without them gets no cumulative sentences.
+export const PILOT_SENTENCE_FRAMES = Object.freeze({ 'montenegrin-en': montenegrinSentenceFrames });
 export const DAILY_VOCABULARY_REVISION = 6;
 export const DAILY_PILOT_REVISION = 7;
 export const DAILY_SENTENCE_REVISION = 8;

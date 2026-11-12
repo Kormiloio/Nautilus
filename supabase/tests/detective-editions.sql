@@ -1,4 +1,5 @@
--- Executed inside a rollback-only transaction by scripts/test-detective-editions.mjs.
+\set ON_ERROR_STOP on
+begin;
 create extension if not exists pgtap with schema extensions;
 select extensions.plan(16);
 insert into auth.users(id,aud,role,email,raw_app_meta_data,raw_user_meta_data)
@@ -14,13 +15,11 @@ insert into public.family_memberships(family_id,user_id,role) values(:'family','
 insert into public.family_voyage_sessions(family_id,pack_id,pack_version,lesson_id,voyage_day,local_date,timezone,status,controlling_adult,is_review)
 select :'family','montenegrin-en','0.1.0','voyage-'||n,n,current_date+n,'UTC','completed','91000000-0000-0000-0000-000000000001',false
 from generate_series(1,40) n;
-insert into public.family_side_quest_sessions(family_id,pack_id,pack_version,quest_id,milestone,controlling_adult)
-values(:'family','montenegrin-en','0.1.0','false-friend-detective',10,'91000000-0000-0000-0000-000000000001') returning id as old_session \gset
-
--- APPLY_MIGRATION_HERE
+insert into public.family_side_quest_sessions(family_id,pack_id,pack_version,quest_id,milestone,controlling_adult,cases)
+values(:'family','montenegrin-en','0.1.0','false-friend-detective',10,'91000000-0000-0000-0000-000000000001',public.detective_cases_for_milestone(10)) returning id as old_session \gset
 
 select extensions.is((select cases->0->>'sentence' from public.family_side_quest_sessions where id=:'old_session'),
-'Padao je grad cijelo popodne.','pre-existing session retains original cases');
+'Padao je grad cijelo popodne.','milestone 10 keeps the original cases');
 update public.family_side_quest_sessions set status='cancelled' where id=:'old_session';
 set local role authenticated;
 select set_config('request.jwt.claim.sub','91000000-0000-0000-0000-000000000001',true);
@@ -60,3 +59,4 @@ select extensions.is(public.detective_cases_for_milestone(190)->0->>'sentence','
 select extensions.is(public.detective_cases_for_milestone(220)->0->>'sentence','Ovaj grad ima veliki trg.','milestones past 190 cycle like the client');
 select extensions.ok(not has_function_privilege('authenticated','public.detective_cases_for_milestone(integer)','EXECUTE'),'catalog helper is not client callable');
 select * from extensions.finish();
+rollback;

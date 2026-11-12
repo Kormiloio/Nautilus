@@ -1,0 +1,221 @@
+{
+  "_comment": "Draft Montenegrin cumulative sentence frames and noun allow-list (catalog revision 9). Nouns use their taught nominative form; grammar is never inferred from spelling. Pending fluent review.",
+  "packId": "montenegrin-en",
+  "languageTag": "cnr",
+  "script": "Latn",
+  "direction": "ltr",
+  "reviewStatus": "draft",
+  "startDay": 27,
+  "frames": [
+    {
+      "id": "identify",
+      "before": "Ovo je",
+      "english": "This is",
+      "parts": [
+        [
+          "Ovo",
+          "this"
+        ],
+        [
+          "je",
+          "is"
+        ]
+      ],
+      "punctuation": ".",
+      "note": "Ovo = this; je = is. Put a familiar naming word after “Ovo je”."
+    },
+    {
+      "id": "locate",
+      "before": "Gdje je",
+      "english": "Where is",
+      "parts": [
+        [
+          "Gdje",
+          "where"
+        ],
+        [
+          "je",
+          "is"
+        ]
+      ],
+      "punctuation": "?",
+      "note": "Gdje = where; je = is. “Gdje je” asks where one person or thing is."
+    },
+    {
+      "id": "here",
+      "before": "Tu je",
+      "english": "Here is",
+      "parts": [
+        [
+          "Tu",
+          "here"
+        ],
+        [
+          "je",
+          "is"
+        ]
+      ],
+      "punctuation": ".",
+      "note": "Tu = here; je = is. “Tu je” points out one person or thing."
+    },
+    {
+      "id": "negative",
+      "before": "To nije",
+      "english": "That is not",
+      "parts": [
+        [
+          "To",
+          "that"
+        ],
+        [
+          "nije",
+          "is not"
+        ]
+      ],
+      "punctuation": ".",
+      "note": "To = that; nije = is not. “To nije” says what something is not."
+    }
+  ],
+  "nouns": [
+    {
+      "targetText": "mama",
+      "supportText": "mom"
+    },
+    {
+      "targetText": "tata",
+      "supportText": "dad"
+    },
+    {
+      "targetText": "brat",
+      "supportText": "brother"
+    },
+    {
+      "targetText": "sestra",
+      "supportText": "sister"
+    },
+    {
+      "targetText": "džemper",
+      "supportText": "a sweater"
+    },
+    {
+      "targetText": "suknja",
+      "supportText": "a skirt"
+    },
+    {
+      "targetText": "šal",
+      "supportText": "a scarf"
+    },
+    {
+      "targetText": "kapa",
+      "supportText": "a hat"
+    },
+    {
+      "targetText": "krug",
+      "supportText": "a circle"
+    },
+    {
+      "targetText": "kvadrat",
+      "supportText": "a square"
+    },
+    {
+      "targetText": "drvo",
+      "supportText": "wood"
+    },
+    {
+      "targetText": "staklo",
+      "supportText": "glass"
+    },
+    {
+      "targetText": "čaša",
+      "supportText": "a glass"
+    },
+    {
+      "targetText": "šolja",
+      "supportText": "a cup"
+    },
+    {
+      "targetText": "flaša",
+      "supportText": "a bottle"
+    },
+    {
+      "targetText": "bokal",
+      "supportText": "a jug"
+    },
+    {
+      "targetText": "limun",
+      "supportText": "a lemon"
+    },
+    {
+      "targetText": "narandža",
+      "supportText": "an orange"
+    },
+    {
+      "targetText": "jagoda",
+      "supportText": "a strawberry"
+    },
+    {
+      "targetText": "kruška",
+      "supportText": "a pear"
+    },
+    {
+      "targetText": "šećer",
+      "supportText": "sugar"
+    },
+    {
+      "targetText": "med",
+      "supportText": "honey"
+    },
+    {
+      "targetText": "led",
+      "supportText": "ice"
+    },
+    {
+      "targetText": "cimet",
+      "supportText": "cinnamon"
+    },
+    {
+      "targetText": "tanjir",
+      "supportText": "a plate"
+    },
+    {
+      "targetText": "kašika",
+      "supportText": "a spoon"
+    },
+    {
+      "targetText": "viljuška",
+      "supportText": "a fork"
+    },
+    {
+      "targetText": "nož",
+      "supportText": "a knife"
+    },
+    {
+      "targetText": "pirinač",
+      "supportText": "rice"
+    },
+    {
+      "targetText": "piletina",
+      "supportText": "chicken"
+    },
+    {
+      "targetText": "kafa",
+      "supportText": "coffee"
+    },
+    {
+      "targetText": "čaj",
+      "supportText": "tea"
+    },
+    {
+      "targetText": "voda",
+      "supportText": "water"
+    },
+    {
+      "targetText": "sok",
+      "supportText": "juice"
+    },
+    {
+      "targetText": "mlijeko",
+      "supportText": "milk"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ export function renderSentenceReviewView(container, state, actions) {
   const feedback = state.sentenceReviewFeedback;
   container.innerHTML = `<header class="navbar"><strong>Sentence review</strong><button class="btn btn-secondary" data-review-exit>Dashboard</button></header>
     <main class="container sentence-review-page">
+      ${review ? '<h1 class="sr-only">Sentence review</h1>' : ''}
       ${state.sentenceReviewError ? `<p role="alert">${escapeHtml(state.sentenceReviewError)}</p>` : ''}
       ${review ? `<p>Sentence ${(state.sentenceReviewIndex || 0) + 1} of ${state.sentenceReviews.length}</p>
       ${renderSharedContent(buildSentenceReviewStep(review), null)}

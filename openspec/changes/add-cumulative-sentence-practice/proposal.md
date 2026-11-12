@@ -40,12 +40,11 @@ From voyage day 27 the focused pilot teaches a subject's words across several da
 ## Conflicts with existing rules (still open after release)
 
 1. **Reviewed content rule.** GAMEPLAY PRD §11.5 forbids publishing a sentence activity without reviewed language data. `scripts/prepare-sentence-release.mjs` would publish draft sentences in catalog revision 9.
-2. **No hard-coded language in the engine.** The `record-parent-preview-and-sentence-rhythm` lesson-rhythm spec and PRD §11.1 require sentence content to live in versioned language-pack content. `src/engine/cumulative-sentences.js` embeds Montenegrin frames and nouns in engine code and starts at a hard-coded voyage day (27).
+2. **No hard-coded language in the engine.** *Resolved 2026-11-12.* Frames and nouns moved to `src/content/daily-vocabulary/montenegrin-sentence-frames.json`, registered per pack in `PILOT_SENTENCE_FRAMES`; the engine contains no language and generates byte-identical revision-9 content for days 27–200.
 3. **Client default revision.** `generateSession` and `buildFamilyPlaySteps` default to revision 9, and `verify-verified-release.mjs` expects revision 9. Production has served revision 9 since it was published, so this now matches.
 
 ## Unresolved product decisions
 
-- Who performs fluent review of the sentence frames, nine topic packs, and Detective cases, and is release blocked on it? (Recommended: yes.)
-- Should the frames and noun list move into the Montenegrin language pack before release, or be accepted as a pilot exception?
+- Who performs fluent review of the sentence frames, nine topic packs, and Detective cases? Release already happened, so review is post-release; the checklist is `docs/reviews/montenegrin-cumulative-content-review.md`.
 - Should sentence review sync across a learner's devices (server-side) or stay device-local?
 - Should listening-practice results count toward any progress, or stay unrecorded practice?
