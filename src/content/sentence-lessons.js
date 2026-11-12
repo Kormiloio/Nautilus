@@ -1,4 +1,5 @@
-// Authored Montenegrin pilot material. These drafts still need fluent review.
+// Authored Montenegrin pilot material. Owner sign-off on fluent review: 2026-11-12
+// (docs/reviews/montenegrin-cumulative-content-review.md).
 const packs = [
   {
     id: 'drinks', firstSourceDay: 27, lastSourceDay: 30,
@@ -65,10 +66,10 @@ const packs = [
 ];
 
 export const SENTENCE_LESSONS = packs.map(pack => ({
-  ...pack, reviewStatus: 'draft', languageTag: 'cnr', script: 'Latn', direction: 'ltr',
+  ...pack, reviewStatus: 'reviewed', languageTag: 'cnr', script: 'Latn', direction: 'ltr',
   sentences: pack.sentences.map(([targetText, supportText], index) => ({
     id: `sentence-${pack.id}-${index + 1}`, targetText, supportText,
-    languageTag: 'cnr', script: 'Latn', direction: 'ltr', reviewStatus: 'draft',
+    languageTag: 'cnr', script: 'Latn', direction: 'ltr', reviewStatus: 'reviewed',
   })),
   dialogue: pack.dialogue.map(([role, targetText, supportText]) => ({ role, targetText, supportText })),
 }));

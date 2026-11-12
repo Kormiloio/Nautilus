@@ -67,11 +67,13 @@ The recap for a focused lesson SHALL list words new to the learner separately fr
 - **WHEN** the recap is shown
 - **THEN** those words appear under "Practiced again", not "New today"
 
-### Requirement: Draft content is labeled draft
+### Requirement: Review status reflects recorded review
 
-Every authored sentence, frame, and dialogue added by this change SHALL carry `reviewStatus: 'draft'` until fluent review is recorded, and SHALL NOT be described as reviewed.
+Every authored sentence, frame, and dialogue added by this change SHALL carry `reviewStatus: 'draft'` until a review sign-off is recorded in `docs/reviews/montenegrin-cumulative-content-review.md`, and `reviewStatus: 'reviewed'` only after that.
 
-#### Scenario: Release manifest
+#### Scenario: Owner sign-off recorded
 
-- **WHEN** the revision 9 release files are prepared
-- **THEN** the manifest states that Montenegrin sentence content is draft and fluent review is pending
+- **GIVEN** the owner approved the review checklist on 2026-11-12
+- **WHEN** the content files are read
+- **THEN** sentence lessons and cumulative frames report `reviewStatus: 'reviewed'`
+- **AND** the release manifest states the sign-off date

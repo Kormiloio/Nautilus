@@ -103,7 +103,7 @@ This is an example only. The curriculum engine selects reviewed connections from
 
 ### 6.2.2 Cumulative sentences, sentence review, and listening practice (released before fluent review)
 
-Tracked in OpenSpec change `add-cumulative-sentence-practice`. Catalog revision 9 reached production before fluent review, against §11.5. On 2026-11-12 the owner chose to ship the matching app rather than roll the catalog back. All new Montenegrin language is still **draft and has not had fluent review**; that review is now a post-release task.
+Tracked in OpenSpec change `add-cumulative-sentence-practice`. Catalog revision 9 reached production before fluent review, against §11.5. On 2026-11-12 the owner chose to ship the matching app rather than roll the catalog back. The owner signed off the content review on 2026-11-12 with no corrections (`docs/reviews/montenegrin-cumulative-content-review.md`), so the content is now marked reviewed.
 
 - **Cumulative sentences (catalog revision 9):** from voyage day 27, focused lessons reuse nouns the learner has already met inside one explained frame ("Ovo je …", "Gdje je …", "Tu je …", "To nije …"). Each lesson has a familiar-words warm-up, a pattern lesson, two sentence builders, two single-blank completions, and a dialogue (individual) or role-play (Family Play). With fewer than two familiar nouns, sentence practice is skipped. Revision 8 uses nine authored topic sentence packs instead.
 - **Accurate recap:** focused recaps separate "New today" from "Practiced again", based on the real focused schedule.
@@ -273,5 +273,3 @@ The first gameplay release is ready when:
 3. What is the minimum participant rule when a family learner is unavailable: wait, remove them for the session, or provide an adult-approved temporary absence flow?
 4. Which port names, story chapters, and poster concepts should be reviewed with heritage speakers for each language pack?
 5. What milestone cadence makes Sailor Talk feel surprising without interrupting the voyage?
-6. Who performs fluent review of the cumulative sentence frames, topic sentence packs, and Detective case packs, and does release wait on it?
-7. Should sentence review stay device-local or sync across a learner's devices?

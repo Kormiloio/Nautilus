@@ -45,7 +45,7 @@ describe('Sentence-led focused lessons', () => {
 
   it('keeps answers, scrambled tokens, and missing-word choices consistent', () => {
     for (const pack of SENTENCE_LESSONS) {
-      expect(pack.reviewStatus).toBe('draft');
+      expect(pack.reviewStatus).toBe('reviewed');
       expect(pack.dialogue).toHaveLength(4);
       const allocation = { focused: true, focusSourceDay: pack.firstSourceDay };
       expect(getSentencePractice(allocation).id).toBe(pack.id);
