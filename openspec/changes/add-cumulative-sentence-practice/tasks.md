@@ -43,5 +43,5 @@
 - [x] Publish catalog revision 9 to production (done outside this repo's tooling between 2026-10-28 and 2026-11-11; publisher not recorded).
 - [ ] Merge `wip/sentences-listening-detective` into `main` and confirm the Netlify production deploy passes `verify:release` at revision 9.
 - [x] Apply `20261026010000_cumulative_detective_editions.sql` to production (found already applied on 2026-11-12; applier not recorded).
-- [ ] Apply `20261112010000_detective_cases_past_190.sql` to production.
+- [x] Apply `20261112010000_detective_cases_past_190.sql` to production (applied 2026-11-12 via `supabase db push`).
 - [ ] Confirm in-flight attempts pinned to earlier revisions still replay unchanged.
