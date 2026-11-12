@@ -21,6 +21,6 @@
 
 ## Release
 
-- [ ] Owner applies the migration (`supabase db push --linked`).
-- [ ] Owner publishes catalog revision 10.
+- [x] Owner applies the migration (`supabase db push --linked`, 2026-11-12).
+- [x] Owner publishes catalog revision 10 (`sh scripts/publish-listening-release.sh`; status revision 10, practice 1139).
 - [ ] Merge, confirm the Netlify deploy passes the revision-10 gate.
