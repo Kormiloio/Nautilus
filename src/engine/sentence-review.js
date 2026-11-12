@@ -1,7 +1,20 @@
 import { createSeededRandom, shuffle } from './learning-engine.js';
 
 const DAY = 24 * 60 * 60 * 1000;
-const keyFor = (userId, packId) => `nautilus:sentence-review:v1:${encodeURIComponent(userId)}:${encodeURIComponent(packId)}`;
+const scope = (userId, packId) => `${encodeURIComponent(userId)}:${encodeURIComponent(packId)}`;
+const keyFor = (userId, packId) => `nautilus:sentence-review:v1:${scope(userId, packId)}`;
+// Offline queue of server operations; localStorage stays the render cache.
+const opsKeyFor = (userId, packId) => `nautilus:sentence-review-ops:v1:${scope(userId, packId)}`;
+const legacyKeyFor = (userId, packId) => `nautilus:sentence-review-uploaded:v1:${scope(userId, packId)}`;
+const newOpId = () => globalThis.crypto?.randomUUID?.() || `op-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+function readOps(userId, packId) {
+  try { const ops = JSON.parse(localStorage.getItem(opsKeyFor(userId, packId)) || '[]'); return Array.isArray(ops) ? ops : []; }
+  catch { return []; }
+}
+function writeOps(userId, packId, ops) { localStorage.setItem(opsKeyFor(userId, packId), JSON.stringify(ops.slice(-500))); }
+function enqueue(userId, packId, op) { writeOps(userId, packId, [...readOps(userId, packId), op]); }
+export function getPendingSentenceReviewOps(userId, packId) { return readOps(userId, packId); }
 
 export function getSentenceReviews(userId, packId, { now = Date.now(), dueOnly = false } = {}) {
   if (!userId || !packId) return [];
@@ -30,6 +43,7 @@ export function recordSentenceMistake(userId, packId, { targetText, supportText,
   Object.assign(item, { misses: item.misses + 1, streak: 0, dueAt: now, lastMissedAt: now, sourceKind: kind });
   if (eventId) item.events = [...(item.events || []), eventId].slice(-20);
   save(userId, packId, reviews);
+  enqueue(userId, packId, { type: 'mistake', eventId: eventId || newOpId(), targetText: text, supportText: supportText.trim(), kind });
 }
 
 export function submitSentenceReview(userId, packId, id, response, now = Date.now()) {
@@ -43,6 +57,7 @@ export function submitSentenceReview(userId, packId, id, response, now = Date.no
   item.lastReviewedAt = now;
   if (!correct) item.misses++;
   save(userId, packId, reviews);
+  enqueue(userId, packId, { type: 'review', opId: newOpId(), id, response: [...response] });
   return { correct, targetText: item.targetText, mastered: item.mastered };
 }
 
@@ -81,4 +96,49 @@ export function sentenceMistakeFromFamilyStep(step) {
   };
   if (step.type === 'family-quiz') return { ...step.item, kind: 'quiz' };
   return null;
+}
+
+const REVIEW_KINDS = new Set(['sentence_builder', 'sentence_completion', 'quiz']);
+const inFlight = new Map();
+
+// Push queued operations in order, then replace the local cache with the server queue.
+// Network/auth/missing-RPC errors keep the queue; a server validation error (P0001) drops that op.
+export function syncSentenceReviews(userId, packId, client) {
+  if (!userId || !packId || !client?.rpc) return Promise.resolve({ synced: false });
+  if (globalThis.navigator?.onLine === false) return Promise.resolve({ synced: false, offline: true });
+  const key = scope(userId, packId);
+  if (inFlight.has(key)) return inFlight.get(key);
+  const run = (async () => {
+    if (!localStorage.getItem(legacyKeyFor(userId, packId))) {
+      const legacy = getSentenceReviews(userId, packId).map(item => ({
+        type: 'mistake', eventId: `legacy:${item.id}`, targetText: item.targetText, supportText: item.supportText,
+        kind: REVIEW_KINDS.has(item.sourceKind) ? item.sourceKind : 'quiz',
+      }));
+      const queued = new Set(readOps(userId, packId).filter(op => op.type === 'mistake').map(op => op.targetText));
+      writeOps(userId, packId, [...legacy.filter(op => !queued.has(op.targetText)), ...readOps(userId, packId)]);
+      localStorage.setItem(legacyKeyFor(userId, packId), '1');
+    }
+    let ops = readOps(userId, packId);
+    while (ops.length) {
+      const op = ops[0];
+      const { error } = op.type === 'review'
+        ? await client.rpc('submit_sentence_review', { target_pack: packId, target_review: op.id, response: op.response, target_op: op.opId })
+        : await client.rpc('record_sentence_mistake', { target_pack: packId, target_event: op.eventId, target_sentence: op.targetText,
+          target_support: op.supportText, target_kind: REVIEW_KINDS.has(op.kind) ? op.kind : 'quiz' });
+      if (error && error.code !== 'P0001') { writeOps(userId, packId, ops); return { synced: false, error: error.message }; }
+      ops = ops.slice(1);
+      writeOps(userId, packId, ops);
+    }
+    const { data, error } = await client.rpc('list_sentence_reviews', { target_pack: packId });
+    if (error || !Array.isArray(data)) return { synced: false, error: error?.message || 'Unexpected review list' };
+    if (readOps(userId, packId).length) return { synced: false, pending: true };
+    save(userId, packId, data.map(item => ({
+      id: item.id, targetText: item.targetText, supportText: item.supportText, sourceKind: item.sourceKind,
+      misses: item.misses, streak: item.streak, dueAt: Date.parse(item.dueAt), lastMissedAt: Date.parse(item.lastMissedAt),
+      ...(item.lastReviewedAt ? { lastReviewedAt: Date.parse(item.lastReviewedAt) } : {}), events: [],
+    })));
+    return { synced: true, count: data.length };
+  })().finally(() => inFlight.delete(key));
+  inFlight.set(key, run);
+  return run;
 }

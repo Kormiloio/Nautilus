@@ -7,10 +7,10 @@
 
 ## Sentence review sync
 
-- [ ] Migration: `learner_sentence_reviews`, `learner_sentence_review_events`, RPCs `record_sentence_mistake`, `submit_sentence_review`, `list_sentence_reviews`.
-- [ ] pgTAP: owner-only access, idempotency, server grading and schedule, 100 cap, re-entry after mastery, parent cannot read.
-- [ ] Client operation queue, legacy upload, `syncSentenceReviews`, wiring in `main.js`.
-- [ ] Unit tests for the queue, sync ordering, failure handling, and merge.
+- [x] Migration: `learner_sentence_reviews`, `learner_sentence_review_events`, RPCs `record_sentence_mistake`, `submit_sentence_review`, `list_sentence_reviews`.
+- [x] pgTAP: owner-only access, idempotency, server grading and schedule, 100 cap, re-entry after mastery, parent cannot read.
+- [x] Client operation queue, legacy upload, `syncSentenceReviews`, wiring in `main.js`.
+- [x] Unit tests for the queue, sync ordering, failure handling, and merge.
 
 ## Listening progress
 
