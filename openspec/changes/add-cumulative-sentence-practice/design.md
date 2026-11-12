@@ -45,9 +45,9 @@ Fallbacks:
 ## Security and access
 
 - `detective_cases_for_milestone` is `immutable` with execute revoked from `public`, `anon`, and `authenticated`. It is called only from the `security definer` RPC `start_family_side_quest`.
-- `start_family_side_quest` now accepts milestones 10–190 in steps of 30. It locks the family row and requires at least `target_milestone` completed non-review family voyage sessions. It snapshots `cases` at creation.
+- `start_family_side_quest` now accepts milestone 10 and every 30 lessons after it, with no upper limit. It locks the family row and requires at least `target_milestone` completed non-review family voyage sessions. It snapshots `cases` at creation.
 - `submit_family_side_quest_answer` checks the answer against the snapshot's choice ids. `advance_family_side_quest` ends after the snapshot's last case. A release cannot change a running game.
-- **Known mismatch.** The client cycles editions past milestone 190, but the server rejects milestones above 190. A family at 220+ lessons would see a case pack it cannot start. This must be resolved (see proposal, open decisions).
+- **Past milestone 190.** The case packs repeat in the same order on the app and the server: milestone 10 uses the original pack, and milestone *m* ≥ 40 uses pack `1 + ((m − 40) / 30) mod 6`. So 220 gets the milestone-40 cases again, under its own edition number and badge. A unit test compares the migration's packs with the client at every milestone up to 400.
 
 ## Release procedure (prepared, not executed)
 

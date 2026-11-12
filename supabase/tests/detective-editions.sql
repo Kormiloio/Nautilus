@@ -1,6 +1,6 @@
 -- Executed inside a rollback-only transaction by scripts/test-detective-editions.mjs.
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(14);
+select extensions.plan(16);
 insert into auth.users(id,aud,role,email,raw_app_meta_data,raw_user_meta_data)
 values ('91000000-0000-0000-0000-000000000001','authenticated','authenticated','detective-parent@example.com','{}','{}'),
 ('91000000-0000-0000-0000-000000000002','authenticated','authenticated','detective-kid@example.com','{}','{}');
@@ -56,5 +56,7 @@ select public.advance_family_side_quest(:'session');
 select extensions.is(public.get_family_side_quest_state(:'family','montenegrin-en')->>'status','completed','new pack completes after all three cases');
 reset role;
 select extensions.is(jsonb_array_length(public.detective_cases_for_milestone(190)),3,'last course milestone has three cases');
+select extensions.is(public.detective_cases_for_milestone(190)->0->>'sentence','Strijela je izletjela iz luka.','milestone 190 gets the sixth new pack');
+select extensions.is(public.detective_cases_for_milestone(220)->0->>'sentence','Ovaj grad ima veliki trg.','milestones past 190 cycle like the client');
 select extensions.ok(not has_function_privilege('authenticated','public.detective_cases_for_milestone(integer)','EXECUTE'),'catalog helper is not client callable');
 select * from extensions.finish();

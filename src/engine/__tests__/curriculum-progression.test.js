@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { VOYAGE_LESSONS, generateSession, getDailyVocabularyAllocation } from '../learning-engine.js';
 import { buildFamilyPlaySteps } from '../family-play-session.js';
 import { toVerifiedExercises } from '../verified-curriculum.js';
@@ -91,5 +92,16 @@ describe('Detective case editions', () => {
     expect(sentences.size).toBe(21);
     expect(detectiveEditionIndex(11)).toBeNull();
     expect(detectiveEditionIndex(40)).toBe(1);
+  });
+
+  it('serves the same cases from the server migration as the client at every milestone, including past 190', () => {
+    const sql = readFileSync(new URL('../../../supabase/migrations/20261026010000_cumulative_detective_editions.sql', import.meta.url), 'utf8');
+    const packs = JSON.parse(sql.match(/declare packs jsonb := '(.*?)'::jsonb;/s)[1].replaceAll("''", "'"));
+    expect(sql).not.toMatch(/target_milestone\s*>\s*190/);
+    // Mirrors detective_cases_for_milestone in the migration.
+    const serverIndex = milestone => milestone === 10 ? 0 : 1 + ((milestone - 40) / 30) % (packs.length - 1);
+    for (let milestone = 10; milestone <= 400; milestone += 30) {
+      expect(packs[serverIndex(milestone)]).toEqual(getSideQuestForProgress('montenegrin-en', milestone).cases);
+    }
   });
 });

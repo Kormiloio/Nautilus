@@ -109,7 +109,7 @@ Tracked in OpenSpec change `add-cumulative-sentence-practice`. The code is on br
 - **Accurate recap:** focused recaps separate "New today" from "Practiced again", based on the real focused schedule.
 - **Sentence review:** missed multi-word sentences are kept on the learner's device per language pack (max 100) and come back for review after 10 minutes, then after 24 hours once answered correctly. They leave the queue after two correct reviews in a row. Review grants no progress and is never sent to the server.
 - **Listening practice:** up to six sentences from the current or next lesson. The learner hears each one (normal or slow) and then picks its meaning or puts its words in order. A written path is offered when no compatible target-language voice is available. Results are not stored.
-- **Detective case packs:** each Detective milestone (10, 40, … 190 family lessons) has its own three-case pack with clue-word glosses and its own badge. The server pins the cases when a game starts.
+- **Detective case packs:** each Detective milestone (10, 40, … 190 family lessons) has its own three-case pack with clue-word glosses and its own badge. After 190 the packs repeat in the same order on app and server. The server pins the cases when a game starts.
 - **Known deviation:** the cumulative frames and noun list currently live in engine code rather than in versioned language-pack content (§11.1). Before release they must either be moved into the pack or approved as a pilot exception.
 
 ### 6.3 Cumulative recall
@@ -275,4 +275,4 @@ The first gameplay release is ready when:
 5. What milestone cadence makes Sailor Talk feel surprising without interrupting the voyage?
 6. Who performs fluent review of the cumulative sentence frames, topic sentence packs, and Detective case packs, and does release wait on it?
 7. Should sentence review stay device-local or sync across a learner's devices?
-8. What happens to the Detective side quest after milestone 190? The client currently cycles case packs, but the server rejects milestones above 190.
+8. After milestone 190 Detective case packs repeat. Should a repeated pack award a new badge (current behavior) or count as already solved?

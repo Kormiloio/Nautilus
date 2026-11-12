@@ -23,7 +23,7 @@
 - [x] Add listening practice (meaning and word-order) with slow playback and a written fallback.
 - [x] Pin Detective cases per session and give each edition its own badge.
 - [x] Reuse an existing open family session after a duplicate-start conflict.
-- [ ] Resolve the milestone > 190 Detective mismatch between client cycling and server limits.
+- [x] Align server Detective milestones with the client: no 190 cap, same repeating pack order, with pgTAP and unit coverage.
 
 ## Interface
 
@@ -33,7 +33,7 @@
 
 ## Verification
 
-- [x] Unit tests: `sentence-practice`, `sentence-review`, `listening-practice`, `curriculum-progression`, plus Family Play, review regression, and vocabulary rollout additions. Full suite: 25 files, 159 tests passing.
+- [x] Unit tests: `sentence-practice`, `sentence-review`, `listening-practice`, `curriculum-progression`, plus Family Play, review regression, and vocabulary rollout additions. Full suite: 25 files, 160 tests passing.
 - [ ] Run `tests/sentence-browser.mjs`, `tests/sentence-review-browser.mjs`, `tests/listening-browser.mjs`, `tests/progression-browser.mjs`.
 - [ ] Run `scripts/test-detective-editions.mjs` and `scripts/test-cumulative-catalog.mjs` against a local Supabase container; run `npm run test:db` including `supabase/tests/detective-editions.sql`.
 - [ ] Production build from a clean tree.

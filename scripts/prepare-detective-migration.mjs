@@ -15,7 +15,7 @@ function replace(text, from, to) {
   return text.replace(from, to);
 }
 let start = rpc('start_family_side_quest');
-start = replace(start, "or target_milestone <> 10", "or target_milestone < 10 or target_milestone > 190 or (target_milestone-10)%30<>0");
+start = replace(start, "or target_milestone <> 10", "or target_milestone < 10 or (target_milestone-10)%30<>0");
 start = replace(start, '  select id into sid', `  perform 1 from public.families where id=target_family for update;
   select id into sid`);
 start = replace(start, '  insert into public.family_side_quest_sessions', `  if (select count(*) from public.family_voyage_sessions where family_id=target_family
@@ -37,9 +37,11 @@ create function public.detective_cases_for_milestone(target_milestone integer)
 returns jsonb language plpgsql immutable set search_path=public as $$
 declare packs jsonb := ${literal(packs)};
 begin
-  if target_milestone<10 or target_milestone>190 or (target_milestone-10)%30<>0 then
+  if target_milestone<10 or (target_milestone-10)%30<>0 then
     raise exception 'Unknown detective milestone'; end if;
-  return packs->((target_milestone-10)/30);
+  -- Match the client: milestone 10 uses pack 0; later milestones cycle packs 1..n-1.
+  if target_milestone=10 then return packs->0; end if;
+  return packs->(1+((target_milestone-40)/30)%(jsonb_array_length(packs)-1));
 end; $$;
 revoke all on function public.detective_cases_for_milestone(integer) from public,anon,authenticated;
 alter table public.family_side_quest_sessions add column cases jsonb;
