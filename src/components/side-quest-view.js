@@ -9,8 +9,8 @@ function shell(quest, content) {
 }
 
 function renderDetective(container, state, actions) {
-  const quest = state.sideQuest;
   const shared = state.familySideQuestState;
+  const quest = shared?.cases ? { ...state.sideQuest, cases: shared.cases } : state.sideQuest;
   const game = state.sideQuestGame;
   const caseIndex = shared?.currentCase ?? game.caseIndex;
   const item = quest.cases[Math.min(caseIndex, quest.cases.length - 1)];
@@ -35,7 +35,7 @@ function renderDetective(container, state, actions) {
     content = `${progress}<div class="detective-pass" role="status"><div aria-hidden="true">🔒</div><h2>Your answer is locked</h2><p>Keep this page open. The evidence will be revealed automatically when everyone has answered.</p><div class="detective-lock-roster">${shared.people.map(person => `<span class="${person.locked ? 'locked' : ''}">${person.locked ? '✓' : '…'} ${esc(person.name)}</span>`).join('')}</div></div>`;
   } else {
     const selected = shared ? state.sideQuestSelection : game.selected;
-    content = `${progress}<p class="side-quest-subtitle">${esc(quest.subtitle)}</p><div class="detective-turn"><span>Your device · your choice</span><strong>Examine the whole sentence before answering</strong></div><article class="detective-case"><span class="detective-word">Word under investigation: ${esc(item.word)}</span><h2>${renderLanguageRun(item.sentence, 'target', LANGUAGE_PACK)}</h2><p>What does <strong>${esc(item.word)}</strong> mean here?</p><div class="detective-choices">${item.choices.map(choice => `<button class="detective-choice ${selected === choice.id ? 'selected' : ''}" data-detective-choice="${esc(choice.id)}" aria-pressed="${selected === choice.id}">${esc(choice.label)}</button>`).join('')}</div></article><p class="side-quest-note">Choose on your own device. Other answers stay private until everyone locks in.</p><button class="btn btn-primary" id="detective-lock" ${selected ? '' : 'disabled'}>Lock my answer →</button>`;
+    content = `${progress}<p class="side-quest-subtitle">${esc(quest.subtitle)}</p><div class="detective-turn"><span>Your device · your choice</span><strong>Examine the whole sentence before answering</strong></div><article class="detective-case"><span class="detective-word">Word under investigation: ${esc(item.word)}</span><h2>${renderLanguageRun(item.sentence, 'target', LANGUAGE_PACK)}</h2>${item.clueWords ? `<p class="detective-clue-words">${esc(item.clueWords)}</p>` : ''}<p>What does <strong>${esc(item.word)}</strong> mean here?</p><div class="detective-choices">${item.choices.map(choice => `<button class="detective-choice ${selected === choice.id ? 'selected' : ''}" data-detective-choice="${esc(choice.id)}" aria-pressed="${selected === choice.id}">${esc(choice.label)}</button>`).join('')}</div></article><p class="side-quest-note">Choose on your own device. Other answers stay private until everyone locks in.</p><button class="btn btn-primary" id="detective-lock" ${selected ? '' : 'disabled'}>Lock my answer →</button>`;
   }
 
   container.innerHTML = shell(quest, content);

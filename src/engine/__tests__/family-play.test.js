@@ -64,6 +64,44 @@ describe('Family Play cloud service', () => {
     });
   });
 
+  it('recovers the current session when another start has already won', async () => {
+    rpc.mockResolvedValueOnce({ data: null, error: {
+      code: '23505',
+      message: 'duplicate key value violates unique constraint "one_open_family_session_per_language"',
+    } });
+    rpc.mockResolvedValueOnce({ data: { activeSession: { id: 'existing-session' } }, error: null });
+    await expect(startFamilyPlay({ familyId: 'family-1', packId: 'montenegrin-en' }))
+      .resolves.toBe('existing-session');
+    expect(rpc).toHaveBeenNthCalledWith(2, 'get_family_play_state', {
+      target_family: 'family-1', target_pack_id: 'montenegrin-en',
+    });
+    expect(rpc).toHaveBeenCalledTimes(2);
+  });
+
+  it('preserves a start conflict if the competing session has already closed', async () => {
+    const error = { code: '23505', message: 'duplicate key value violates unique constraint "one_open_family_session_per_language"' };
+    rpc.mockResolvedValueOnce({ data: null, error });
+    rpc.mockResolvedValueOnce({ data: { activeSession: null }, error: null });
+    await expect(startFamilyPlay({ familyId: 'family-1', packId: 'montenegrin-en' }))
+      .rejects.toBe(error);
+  });
+
+  it('does not recover unrelated database errors', async () => {
+    const error = { code: '23505', message: 'duplicate key value violates unique constraint "other_constraint"' };
+    rpc.mockResolvedValueOnce({ data: null, error });
+    await expect(startFamilyPlay({ familyId: 'family-1', packId: 'montenegrin-en' }))
+      .rejects.toBe(error);
+    expect(rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it('explains why a review cannot start while another session is open', async () => {
+    rpc.mockResolvedValueOnce({ data: null, error: {
+      code: '23505', message: 'duplicate key value violates unique constraint "one_open_family_session_per_language"',
+    } });
+    await expect(startFamilyReview('completed-session', ['mia']))
+      .rejects.toThrow('Continue or cancel it before starting a review.');
+  });
+
   it('subscribes to session, participant, and verified-attempt changes', () => {
     const stop = subscribeToFamilyPlay('family-1', vi.fn());
     expect(channel).toHaveBeenCalledWith('family-play:family-1');

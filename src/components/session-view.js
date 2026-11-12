@@ -680,8 +680,8 @@ function renderDoneStep(mount, step, state, actions) {
       <section class="lesson-recap" aria-label="What we brought back today">
         <div class="lesson-recap__heading"><span>⚓</span><div><small>Today’s voyage recap</small><h4>What we brought back</h4></div></div>
         <div class="lesson-recap__grid">
-          <article><small>New today</small><ul>${recap.newItems.length ? recap.newItems.map(recapItem).join('') : '<li><strong>Mixed voyage review</strong><span>Several familiar topics together</span></li>'}</ul></article>
-          <article><small>Remembered</small><ul>${recap.recalledItems.length ? recap.recalledItems.map(recapItem).join('') : '<li><strong>Your first words</strong><span>More recall appears as your voyage grows</span></li>'}</ul></article>
+          ${recap.focused && !recap.newItems.length ? '' : `<article><small>New today</small><ul>${recap.newItems.length ? recap.newItems.map(recapItem).join('') : '<li><strong>Mixed voyage review</strong><span>Several familiar topics together</span></li>'}</ul></article>`}
+          ${recap.focused && !recap.recalledItems.length ? '' : `<article><small>${recap.focused ? 'Practiced again' : 'Remembered'}</small><ul>${recap.recalledItems.length ? recap.recalledItems.map(recapItem).join('') : '<li><strong>Your first words</strong><span>More recall appears as your voyage grows</span></li>'}</ul></article>`}
           ${recap.connection ? `<article class="lesson-recap__connection"><small>Connection</small><strong>${renderLanguageRun(recap.connection.targetText, 'target', LANGUAGE_PACK, recap.connection)}</strong><span>${renderLanguageRun(recap.connection.supportText, 'support', LANGUAGE_PACK, recap.connection)}</span></article>` : ''}
         </div>
       </section>

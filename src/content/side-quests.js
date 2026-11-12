@@ -1,3 +1,5 @@
+import { DETECTIVE_EDITIONS, detectiveEditionIndex } from './detective-editions.js';
+
 const MONTENEGRIN_QUESTS = [
   {
     id: 'sailor-talk',
@@ -73,5 +75,12 @@ export function getSideQuestForProgress(packId, completedLessonCount) {
   const milestone = Math.floor(Math.max(0, completedLessonCount) / 5) * 5;
   if (milestone < 5) return { locked:true, nextAt:5, remaining:5 - completedLessonCount };
   const questIndex = (milestone / 5 - 1) % MONTENEGRIN_QUESTS.length;
-  return { ...MONTENEGRIN_QUESTS[questIndex], locked:false, milestone };
+  const quest = { ...MONTENEGRIN_QUESTS[questIndex], locked:false, milestone };
+  if (quest.game === 'detective') {
+    const edition = detectiveEditionIndex(milestone);
+    const cases = edition > 0 ? DETECTIVE_EDITIONS[(edition - 1) % DETECTIVE_EDITIONS.length] : quest.cases;
+    return { ...quest, cases, edition: edition + 1, title: `${quest.title} · Case pack ${edition + 1}`,
+      badgeId: edition ? `${quest.id}:edition-${edition + 1}` : quest.id };
+  }
+  return quest;
 }

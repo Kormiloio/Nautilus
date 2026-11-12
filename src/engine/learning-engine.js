@@ -1,4 +1,6 @@
-import { DAILY_PLANS, PILOT_DAILY_PLANS, getFocusedPilotMetadata } from '../content/daily-plans.js';
+import { DAILY_PLANS, PILOT_DAILY_PLANS, DAILY_SENTENCE_REVISION, DAILY_CUMULATIVE_REVISION, getFocusedPilotMetadata, getFocusedPilotWordIds } from '../content/daily-plans.js';
+import { buildCumulativeSentencePack } from './cumulative-sentences.js';
+import { getSentencePractice } from './sentence-practice.js';
 import { validateDailyPlan, dailyVocabularySteps } from './daily-vocabulary.js';
 import montenegrin from '../content/topics.json';
 import albanian from '../content/albanian.js';
@@ -292,7 +294,7 @@ export function getPilotDailyVocabularyPlan() {
   return PILOT_DAILY_PLANS[LANGUAGE_PACK.id] || null;
 }
 
-export function getDailyVocabularyAllocation(lesson, { focused = true } = {}) {
+export function getDailyVocabularyAllocation(lesson, { focused = true, cumulative = false } = {}) {
   if (!VOYAGE_LESSONS.some(candidate => candidate.id === lesson.id)) return null;
   const approved = getDailyVocabularyPlan();
   if (approved) return validateDailyPlan(approved, VOYAGE_LESSONS.map(candidate => candidate.id)).get(lesson.id);
@@ -303,25 +305,45 @@ export function getDailyVocabularyAllocation(lesson, { focused = true } = {}) {
   const base = allocations.get(lesson.id);
   const metadata = focused ? getFocusedPilotMetadata(pilot, lesson.id) : null;
   if (!metadata) return { ...base, pilot: true };
-  const primary = allocations.get(metadata.primary.id)?.newItems || [];
-  const secondary = allocations.get(metadata.secondary.id)?.newItems || [];
-  const focusItems = metadata.phase === 'bridge'
-    ? metadata.step === 1 ? [...primary.slice(0, 7), ...secondary.slice(0, 3)] : [...primary.slice(5), ...secondary.slice(0, 5)]
-    : primary;
-  return {
+  const inventory = new Map(pilot.vocabulary.map(item => [item.id, item]));
+  const focusItems = getFocusedPilotWordIds(metadata).map(id => inventory.get(id));
+  const introduced = new Set(pilot.priorWordIds || []);
+  // Use the actual focused schedule: authored source days no longer match voyage days.
+  for (const earlier of pilot.lessons) {
+    if (earlier.id === lesson.id) break;
+    const earlierFocus = getFocusedPilotMetadata(pilot, earlier.id);
+    const wordIds = earlierFocus ? getFocusedPilotWordIds(earlierFocus) : earlier.newWordIds;
+    wordIds.forEach(id => introduced.add(id));
+  }
+  const result = {
     newItems: focusItems,
     reviewItems: [],
     pilot: true,
     focused: true,
     focusPhase: metadata.phase,
+    focusStep: metadata.step,
+    focusSourceDay: Number(metadata.primary.id.replace('voyage-', '')),
+    voyageDay: lesson.number || Number(lesson.id.replace('voyage-', '')),
+    priorWordIds: [...introduced],
     focusTitle: metadata.title,
     focusDescription: metadata.description,
+    recap: {
+      focused: true,
+      newItems: focusItems.filter(item => !introduced.has(item.id)),
+      recalledItems: focusItems.filter(item => introduced.has(item.id)),
+    },
   };
+  if (cumulative) {
+    result.sentencePractice = buildCumulativeSentencePack(result, pilot.vocabulary);
+    result.focusDescription = 'Reuse familiar words in a short sentence pattern. Read and hear the pattern before practicing.';
+  }
+  return result;
 }
 
 export function generateSession(lesson, completedTopicIds, options = {}) {
-  const allocation = getDailyVocabularyAllocation(lesson);
-  if (allocation) return dailyVocabularySteps(allocation, { buildQuiz, buildMatch, shuffle, random: options.random || Math.random });
+  const revision = options.catalogRevision ?? DAILY_CUMULATIVE_REVISION;
+  const allocation = getDailyVocabularyAllocation(lesson, { focused: revision >= 7, cumulative: revision >= DAILY_CUMULATIVE_REVISION });
+  if (allocation) return dailyVocabularySteps({ ...allocation, sentencePractice: revision >= DAILY_CUMULATIVE_REVISION ? allocation.sentencePractice : revision >= DAILY_SENTENCE_REVISION ? getSentencePractice(allocation) : null }, { buildQuiz, buildMatch, shuffle, random: options.random || Math.random });
   const steps = [];
   const random = options.random || Math.random;
 

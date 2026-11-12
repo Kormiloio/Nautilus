@@ -15,6 +15,8 @@ import { renderVoyageExperience } from './voyage-map.js';
 import { getSideQuestForProgress } from '../content/side-quests.js';
 import { hasSideQuestBadge } from '../engine/side-quest-game.js';
 import { getLessonPreview } from '../engine/family-play-session.js';
+import { getSentenceReviews } from '../engine/sentence-review.js';
+import { getListeningItems } from '../engine/listening-practice.js';
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -56,8 +58,12 @@ export function renderDashboard(container, state, actions) {
   const lessonPreview = getLessonPreview(nextLesson, state.completedTopicIds);
   const previewReviews = lessonPreview.reviewTopics.slice(0, 3);
   const previewConnection = lessonPreview.connectionItems[0];
-  const sideQuest = getSideQuestForProgress(state.activePackId, state.completedLessons.length);
-  const sideQuestComplete = sideQuest && !sideQuest.locked && hasSideQuestBadge(state.activePackId, state.profile, sideQuest.id);
+  const sideQuest = getSideQuestForProgress(state.activePackId, learningDayCount);
+  const sideQuestComplete = sideQuest && !sideQuest.locked && hasSideQuestBadge(state.activePackId, state.profile, sideQuest.badgeId || sideQuest.id);
+  const sentenceReviews = getSentenceReviews(state.sessionUser?.id, state.activePackId);
+  const dueSentences = sentenceReviews.filter(review => review.dueAt <= Date.now());
+  const listeningLesson = VOYAGE_LESSONS.find(item => item.id === state.familyPlayState?.activeSession?.lessonId) || nextLesson;
+  const listeningAvailable = getListeningItems(listeningLesson).length > 0;
 
   // Voyage Honors celebrate an accomplishment; posters celebrate arriving at a place.
   const badgeDefs = [
@@ -140,6 +146,12 @@ export function renderDashboard(container, state, actions) {
     </header>
 
     <main class="container">
+      ${state.sessionUser && listeningAvailable ? `<section class="family-play-dashboard-banner" aria-label="Listening practice"><div><span>Listening practice</span><strong>Hear and understand sentences</strong></div><button class="btn btn-primary" id="listening-practice-btn">Start listening →</button></section>` : ''}
+      ${state.sessionUser ? `<section class="family-play-dashboard-banner" aria-label="Your sentence review">
+        <div><span>Sentence review</span><strong>${dueSentences.length ? `${dueSentences.length} ${dueSentences.length === 1 ? 'sentence' : 'sentences'} ready to revisit` : sentenceReviews.length ? 'Your next sentence review is scheduled' : 'No sentence mistakes to revisit yet'}</strong></div>
+        <button class="btn btn-secondary" id="sentence-review-btn" ${dueSentences.length ? '' : 'disabled'}>Review sentences →</button>
+      </section>` : ''}
+      ${state.sentenceReviewError ? `<p role="alert" class="dashboard-alert">${escapeHtml(state.sentenceReviewError)}</p>` : ''}
       ${state.familyError ? `<p role="alert" class="dashboard-alert">${escapeHtml(state.familyError)}</p>` : ''}
       ${LANGUAGE_PACK.status === 'pilot' ? `
         <section class="pilot-pack-banner" role="status">
@@ -326,6 +338,8 @@ export function renderDashboard(container, state, actions) {
   container.querySelector('#activity-preview-btn')?.addEventListener('click', actions.goActivityPreview);
   container.querySelector('#platform-admin-btn')?.addEventListener('click', actions.goAdminDashboard);
   container.querySelector('#join-family-play-btn')?.addEventListener('click', actions.openFamilySession);
+  container.querySelector('#sentence-review-btn')?.addEventListener('click', actions.openSentenceReview);
+  container.querySelector('#listening-practice-btn')?.addEventListener('click', actions.openListeningPractice);
   container.querySelector('#open-side-quest-btn')?.addEventListener('click', () => actions.openSideQuest(sideQuest));
 
   // Topic card clicks

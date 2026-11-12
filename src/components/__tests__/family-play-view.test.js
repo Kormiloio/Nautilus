@@ -1,9 +1,26 @@
 import { describe, expect, it } from 'vitest';
-import { getFamilyMatchColor, getFamilyQuizFeedback } from '../family-play-view.js';
+import { getFamilyMatchColor, getFamilyQuizFeedback, renderLessonRecap } from '../family-play-view.js';
 
 const step = {
   item: { id: 'ne', targetText: 'Ne', supportText: 'No' },
 };
+
+describe('Focused lesson recap', () => {
+  it('shows repeated words as practice without claiming they are new or first words', () => {
+    const html = renderLessonRecap({ focused: true, newItems: [], recalledItems: [{ targetText: 'naručiti', supportText: 'to order' }] });
+    expect(html).toContain('Practiced again');
+    expect(html).toContain('naručiti');
+    expect(html).not.toContain('New today');
+    expect(html).not.toContain('Your first words');
+  });
+
+  it('keeps both introductions and familiar vocabulary visible on bridge days', () => {
+    const html = renderLessonRecap({ focused: true, newItems: [{ targetText: 'new', supportText: 'new meaning' }], recalledItems: [{ targetText: 'familiar', supportText: 'familiar meaning' }] });
+    expect(html).toContain('New today');
+    expect(html).toContain('Practiced again');
+    expect(html).not.toContain('Your first words');
+  });
+});
 
 describe('Family Play quiz feedback', () => {
   it('reveals the current learner’s incorrect answer immediately', () => {

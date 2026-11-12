@@ -1777,3 +1777,51 @@ button, input, select {
 
 /* Keep the draft vocabulary day selector usable on narrow parent devices. */
 .activity-preview #preview-day { display: block; width: 100%; max-width: 100%; margin: .5rem 0 1rem; }
+
+.sentence-review-page { max-width:760px; padding-top:28px; padding-bottom:80px; }
+.sentence-review-page>p { margin:12px 0; }
+.sentence-review-page>h1 { font-size:28px; }
+.sentence-review-controls { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:20px; }
+.sentence-review-controls [data-review-audio] { width:48px; height:48px; padding:0; }
+
+.listening-page { max-width:760px; padding-top:28px; padding-bottom:80px; }
+.listening-page h1 { font-size:28px; margin:16px 0; }
+.listening-page p { margin:14px 0; }
+.listening-page [hidden] { display:none!important; }
+.listening-page button:disabled { opacity:.45; cursor:not-allowed; }
+.listening-audio { display:flex; justify-content:center; gap:14px; margin:30px 0; }
+.listening-audio button { width:64px; height:64px; padding:0; font-size:24px; }
+.listening-choices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:24px 0; }
+.listening-choices .btn { min-height:64px; white-space:normal; overflow-wrap:anywhere; }
+.listening-choices .selected { border-color:var(--cyan); background:rgba(125,211,252,.16); }
+.listening-tokens { display:flex; flex-wrap:wrap; gap:10px; margin:16px 0; }
+.listening-tokens .btn { min-height:48px; }
+.listening-answer { min-height:80px; padding:16px; border:1px dashed var(--cyan); border-radius:8px; font-size:22px; }
+.listening-transcript { display:grid; gap:10px; margin:24px 0; padding:18px 0; border-top:1px solid var(--border-color); }
+.listening-transcript strong { font-size:24px; }
+.listening-study { display:grid; gap:16px; margin:24px 0; }
+.listening-study article { display:grid; gap:10px; padding:16px 0; border-bottom:1px solid var(--border-color); }
+.listening-study strong { font-size:22px; }
+.listening-study button { width:48px; height:48px; padding:0; }
+.detective-panel #side-quest-title { font-size:32px; line-height:1.25; letter-spacing:0; }
+.detective-clue-words { text-align:left; font-size:16px; line-height:1.6; color:var(--text-muted); }
+
+.family-play-panel .pattern-stage-title { font-size:32px; line-height:1.2; margin-bottom:20px; }
+.pattern-lesson { padding:24px 0; }
+.pattern-meta { display:flex; justify-content:space-between; gap:16px; color:var(--text-muted); font-size:14px; }
+.pattern-lesson h2 { font-size:22px; margin:20px 0; }
+.pattern-example { font-size:32px; font-weight:800; line-height:1.35; margin:28px 0 12px; overflow-wrap:anywhere; }
+.pattern-meaning { font-size:20px; color:var(--text-muted); margin:0 0 24px; }
+.pattern-parts { display:flex; flex-wrap:wrap; gap:20px; margin:24px 0; }
+.pattern-parts>div { flex:1 1 100px; border-bottom:3px solid var(--cyan); padding:12px 0; }
+.pattern-parts dt { font-size:28px; font-weight:800; }
+.pattern-parts dd { margin:8px 0 0; color:var(--text-muted); font-size:18px; }
+.pattern-choices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:20px 0; }
+.pattern-choices button { min-height:54px; white-space:normal; }
+.pattern-choices .selected { border-color:var(--cyan); background:rgba(125,211,252,.15); }
+.pattern-feedback { min-height:48px; line-height:1.5; }
+.pattern-navigation { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-top:24px; }
+.pattern-navigation [data-pattern-back],.pattern-navigation [data-pattern-audio] { width:48px; height:48px; padding:0; }
+.pattern-ready { color:var(--lime); font-weight:700; }
+@media(max-width:500px) { .pattern-choices { grid-template-columns:1fr; }.family-play-panel .pattern-stage-title { font-size:26px; }.pattern-example { font-size:28px; } }
+@media(max-width:500px) { .listening-choices { grid-template-columns:1fr; } }

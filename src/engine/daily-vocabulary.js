@@ -1,3 +1,5 @@
+import { buildSentencePracticeSteps } from './sentence-practice.js';
+
 // Canonical lexical identities are authored by language reviewers, never tokenized from phrases.
 export function validateDailyPlan(plan, lessonIds, { requireReview = true } = {}) {
   const fail = message => { throw new Error(`Daily vocabulary: ${message}`); };
@@ -36,6 +38,11 @@ export function validateDailyPlan(plan, lessonIds, { requireReview = true } = {}
   return allocations;
 }
 
+export function getDailyVocabularyRecap(allocation) {
+  const recap = allocation.recap || { newItems: allocation.newItems, recalledItems: allocation.reviewItems };
+  return { ...recap, newItems: recap.newItems.slice(0, 1), recalledItems: recap.recalledItems.slice(0, 2), connection: null };
+}
+
 export function dailyVocabularySteps(allocation, helpers, family = false) {
   const { buildQuiz, buildMatch, shuffle, random } = helpers;
   const { newItems, reviewItems } = allocation;
@@ -46,11 +53,32 @@ export function dailyVocabularySteps(allocation, helpers, family = false) {
   const introduction = allocation.focusDescription || (allocation.pilot ? 'Family pilot · language review pending. Learn today’s new vocabulary.' : 'Learn today’s new vocabulary before practicing it');
   const batches = [];
   for (let i = 0; i < newItems.length; i += 5) batches.push(newItems.slice(i, i + 5));
+  if (allocation.sentencePractice) {
+    const sentenceSteps = buildSentencePracticeSteps(allocation, helpers, family);
+    const recap = { ...getDailyVocabularyRecap(allocation), connection: allocation.sentencePractice.sentences[0] };
+    const quizItems = shuffle(items, random).slice(0, 3);
+    if (!family) return [
+      { type: 'discover', title, subtitle: introduction, items: newItems },
+      { type: 'match', title: 'Warm up with familiar words', match: buildMatch(newItems, 5, random) },
+      ...sentenceSteps,
+      { type: 'quiz', title: 'Remember the words', quiz: buildQuiz(items, 3, random) },
+      { type: 'done', title: 'Completed!', subtitle: allocation.sentencePractice.title },
+    ];
+    const matching = newItems.slice(0, 5);
+    return [
+      { type: 'ready', title: 'Is everyone ready?' },
+      { type: 'family-flashcards', title, subtitle: introduction, items: newItems },
+      { type: 'family-match', title: 'Warm up with familiar words', items: matching, targetItems: shuffle(matching, random), supportItems: shuffle(matching, random) },
+      ...sentenceSteps,
+      ...quizItems.map(item => ({ type: 'family-quiz', title: 'Remember the words', item, options: shuffle([item, ...shuffle(items.filter(other => other.id !== item.id), random).slice(0, 3)], random) })),
+      { type: 'family-reflection', title: 'Use a whole sentence', subtitle: 'Say your sentence, explain its meaning, then try the conversation without looking.', sentenceChallenge: true, items: allocation.sentencePractice.sentences.slice(0, 3), recap },
+    ];
+  }
   if (!family) return [
     { type: 'discover', title, subtitle: introduction, items: newItems },
     ...(catchUpItems.length ? [{ type: 'recall-flash', title: 'Catch up on earlier words', reviewCount: catchUpItems.length, items: catchUpItems, catchUp: true }] : []),
     ...(reviewItems.length ? [{ type: 'recall-flash', title: 'Bring back earlier words', reviewCount: reviewItems.length, items: reviewItems }] : []),
-    ...batches.map(batch => ({ type: 'match', title: 'Connect today’s new words', match: buildMatch(batch, batch.length, random) })),
+    ...batches.map(batch => ({ type: 'match', title: allocation.focused ? 'Connect today’s words' : 'Connect today’s new words', match: buildMatch(batch, batch.length, random) })),
     { type: 'quiz', title: 'Recall today’s vocabulary', quiz: buildQuiz(items, items.length, random) },
     { type: 'done', title: 'Completed!', subtitle: title },
   ];
@@ -62,8 +90,8 @@ export function dailyVocabularySteps(allocation, helpers, family = false) {
     ...(grammarItems.length ? [{ type: 'family-grammar', title: 'Weekly grammar mission', subtitle: allocation.grammarGame || 'Play with this week’s sentence pattern together.', items: grammarItems }] : []),
     ...(allocation.grammarStory ? [allocation.grammarStory] : []),
     ...(allocation.grammarRoleplay ? [allocation.grammarRoleplay] : []),
-    ...batches.map(batch => ({ type: 'family-match', title: 'Connect today’s new words', items: batch, targetItems: shuffle(batch, random), supportItems: shuffle(batch, random) })),
+    ...batches.map(batch => ({ type: 'family-match', title: allocation.focused ? 'Connect today’s words' : 'Connect today’s new words', items: batch, targetItems: shuffle(batch, random), supportItems: shuffle(batch, random) })),
     ...shuffle(items, random).map(item => ({ type: 'family-quiz', title: 'Recall today’s vocabulary', item, options: shuffle([item, ...shuffle(items.filter(other => other.id !== item.id), random).slice(0, 3)], random) })),
-    { type: 'family-reflection', title: 'Bring It Home', subtitle: 'Use today’s new words together', items: newItems, recap: { newItems: newItems.slice(0, 1), recalledItems: reviewItems.slice(0, 2), connection: null } },
+    { type: 'family-reflection', title: 'Bring It Home', subtitle: allocation.focused ? 'Use today’s words together' : 'Use today’s new words together', items: newItems, recap: getDailyVocabularyRecap(allocation) },
   ];
 }

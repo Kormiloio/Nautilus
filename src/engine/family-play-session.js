@@ -1,5 +1,6 @@
-import { DAILY_PILOT_REVISION, DAILY_VOCABULARY_REVISION } from '../content/daily-plans.js';
-import { dailyVocabularySteps } from './daily-vocabulary.js';
+import { DAILY_PILOT_REVISION, DAILY_VOCABULARY_REVISION, DAILY_SENTENCE_REVISION, DAILY_CUMULATIVE_REVISION } from '../content/daily-plans.js';
+import { getSentencePractice } from './sentence-practice.js';
+import { dailyVocabularySteps, getDailyVocabularyRecap } from './daily-vocabulary.js';
 import { VOYAGE_LESSONS, getDailyVocabularyAllocation, buildQuiz, buildMatch, buildSentenceCompletion, createSeededRandom, getTopic, isBuildableSentence, shuffle } from './learning-engine.js';
 import { getWeeklyGrammarTopicId, getWeeklyGrammarGame, buildWeeklyFamilyStory, buildWeeklyFamilyRoleplay } from './weekly-grammar.js';
 
@@ -72,7 +73,7 @@ export function getLessonPreview(lesson, learnedTopicIds = []) {
 
 export function getLessonRecap(lesson, learnedTopicIds = []) {
   const allocation = lesson ? getDailyVocabularyAllocation(lesson) : null;
-  if (allocation) return { newItems: allocation.newItems.slice(0, 1), recalledItems: allocation.reviewItems.slice(0, 2), connection: null };
+  if (allocation) return getDailyVocabularyRecap(allocation);
   const preview = getLessonPreview(lesson, learnedTopicIds);
   return {
     newItems: (preview.topic?.items || []).slice(0, 1),
@@ -83,14 +84,14 @@ export function getLessonRecap(lesson, learnedTopicIds = []) {
 
 export function buildFamilyPlaySteps(lesson, topic, sessionId, options = {}) {
   const random = createSeededRandom(`${sessionId}:${lesson.id}:family-full-session`);
-  const catalogRevision = options.catalogRevision ?? DAILY_PILOT_REVISION;
+  const catalogRevision = options.catalogRevision ?? DAILY_CUMULATIVE_REVISION;
   const allocation = catalogRevision >= DAILY_VOCABULARY_REVISION
-    ? getDailyVocabularyAllocation(lesson, { focused: catalogRevision >= DAILY_PILOT_REVISION })
+    ? getDailyVocabularyAllocation(lesson, { focused: catalogRevision >= DAILY_PILOT_REVISION, cumulative: catalogRevision >= DAILY_CUMULATIVE_REVISION })
     : null;
   if (allocation) {
     const catchUpItems = allocation.focused ? [] : getCamajCatchUpItems(lesson, options.familyId);
     const grammarItems = allocation.focused ? [] : getTopic(getWeeklyGrammarTopicId(lesson.id, options.familyId))?.items || [];
-    return dailyVocabularySteps({ ...allocation, catchUpItems, grammarItems, grammarGame: getWeeklyGrammarGame(lesson.id, options.familyId), grammarStory: grammarItems.length ? buildWeeklyFamilyStory(grammarItems, lesson.id, options.familyId) : null, grammarRoleplay: grammarItems.length ? buildWeeklyFamilyRoleplay(grammarItems, lesson.id, options.familyId) : null }, { buildQuiz, buildMatch, shuffle, random }, true);
+    return dailyVocabularySteps({ ...allocation, sentencePractice: catalogRevision >= DAILY_CUMULATIVE_REVISION ? allocation.sentencePractice : catalogRevision >= DAILY_SENTENCE_REVISION ? getSentencePractice(allocation) : null, catchUpItems, grammarItems, grammarGame: getWeeklyGrammarGame(lesson.id, options.familyId), grammarStory: grammarItems.length ? buildWeeklyFamilyStory(grammarItems, lesson.id, options.familyId) : null, grammarRoleplay: grammarItems.length ? buildWeeklyFamilyRoleplay(grammarItems, lesson.id, options.familyId) : null }, { buildQuiz, buildMatch, shuffle, random }, true);
   }
   const lessonKind = String(lesson.type || 'discover').replace('integration-', '');
   const grammarItems = getTopic(getWeeklyGrammarTopicId(lesson.id, options.familyId))?.items || [];

@@ -6,6 +6,11 @@ function requireCloud() {
   }
 }
 
+function isOpenFamilySessionConflict(error) {
+  return error?.code === '23505'
+    && error.message?.includes('"one_open_family_session_per_language"');
+}
+
 export async function listFamilies() {
   requireCloud();
   const { data: auth, error: authError } = await supabase.auth.getSession();
@@ -183,6 +188,11 @@ export async function startFamilyPlay({
     target_timezone: timezone,
     participant_profiles: participantProfileIds,
   });
+  if (isOpenFamilySessionConflict(error)) {
+    // A second device or a retried request may have already started the session.
+    const sharedState = await getFamilyPlayState(familyId, packId);
+    if (sharedState.activeSession?.id) return sharedState.activeSession.id;
+  }
   if (error) throw error;
   return data;
 }
@@ -227,6 +237,9 @@ export async function startFamilyReview(sourceSessionId, participantProfileIds) 
     source_session: sourceSessionId,
     participant_profiles: participantProfileIds,
   });
+  if (isOpenFamilySessionConflict(error)) {
+    throw new Error('A family session is already in progress. Continue or cancel it before starting a review.');
+  }
   if (error) throw error;
   return data;
 }

@@ -132,4 +132,46 @@ describe('Code review regressions', () => {
     expect(fs.readFileSync(new URL('supabase/migrations/20260810000000_nautilus_foundation.sql',root),'utf8'))
       .toBe(fs.readFileSync(new URL('supabase/migration.sql',root),'utf8'));
   });
+
+  it('opens the recovered session lesson instead of the stale start selection', async () => {
+    const main = fs.readFileSync(new URL('../../main.js', import.meta.url), 'utf8');
+    const start = main.indexOf('  startFamilySession:');
+    const end = main.indexOf('  claimFamilyController:', start);
+    const lessons = [{ id: 'voyage-1' }, { id: 'voyage-2' }];
+    const active = { id: 'existing', lessonId: 'voyage-2', voyageDay: 2, canTakeControl: true };
+    const context = {
+      state: { families: [{ family_id: 'family', role: 'owner' }], languagePacks: [{ id: 'pack', version: '1' }],
+        activePackId: 'pack', familyPlayState: { completedDays: 0 }, familyOverview: {} },
+      VOYAGE_LESSONS: lessons,
+      startFamilyPlay: vi.fn().mockResolvedValue('existing'),
+      loadFamilyPlayState: vi.fn(async () => { context.state.familyPlayState = { activeSession: active }; }),
+      claimFamilyPlayController: vi.fn().mockResolvedValue(null),
+      rerender: vi.fn(),
+    };
+    vm.createContext(context);
+    vm.runInContext(`const actions = {${main.slice(start, end)}}; globalThis.actions = actions;`, context);
+    await context.actions.startFamilySession(['learner']);
+    expect(context.state.activeLesson).toEqual(lessons[1]);
+    expect(context.state.screen).toBe('family-play');
+    expect(context.claimFamilyPlayController).toHaveBeenCalledWith('existing');
+  });
+
+  it('clears old errors on a successful session control and retains a new failure', async () => {
+    const main = fs.readFileSync(new URL('../../main.js', import.meta.url), 'utf8');
+    const start = main.indexOf('  controlFamilySession:');
+    const end = main.indexOf('  refresh:', start);
+    const context = {
+      state: { familyPlayState: { activeSession: { id: 'session' } }, familyError: 'Old conflict' },
+      controlFamilyPlay: vi.fn().mockResolvedValue(null),
+      loadFamilyPlayState: vi.fn().mockResolvedValue(null), rerender: vi.fn(),
+    };
+    vm.createContext(context);
+    vm.runInContext(`const actions = {${main.slice(start, end)}}; globalThis.actions = actions;`, context);
+    await context.actions.controlFamilySession('live', 3);
+    expect(context.state.familyError).toBeNull();
+    expect(context.controlFamilyPlay).toHaveBeenCalledWith('session', 'live', 3);
+    context.controlFamilyPlay.mockRejectedValueOnce(new Error('Connection lost'));
+    await context.actions.controlFamilySession('paused', 3);
+    expect(context.state.familyError).toBe('Connection lost');
+  });
 });
