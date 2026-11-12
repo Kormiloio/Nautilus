@@ -23,7 +23,7 @@
 - [x] Add listening practice (meaning and word-order) with slow playback and a written fallback.
 - [x] Pin Detective cases per session and give each edition its own badge.
 - [x] Reuse an existing open family session after a duplicate-start conflict.
-- [x] Align server Detective milestones with the client: no 190 cap, same repeating pack order, with pgTAP and unit coverage.
+- [x] Align server Detective milestones with the client: no 190 cap, same repeating pack order, with pgTAP and unit coverage (follow-up migration `20261112010000`).
 
 ## Interface
 
@@ -42,5 +42,6 @@
 
 - [x] Publish catalog revision 9 to production (done outside this repo's tooling between 2026-10-28 and 2026-11-11; publisher not recorded).
 - [ ] Merge `wip/sentences-listening-detective` into `main` and confirm the Netlify production deploy passes `verify:release` at revision 9.
-- [ ] Apply `20261026010000_cumulative_detective_editions.sql` to production.
+- [x] Apply `20261026010000_cumulative_detective_editions.sql` to production (found already applied on 2026-11-12; applier not recorded).
+- [ ] Apply `20261112010000_detective_cases_past_190.sql` to production.
 - [ ] Confirm in-flight attempts pinned to earlier revisions still replay unchanged.

@@ -47,7 +47,7 @@ Fallbacks:
 - `detective_cases_for_milestone` is `immutable` with execute revoked from `public`, `anon`, and `authenticated`. It is called only from the `security definer` RPC `start_family_side_quest`.
 - `start_family_side_quest` now accepts milestone 10 and every 30 lessons after it, with no upper limit. It locks the family row and requires at least `target_milestone` completed non-review family voyage sessions. It snapshots `cases` at creation.
 - `submit_family_side_quest_answer` checks the answer against the snapshot's choice ids. `advance_family_side_quest` ends after the snapshot's last case. A release cannot change a running game.
-- **Past milestone 190.** The case packs repeat in the same order on the app and the server: milestone 10 uses the original pack, and milestone *m* ≥ 40 uses pack `1 + ((m − 40) / 30) mod 6`. So 220 gets the milestone-40 cases again, under its own edition number and badge. A unit test compares the migration's packs with the client at every milestone up to 400.
+- **Past milestone 190.** The case packs repeat in the same order on the app and the server: milestone 10 uses the original pack, and milestone *m* ≥ 40 uses pack `1 + ((m − 40) / 30) mod 6`. So 220 gets the milestone-40 cases again, under its own edition number and badge. `20261026010000` was already applied in production with the 190 cap, so it is left exactly as applied, and the cap is lifted by the follow-up migration `20261112010000_detective_cases_past_190.sql` (`create or replace` of `detective_cases_for_milestone` and `start_family_side_quest`). A unit test compares that migration's packs with the client at every milestone up to 400.
 
 ## Release procedure (prepared, not executed)
 

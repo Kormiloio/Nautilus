@@ -95,8 +95,12 @@ describe('Detective case editions', () => {
   });
 
   it('serves the same cases from the server migration as the client at every milestone, including past 190', () => {
-    const sql = readFileSync(new URL('../../../supabase/migrations/20261026010000_cumulative_detective_editions.sql', import.meta.url), 'utf8');
-    const packs = JSON.parse(sql.match(/declare packs jsonb := '(.*?)'::jsonb;/s)[1].replaceAll("''", "'"));
+    // 20261026010000 is already applied in production; the 190 cap is lifted by 20261112010000.
+    const sql = readFileSync(new URL('../../../supabase/migrations/20261112010000_detective_cases_past_190.sql', import.meta.url), 'utf8');
+    const original = readFileSync(new URL('../../../supabase/migrations/20261026010000_cumulative_detective_editions.sql', import.meta.url), 'utf8');
+    const literal = text => JSON.parse(text.match(/declare packs jsonb := '(.*?)'::jsonb;/s)[1].replaceAll("''", "'"));
+    const packs = literal(sql);
+    expect(packs).toEqual(literal(original));
     expect(sql).not.toMatch(/target_milestone\s*>\s*190/);
     // Mirrors detective_cases_for_milestone in the migration.
     const serverIndex = milestone => milestone === 10 ? 0 : 1 + ((milestone - 40) / 30) % (packs.length - 1);
