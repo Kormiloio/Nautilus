@@ -2,7 +2,9 @@
 
 ## Status
 
-Retrospective documentation for work implemented on branch `wip/sentences-listening-detective` (commit `5c1e5f2`) before its OpenSpec record existed. The code is **not merged to `main`, not deployed, and the catalog revision 9 and Detective migration are not published.** This change records the behavior, states where it deviates from existing PRD rules, and lists what must happen before release.
+Retrospective documentation for work implemented on branch `wip/sentences-listening-detective` (commit `5c1e5f2`) before its OpenSpec record existed.
+
+**Released out of order.** Catalog revision 9 was published to production Supabase between 2026-10-28 and 2026-11-11, by a person and tool not recorded, before fluent review. From then on the server served revision 9 lessons to the Oct 28 client. `main` still expected revision 7, so every Netlify deploy failed. On 2026-11-12 the owner decided to ship this branch so the code, GitHub `main`, and Netlify match production again. Fluent review of the content is still outstanding and now happens after release.
 
 ## Why
 
@@ -35,11 +37,11 @@ From voyage day 27 the focused pilot teaches a subject's words across several da
 - **Accessibility.** New controls are buttons with `aria-label`/`aria-pressed`, status regions use `role="status"`/`aria-live`, and every audio activity has a written alternative.
 - **Audio.** Uses on-device speech synthesis only. Voice selection now prefers `cnr-ME`/`cnr` before Croatian, Serbian, and Bosnian fallbacks. Without a compatible voice the app explains this and offers written practice; it never pronounces target text with an English voice. No microphone is used.
 
-## Conflicts with existing rules (must be resolved before release)
+## Conflicts with existing rules (still open after release)
 
 1. **Reviewed content rule.** GAMEPLAY PRD §11.5 forbids publishing a sentence activity without reviewed language data. `scripts/prepare-sentence-release.mjs` would publish draft sentences in catalog revision 9.
 2. **No hard-coded language in the engine.** The `record-parent-preview-and-sentence-rhythm` lesson-rhythm spec and PRD §11.1 require sentence content to live in versioned language-pack content. `src/engine/cumulative-sentences.js` embeds Montenegrin frames and nouns in engine code and starts at a hard-coded voyage day (27).
-3. **Client default revision.** `generateSession` and `buildFamilyPlaySteps` now default to revision 9, and `verify-verified-release.mjs` expects revision 9, while production still serves an earlier revision.
+3. **Client default revision.** `generateSession` and `buildFamilyPlaySteps` default to revision 9, and `verify-verified-release.mjs` expects revision 9. Production has served revision 9 since it was published, so this now matches.
 
 ## Unresolved product decisions
 

@@ -38,9 +38,9 @@
 - [ ] Run `scripts/test-detective-editions.mjs` and `scripts/test-cumulative-catalog.mjs` against a local Supabase container; run `npm run test:db` including `supabase/tests/detective-editions.sql`.
 - [ ] Production build from a clean tree.
 
-## Release (blocked on content review)
+## Release (shipped before content review, by owner decision 2026-11-12)
 
-- [ ] Merge `wip/sentences-listening-detective` into `main`.
+- [x] Publish catalog revision 9 to production (done outside this repo's tooling between 2026-10-28 and 2026-11-11; publisher not recorded).
+- [ ] Merge `wip/sentences-listening-detective` into `main` and confirm the Netlify production deploy passes `verify:release` at revision 9.
 - [ ] Apply `20261026010000_cumulative_detective_editions.sql` to production.
-- [ ] Publish catalog revision 9 using `scripts/prepare-sentence-release.mjs` output; confirm `npm run verify:release` reports revision 9.
 - [ ] Confirm in-flight attempts pinned to earlier revisions still replay unchanged.
