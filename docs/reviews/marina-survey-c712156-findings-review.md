@@ -2,7 +2,7 @@
 
 Status: **reviewed on 2026-11-12. No exploitable finding; no code change required.** One unused published page was removed as hardening (see below).
 
-Survey `35c57a1072c9`, baseline_scan v1 `17a9b068048c`, 90 deterministic findings, plus 37 advisory artifact findings from Dry Dock run `c00c2c09a1d6494f90e4cbb9b52aae4c`. This record is the evidence for the human disposition. It does not replace it.
+Survey `35c57a1072c9`: 90 baseline_scan v1 (`17a9b068048c`) findings, later 346 once the deterministic v1 rules (`88bd95c91aef`) ran, plus 37 advisory artifact findings from Dry Dock run `c00c2c09a1d6494f90e4cbb9b52aae4c`. This record is the evidence for the human disposition. It does not replace it.
 
 ## Summary
 
@@ -47,6 +47,20 @@ The 37 findings in `web/assets/index-ByPYhts2.js` are the compiled form of the s
 `web/prototype.html` (the original concept export) re-executed its own embedded scripts at load. It took no outside input, but it was unmaintained and published at `/prototype.html`. It is deleted in PR #17 (`openspec/changes/remove-published-prototype`) and remains in git history at `2918c96:web/prototype.html`.
 
 `src/content/schema.json:2` is the standard JSON Schema `$schema` identifier; no request is made to it.
+
+## Deterministic rule set (`deterministic v1`, `88bd95c91aef`)
+
+When the deterministic check ran, it raised the total to 346 findings. Most re-flag the locations above under a second rule ID ("The approved rules detected raw HTML insertion", "A possible hard-coded credential was detected"), and the verdicts above apply to them. The new items:
+
+| Rule | Severity | Locations | Verdict |
+|---|---|---|---|
+| Hard-coded credential | critical | `tests/listening-browser.mjs:57` | False positive: `exercises[1].tokens` are a sentence's word tiles in a browser test |
+| Raw HTML insertion | high | `tests/sentence-review-browser.mjs:22` | False positive: a browser test renders a fixed fixture sentence into its own test page |
+| Line exceeds readability limit | low | ~45 files, including the minified `web/assets/*.js` and `*.css` | Accepted: style-only. Many are data rows in content files or long template strings in views |
+| Repeated six-line block | low | `src/public/sw.js`, `admin-dashboard.js`, `main.js`, `session-view.js`, and others | Accepted: style-only. `sw.js` repeats its cache-handler shape on purpose, and the rest are similar markup or setup blocks |
+| Document root has no language attribute | low | `web/prototype.html:2` | Resolved: the file is removed in PR #17 |
+
+None of the low findings affects security or behavior. Reducing duplication or line length would be ordinary refactoring and is not required to release.
 
 ## Probe diagnostic
 
