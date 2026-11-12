@@ -1,5 +1,10 @@
 import { beginVerifiedLesson, getVerifiedAttempt, submitVerifiedExercise, getVoyageReviewTopic } from './engine/verified-learning-service.js';
 import { renderVerifiedLessonView } from './components/verified-lesson-view.js';
+import { renderSentenceReviewView } from './components/sentence-review-view.js';
+import { renderListeningPracticeView } from './components/listening-practice-view.js';
+import { getSideQuestForProgress } from './content/side-quests.js';
+import { buildListeningExercises, getListeningItems } from './engine/listening-practice.js';
+import { getSentenceReviews, recordSentenceMistake, sentenceMistakeFromExercise, sentenceMistakeFromFamilyStep } from './engine/sentence-review.js';
 import { advanceDetectiveCase, createDetectiveGame, earnSideQuestBadge, lockDetectiveAnswer, selectDetectiveAnswer } from './engine/side-quest-game.js';
 import { advanceFamilySideQuest, cancelFamilySideQuest, getFamilySideQuestState, startFamilySideQuest, submitFamilySideQuestAnswer, subscribeToFamilySideQuest } from './engine/side-quest-service.js';
 import {
@@ -396,7 +401,7 @@ const actions = {
   },
   replaySideQuest: () => { state.sideQuestGame = createDetectiveGame(state.sideQuest, [state.profile || "Detective"]); rerender(); },
   finishSideQuest: () => {
-    earnSideQuestBadge(state.activePackId, state.profile || 'family', state.sideQuest.id);
+    earnSideQuestBadge(state.activePackId, state.profile || 'family', state.sideQuest.badgeId || state.sideQuest.id);
     actions.goDashboard();
   },
 
@@ -449,8 +454,7 @@ const actions = {
         participantProfileIds,
       });
       await loadFamilyPlayState();
-      state.activeLesson = lesson;
-      state.screen = 'family-play';
+      await actions.openFamilySession();
     } catch (error) {
       state.familyError = error.message;
     }
@@ -492,6 +496,46 @@ const actions = {
   answerFamilyQuiz: async (answerId, segment) => {
     const sessionId = state.familyPlayState?.activeSession?.id; if (!sessionId) return;
     try { await submitFamilyQuizAnswer(sessionId, segment, answerId); await loadFamilyPlayState(); } catch (error) { state.familyError = error.message; }
+    rerender();
+  },
+
+  rememberSentenceMistake: (mistake, eventId, packId = state.activePackId) => {
+    if (!mistake || !state.sessionUser) return;
+    try {
+      recordSentenceMistake(state.sessionUser.id, packId, { ...mistake, eventId });
+      state.sentenceReviewError = null;
+    } catch {
+      state.sentenceReviewError = 'This device could not save sentence review. Check that browser storage is available.';
+    }
+  },
+
+  rememberFamilySentence: (step, segment, response) => {
+    const session = state.familyPlayState?.activeSession;
+    if (!session) return;
+    actions.rememberSentenceMistake(sentenceMistakeFromFamilyStep(step), `${session.id}:${segment}:${JSON.stringify(response)}`);
+  },
+
+  openSentenceReview: () => {
+    if (!state.sessionUser) return;
+    state.sentenceReviews = getSentenceReviews(state.sessionUser.id, state.activePackId, { dueOnly: true }).slice(0, 5);
+    state.sentenceReviewIndex = 0;
+    state.sentenceReviewFeedback = null;
+    state.sentenceReviewInteraction = {};
+    state.screen = 'sentence-review';
+    rerender();
+  },
+
+  openListeningPractice: () => {
+    if (!state.sessionUser) return;
+    const active = state.familyPlayState?.activeSession;
+    const lesson = VOYAGE_LESSONS.find(item => item.id === active?.lessonId)
+      || VOYAGE_LESSONS[Math.min(state.familyPlayState?.completedDays ?? state.completedLessons.length, 199)];
+    const id = `listening:${Date.now()}`;
+    const exercises = buildListeningExercises(getListeningItems(lesson), id);
+    if (!exercises.length) return;
+    state.listeningPractice?.cleanup?.();
+    state.listeningPractice = { id, userId: state.sessionUser.id, packId: state.activePackId, exercises, index: 0, results: [] };
+    state.screen = 'listening-practice';
     rerender();
   },
 
@@ -539,16 +583,22 @@ const actions = {
 
   reviewFamilySession: async (sourceSessionId) => {
     const participants = state.familyOverview?.learners?.map(learner => learner.id) || [];
+    state.familyError = null;
     try {
       await startFamilyReview(sourceSessionId, participants);
       await loadFamilyPlayState();
       await actions.openFamilySession();
-    } catch (error) { state.familyError = error.message; rerender(); }
+    } catch (error) {
+      state.familyError = error.message;
+      try { await loadFamilyPlayState(); } catch { /* Keep the original action error. */ }
+      rerender();
+    }
   },
 
   controlFamilySession: async (status, segment) => {
     const sessionId = state.familyPlayState?.activeSession?.id;
     if (!sessionId) return;
+    state.familyError = null;
     try {
       await controlFamilyPlay(sessionId, status, segment);
       await loadFamilyPlayState();
@@ -650,6 +700,10 @@ const actions = {
         state.verifiedError='Not quite—check your pairs and try again.';
       } else if(attempt.exercises[index].kind!=='self_report') {
         const receipt=fresh.receipts.find(r=>r.index===index);
+        actions.rememberSentenceMistake(sentenceMistakeFromExercise(attempt.exercises[index], {
+          ...receipt, correct: result.correct, correctAnswer: result.correctAnswer ?? receipt?.correctAnswer,
+          completedSentence: result.completedSentence ?? receipt?.completedSentence,
+        }), `${attempt.id}:${index}`, attempt.packId || state.activePackId);
         state.verifiedFeedback={attemptId:attempt.id,index,answer:response,correct:result.correct,
           correctAnswer:result.correctAnswer??receipt?.correctAnswer};
         if(state.screen==='family-play') setTimeout(()=>{
@@ -875,6 +929,11 @@ async function loadFamilySideQuestState() {
   const familyId = state.families?.[0]?.family_id;
   if (!familyId || !state.sessionUser) { state.familySideQuestState = null; return; }
   state.familySideQuestState = await getFamilySideQuestState(familyId, state.activePackId);
+  if (state.familySideQuestState?.status === 'active' && state.sideQuest?.game === 'detective') {
+    const shared = state.familySideQuestState;
+    const pinned = getSideQuestForProgress(state.activePackId, shared.milestone);
+    state.sideQuest = { ...pinned, cases: shared.cases || pinned.cases };
+  }
 }
 
 let stopFamilySideQuestSubscription = null;
@@ -1007,6 +1066,11 @@ function mountFamilySelector() {
 }
 
 function rerender() {
+  if (state.screen === 'listening-practice' && (state.listeningPractice?.userId !== state.sessionUser?.id || state.listeningPractice?.packId !== state.activePackId)) state.screen = 'dashboard';
+  if (state.screen !== 'listening-practice') {
+    state.listeningPractice?.cleanup?.();
+    if (state.listeningPractice) state.listeningPractice.cleanup = null;
+  }
   applyDocumentLanguage(LANGUAGE_PACK);
   const activeBeforeRender = state.familyPlayState?.activeSession;
   const nextFamilyStage = activeBeforeRender ? `${activeBeforeRender.id}:${activeBeforeRender.currentSegment}` : null;
@@ -1030,6 +1094,16 @@ function rerender() {
   familyHeartbeatTimer = null;
   syncLearnerPresence();
   syncFamilyPlayRefresh();
+
+  if (state.screen === 'sentence-review' && state.sessionUser) {
+    renderSentenceReviewView(appContainer, state, actions);
+    return;
+  }
+
+  if (state.screen === 'listening-practice' && state.sessionUser) {
+    renderListeningPracticeView(appContainer, state, actions);
+    return;
+  }
 
   // Family Overview is an account-level screen. A parent can arrive here
   // while a learner profile is still active (notably after completing Family

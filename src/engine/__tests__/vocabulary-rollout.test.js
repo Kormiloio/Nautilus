@@ -59,6 +59,30 @@ describe('Live continuation rollout and full-course draft', () => {
     expect(family[2].reviewCount).toBe(10);
     expect(family.filter(step=>step.type==='family-quiz')).toHaveLength(20);
   });
+  it('labels vocabulary as new only on its first appearance in the focused schedule', () => {
+    const seen = new Set();
+    for (let day = 24; day <= 200; day++) {
+      const allocation = getDailyVocabularyAllocation(VOYAGE_LESSONS[day - 1]);
+      if (allocation.focused) {
+        expect(allocation.recap.newItems.map(item => item.id)).toEqual(allocation.newItems.filter(item => !seen.has(item.id)).map(item => item.id));
+        expect(allocation.recap.recalledItems.map(item => item.id)).toEqual(allocation.newItems.filter(item => seen.has(item.id)).map(item => item.id));
+      }
+      allocation.newItems.forEach(item => seen.add(item.id));
+    }
+  });
+  it('recognizes naručiti as practice after its first focused lesson', () => {
+    const allocation = day => getDailyVocabularyAllocation(VOYAGE_LESSONS[day - 1]);
+    expect(allocation(35).recap.newItems.some(item => item.targetText === 'naručiti')).toBe(true);
+    for (const day of [36, 37, 38]) {
+      expect(allocation(day).recap.newItems.some(item => item.targetText === 'naručiti')).toBe(false);
+      expect(allocation(day).recap.recalledItems.some(item => item.targetText === 'naručiti')).toBe(true);
+    }
+    expect(allocation(36).recap.newItems).toEqual([]);
+    const reflection = buildFamilyPlaySteps(VOYAGE_LESSONS[35], null, 'repeat', { catalogRevision: 7 }).at(-1);
+    expect(reflection.recap.newItems).toEqual([]);
+    expect(reflection.recap.recalledItems.length).toBeGreaterThan(0);
+    expect(reflection.subtitle).not.toContain('new');
+  });
   it('does not change another language pack', () => {
     setActiveLanguagePack('albanian-en');
     expect(getDailyVocabularyAllocation(VOYAGE_LESSONS[23])).toBeNull();

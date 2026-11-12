@@ -5,7 +5,18 @@ export const DAILY_PLANS = Object.freeze({});
 export const PILOT_DAILY_PLANS = Object.freeze({ 'montenegrin-en': montenegrinPilot });
 export const DAILY_VOCABULARY_REVISION = 6;
 export const DAILY_PILOT_REVISION = 7;
+export const DAILY_SENTENCE_REVISION = 8;
+export const DAILY_CUMULATIVE_REVISION = 9;
 export const FOCUSED_PILOT_START_DAY = 27;
+
+export function getFocusedPilotWordIds(metadata) {
+  const primary = metadata.primary.newWordIds;
+  const secondary = metadata.secondary.newWordIds;
+  if (metadata.phase !== 'bridge') return primary;
+  return metadata.step === 1
+    ? [...primary.slice(0, 7), ...secondary.slice(0, 3)]
+    : [...primary.slice(5), ...secondary.slice(0, 5)];
+}
 
 // From day 27 onward, two authored subjects are spread across an eight-day
 // child-led rhythm: three focus days, two gentle bridge days, then three focus

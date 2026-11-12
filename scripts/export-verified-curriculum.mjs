@@ -56,8 +56,8 @@ try {
         .slice(0, Math.max(0, (lesson.number || 1) - 1))
         .map(previous => previous.topicId).filter(Boolean)
         .filter((topicId, index, ids) => ids.indexOf(topicId) === index);
-      const steps=mode==='family' ? buildFamilyPlaySteps(lesson,engine.getTopic(lesson.topicId)||engine.getTopics()[0],key)
-        : engine.generateSession(lesson,learnedTopicIds,{random:engine.createSeededRandom(key)});
+      const steps=mode==='family' ? buildFamilyPlaySteps(lesson,engine.getTopic(lesson.topicId)||engine.getTopics()[0],key,{catalogRevision:revision})
+        : engine.generateSession(lesson,learnedTopicIds,{random:engine.createSeededRandom(key),catalogRevision:revision});
       publish(pack,lesson,mode,steps);
     }
     if(!options.mode || options.mode==="practice") for(const topic of engine.ALL_TOPICS) for(const activity of ['flashcards','quiz','match','listen','dialogue']) {

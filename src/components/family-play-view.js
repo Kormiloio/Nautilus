@@ -1,5 +1,6 @@
 import { getTopic, LANGUAGE_PACK } from '../engine/learning-engine.js';
 import { buildFamilyPlaySteps } from '../engine/family-play-session.js';
+import { bindPatternLesson } from './pattern-lesson.js';
 import { getImmersiveLessonScene } from './lesson-visuals.js';
 import { getParticipantConnectionState } from '../engine/family-play-readiness.js';
 import { renderLanguageRun } from '../engine/language-runs.js';
@@ -60,17 +61,20 @@ function buildConversationScript(step, leader, participants = []) {
   ];
 }
 
-function renderLessonRecap(recap) {
+export function renderLessonRecap(recap) {
   if (!recap) return "";
   const entry = item => "<li><strong>" + renderLanguageRun(item.targetText, "target", LANGUAGE_PACK, item) + "</strong><span>" + renderLanguageRun(item.supportText, "support", LANGUAGE_PACK, item) + "</span></li>";
   const column = (label, items, emptyTarget, emptySupport) => "<article><small>" + label + "</small><ul>" + (items.length ? items.map(entry).join("") : "<li><strong>" + emptyTarget + "</strong><span>" + emptySupport + "</span></li>") + "</ul></article>";
   const connection = recap.connection
     ? "<article class=\"lesson-recap__connection\"><small>Connection</small><strong>" + renderLanguageRun(recap.connection.targetText, "target", LANGUAGE_PACK, recap.connection) + "</strong><span>" + renderLanguageRun(recap.connection.supportText, "support", LANGUAGE_PACK, recap.connection) + "</span></article>"
     : "";
-  return "<section class=\"lesson-recap lesson-recap--family\" aria-label=\"What we brought back today\"><div class=\"lesson-recap__heading\"><span>⚓</span><div><small>Today’s voyage recap</small><h4>What we brought back</h4></div></div><div class=\"lesson-recap__grid\">" + column("New today", recap.newItems || [], "Mixed voyage review", "Several familiar topics together") + column("Remembered", recap.recalledItems || [], "Your first words", "More recall appears as your voyage grows") + connection + "</div></section>";
+  const newWords = recap.focused && !recap.newItems?.length ? "" : column("New today", recap.newItems || [], "Mixed voyage review", "Several familiar topics together");
+  const recalledWords = recap.focused && !recap.recalledItems?.length ? "" : column(recap.focused ? "Practiced again" : "Remembered", recap.recalledItems || [], "Your first words", "More recall appears as your voyage grows");
+  return "<section class=\"lesson-recap lesson-recap--family\" aria-label=\"What we brought back today\"><div class=\"lesson-recap__heading\"><span>⚓</span><div><small>Today’s voyage recap</small><h4>What we brought back</h4></div></div><div class=\"lesson-recap__grid\">" + newWords + recalledWords + connection + "</div></section>";
 }
 
-function renderSharedContent(step, turnPerson, quizState = null, participants = [], familyPeople = [], matchState = null) {
+export function renderSharedContent(step, turnPerson, quizState = null, participants = [], familyPeople = [], matchState = null) {
+  if (step.patternLesson) return '<section class="pattern-lesson" aria-label="Learn one pattern at a time" data-pattern-lesson></section>';
   if (step.type === 'ready') {
     return `<div class="family-ready-call"><span aria-hidden="true">⚓</span><div><strong>Gather your crew</strong><p>Open Family Play on each learner's device. When everyone shows Ready, the parent can begin.</p></div></div>`;
   }
@@ -80,7 +84,7 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
     return `${turnPrompt}<div class="family-activity-instructions"><strong>Three-card family story</strong><span>Read each card, put the story in order, and say the target sentence together. Add one silly detail before moving to the next card.</span><em>No recording—your family is the storyteller.</em></div><div class="family-story-grid">${cards}</div>`;
   }
   if (step.type === 'family-roleplay') {
-    const turns = step.turns.map((turn, index) => `<article class="family-roleplay-turn"><span>${index + 1}</span><small>${escapeHtml(turn.role)}’s turn</small><strong>${renderLanguageRun(turn.targetText, 'target', LANGUAGE_PACK, turn)}</strong><em>${renderLanguageRun(turn.supportText, 'support', LANGUAGE_PACK, turn)}</em><button class="dialogue-play-btn" data-family-audio="${index}" aria-label="Play role ${index + 1}">► Hear it</button></article>`).join('');
+    const turns = step.turns.map((turn, index) => `<article class="family-roleplay-turn"><span>${index + 1}</span><small>${escapeHtml(turn.role)}’s turn</small><strong>${renderLanguageRun(turn.targetText, 'target', LANGUAGE_PACK, turn)}</strong><em>${renderLanguageRun(turn.supportText, 'support', LANGUAGE_PACK, turn)}</em><button class="dialogue-play-btn" data-family-audio="${index}" aria-label="Play role ${index + 1}" title="Hear this sentence">►</button></article>`).join('');
     return `${turnPrompt}<div class="family-activity-instructions"><strong>Family role-play</strong><span>${escapeHtml(step.subtitle)}</span><em>Take turns, then swap roles. Nautilus does not record anyone.</em></div><div class="family-roleplay-grid">${turns}</div>`;
   }
   if (step.type === 'family-grammar') {
@@ -153,7 +157,7 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
   if (step.type === 'family-reflection') {
     const people = familyPeople.length ? familyPeople : [{ name: 'Everyone' }];
     const locks = quizState?.answers || [];
-    return `${renderLessonRecap(step.recap)}<div class="family-reflection-card"><strong>Final family challenge</strong><p>Complete your three actions, then lock in your own card. The family day finishes automatically when everyone is done.</p><div class="family-reflection-grid">${people.map((person, index) => { const item = step.items[index % step.items.length]; const lock = locks.find(answer => person.profileId ? answer.profileId === person.profileId : !answer.profileId); const isMine = Boolean(person.isCurrentUser); return `<button class="family-reflection-assignment ${lock ? 'finished' : ''}" data-final-lock ${isMine && !lock ? '' : 'disabled'}><small>${escapeHtml(person.name)}’s word</small><strong>${renderLanguageRun(item.targetText, 'target', LANGUAGE_PACK, item)}</strong><span>${renderLanguageRun(item.supportText, 'support', LANGUAGE_PACK, item)}</span><em>1. Say it · 2. Translate it · 3. Use it in a family example</em><b>${lock ? '✓ Locked in' : isMine ? 'Tap to lock in' : 'Waiting…'}</b></button>`; }).join('')}</div><span>${locks.length} of ${people.length} people locked in</span></div>`;
+    return `${renderLessonRecap(step.recap)}<div class="family-reflection-card"><strong>Final family challenge</strong><p>Complete your three actions, then lock in your own card. The family day finishes automatically when everyone is done.</p><div class="family-reflection-grid">${people.map((person, index) => { const item = step.items[index % step.items.length]; const lock = locks.find(answer => person.profileId ? answer.profileId === person.profileId : !answer.profileId); const isMine = Boolean(person.isCurrentUser); return `<button class="family-reflection-assignment ${lock ? 'finished' : ''}" data-final-lock ${isMine && !lock ? '' : 'disabled'}><small>${escapeHtml(person.name)}’s ${step.sentenceChallenge ? 'sentence' : 'word'}</small><strong>${renderLanguageRun(item.targetText, 'target', LANGUAGE_PACK, item)}</strong><span>${renderLanguageRun(item.supportText, 'support', LANGUAGE_PACK, item)}</span><em>${step.sentenceChallenge ? '1. Say the sentence · 2. Explain it · 3. Say it without looking' : '1. Say it · 2. Translate it · 3. Use it in a family example'}</em><b>${lock ? '✓ Locked in' : isMine ? 'Tap to lock in' : 'Waiting…'}</b></button>`; }).join('')}</div><span>${locks.length} of ${people.length} people locked in</span></div>`;
   }
   const items = step.items || step.dialogue?.lines || [];
   if (items.length) {
@@ -178,11 +182,68 @@ function renderSharedContent(step, turnPerson, quizState = null, participants = 
   return `${turnPrompt}<div class="family-play-challenge"><span>Speak together</span><strong>${escapeHtml(step.subtitle || 'Practice this section as a family.')}</strong></div>`;
 }
 
+export function bindFamilySentencePractice(container, step, interaction, onAnswer = () => {}) {
+  const builder = container.querySelector('[data-sentence-answer]');
+  if (builder) {
+    const answer = builder.dataset.sentenceAnswer.trim().replace(/\s+/g, ' ');
+    const buttons = [...builder.querySelectorAll('[data-sentence-token]')];
+    const chosen = interaction.sentence || (interaction.sentence = []);
+    const slot = builder.querySelector('.family-sentence-builder__answer');
+    const update = () => {
+      const assembled = chosen.map(index => buttons[index].textContent.trim()).join(' ');
+      buttons.forEach((button, index) => { button.disabled = chosen.includes(index); });
+      slot.textContent = assembled === answer ? `✓ ${assembled} · Say it together!` : assembled || 'Tap a word to begin';
+      slot.classList.toggle('complete', assembled === answer);
+      slot.classList.toggle('try-again', chosen.length === buttons.length && assembled !== answer);
+    };
+    buttons.forEach((button, index) => button.addEventListener('click', () => {
+      if (!button.disabled) {
+        chosen.push(index); update();
+        if (chosen.length === buttons.length) {
+          const response = chosen.map(tokenIndex => buttons[tokenIndex].textContent.trim());
+          onAnswer(response, response.join(' ') === answer);
+        }
+      }
+    }));
+    builder.querySelector('[data-sentence-reset]').addEventListener('click', () => { chosen.length = 0; update(); });
+    update();
+  }
+  const completion = container.querySelector('.family-sentence-completion');
+  if (completion) {
+    const selected = interaction.completionChoices || (interaction.completionChoices = []);
+    const update = () => {
+      const index = selected.at(-1);
+      const choice = step.completion.choices[index];
+      const correct = choice === step.completion.answer;
+      const slot = completion.querySelector('.family-sentence-builder__answer');
+      slot.textContent = step.completion.displayTokens.map((token, tokenIndex) => tokenIndex === step.completion.blankIndex && choice ? choice : token).join(' ');
+      slot.classList.toggle('complete', correct);
+      slot.classList.toggle('try-again', Boolean(choice) && !correct);
+      const feedback = completion.querySelector('.family-answer-feedback');
+      feedback.textContent = correct ? 'Correct. Say the completed sentence together.' : choice ? 'Not quite. Try another word.' : 'Choose the word that completes the sentence.';
+      feedback.classList.toggle('correct', correct);
+      feedback.classList.toggle('incorrect', Boolean(choice) && !correct);
+      completion.querySelectorAll('[data-completion-choice]').forEach(button => {
+        button.disabled = correct || selected.includes(Number(button.dataset.completionChoice));
+      });
+    };
+    completion.querySelectorAll('[data-completion-choice]').forEach(button => button.addEventListener('click', () => {
+      if (!button.disabled) {
+        const choice = step.completion.choices[Number(button.dataset.completionChoice)];
+        selected.push(Number(button.dataset.completionChoice)); update();
+        onAnswer(choice, choice === step.completion.answer);
+      }
+    }));
+    update();
+  }
+}
+
 export function renderFamilyPlayView(container, state, actions) {
   const oldKey = container.dataset.familyInteractionKey;
   if (oldKey) {
     const selected = container.querySelector('[data-family-match].selected');
     interactionStates.set(oldKey, {
+      ...interactionStates.get(oldKey),
       revealed: [...container.querySelectorAll('[data-family-reveal]')].map(button => button.classList.contains('revealed')),
       selectedId: selected?.dataset.familyMatch,
       selectedSide: selected?.dataset.familyMatchSide,
@@ -264,7 +325,7 @@ export function renderFamilyPlayView(container, state, actions) {
         </div>
         <p class="hero-tag">${isController ? 'You are leading' : `Following ${escapeHtml(cloudSession.controllerName || 'the family guide')}`}</p>
         ${state.familyError ? `<div class="family-play-error" role="alert"><strong>Couldn’t save that action</strong><span>${escapeHtml(state.familyError)}</span></div>` : ''}
-        <h1 id="family-play-title">${escapeHtml(step.title)}</h1>
+        <h1 id="family-play-title" ${step.patternLesson ? 'class="pattern-stage-title"' : ''}>${escapeHtml(step.patternLesson ? 'Let’s make a sentence' : step.title)}</h1>
         <p class="family-play-subtitle">${escapeHtml(step.subtitle)}</p>
         ${renderSharedContent(step, turnPerson, quizState, cloudSession.participants, familyPeople, matchState)}
         ${isController ? `<div class="family-play-controls">
@@ -295,7 +356,15 @@ export function renderFamilyPlayView(container, state, actions) {
   container.querySelectorAll('[data-family-reveal]').forEach(button => button.addEventListener('click', () => button.classList.toggle('revealed')));
   const interactionKey = cloudSession.id + ':' + stepIndex;
   container.dataset.familyInteractionKey = interactionKey;
+  if (!interactionStates.has(interactionKey)) interactionStates.set(interactionKey, { revealed: [] });
   const interaction = interactionStates.get(interactionKey);
+  if (step.patternLesson) {
+    interaction.pattern ??= {};
+    bindPatternLesson(container.querySelector('[data-pattern-lesson]'), step.patternLesson, interaction.pattern, actions.speak, done => {
+      const next = container.querySelector('#family-play-next');
+      if (next) { next.disabled = !done; next.textContent = done ? 'Practice sentences →' : 'Finish the pattern first'; }
+    });
+  }
   container.querySelectorAll('[data-family-reveal]').forEach((button, index) => {
     if (interaction?.revealed[index]) button.classList.add('revealed');
   });
@@ -303,46 +372,9 @@ export function renderFamilyPlayView(container, state, actions) {
     !button.disabled && button.dataset.familyMatch === interaction?.selectedId && button.dataset.familyMatchSide === interaction?.selectedSide
   ) || null;
   selectedMatch?.classList.add('selected');
-  const sentenceBuilder = container.querySelector('.family-sentence-builder');
-  if (sentenceBuilder) {
-    const answer = sentenceBuilder.dataset.sentenceAnswer.trim().replace(/\s+/g, ' ');
-    const chosen = [];
-    const answerSlot = sentenceBuilder.querySelector('.family-sentence-builder__answer');
-    const updateSentence = () => {
-      const assembled = chosen.map(button => button.textContent.trim()).join(' ');
-      answerSlot.textContent = assembled || 'Tap a word to begin';
-      answerSlot.classList.toggle('complete', assembled === answer);
-      answerSlot.classList.toggle('try-again', Boolean(assembled) && chosen.length === sentenceBuilder.querySelectorAll('[data-sentence-token]').length && assembled !== answer);
-      if (assembled === answer) answerSlot.textContent = `✓ ${assembled} · Say it together!`;
-    };
-    sentenceBuilder.querySelectorAll('[data-sentence-token]').forEach(button => button.addEventListener('click', () => {
-      if (button.disabled) return;
-      button.disabled = true; chosen.push(button); updateSentence();
-    }));
-    sentenceBuilder.querySelector('[data-sentence-reset]').addEventListener('click', () => {
-      chosen.length = 0; sentenceBuilder.querySelectorAll('[data-sentence-token]').forEach(button => { button.disabled = false; }); updateSentence();
-    });
-  }
-
-  const completion = container.querySelector('.family-sentence-completion');
-  if (completion) {
-    const answer = completion.dataset.completionAnswer;
-    const blankIndex = Number(completion.dataset.completionBlank);
-    const slots = step.completion.displayTokens;
-    const answerSlot = completion.querySelector('.family-sentence-builder__answer');
-    const feedback = completion.querySelector('.family-answer-feedback');
-    completion.querySelectorAll('[data-completion-choice]').forEach(button => button.addEventListener('click', () => {
-      if (completion.dataset.completed) return;
-      const choice = step.completion.choices[Number(button.dataset.completionChoice)];
-      const correct = choice === answer;
-      completion.dataset.completed = 'true';
-      completion.querySelectorAll('[data-completion-choice]').forEach(candidate => { candidate.disabled = true; });
-      answerSlot.textContent = slots.map((token, index) => index === blankIndex ? choice : token).join(' ');
-      answerSlot.classList.add(correct ? 'complete' : 'try-again');
-      feedback.textContent = correct ? '✓ Correct — say the completed sentence together.' : 'Not quite. The sentence is: ' + step.completion.completedSentence.join(' ');
-      feedback.classList.add(correct ? 'correct' : 'incorrect');
-    }));
-  }
+  bindFamilySentencePractice(container, step, interaction, (response, correct) => {
+    if (!correct) actions.rememberFamilySentence?.(step, stepIndex, response);
+  });
   container.querySelectorAll('[data-family-match]').forEach(button => button.addEventListener('click', () => {
     if (button.classList.contains('matched')) return;
     if (!selectedMatch) {
@@ -394,6 +426,7 @@ export function renderFamilyPlayView(container, state, actions) {
     actions.finishFamilyChallenge(stepIndex);
   }));
   container.querySelectorAll('[data-family-answer]').forEach(button => button.addEventListener('click', () => {
+    if (button.dataset.familyAnswer !== step.item.id) actions.rememberFamilySentence?.(step, stepIndex, button.dataset.familyAnswer);
     const card = button.closest('.family-quiz-card');
     card.querySelectorAll('.family-answer').forEach(answer => { answer.disabled = true; });
     button.classList.add('locked');
@@ -402,7 +435,9 @@ export function renderFamilyPlayView(container, state, actions) {
     actions.answerFamilyQuiz(button.dataset.familyAnswer, stepIndex);
   }));
   container.querySelector('#family-play-audio')?.addEventListener('click', () => {
-    const target = items.map(item => item.targetText || item.target || item.text || item.line).filter(Boolean).join('. ');
+    const target = step.patternLesson
+      ? step.patternLesson[interaction.pattern.frame].example.targetText
+      : items.map(item => item.targetText || item.target || item.text || item.line).filter(Boolean).join('. ');
     if (target) actions.speak(target);
   });
   container.querySelector('#family-play-prev')?.addEventListener('click', () => actions.controlFamilySession('live', stepIndex - 1));
