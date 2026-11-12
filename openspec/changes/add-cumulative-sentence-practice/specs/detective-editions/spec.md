@@ -19,6 +19,7 @@ The False-Friend Detective side quest SHALL offer a distinct three-case pack at 
 - **WHEN** the Detective side quest is shown and started
 - **THEN** the app and the server both use the milestone-40 cases
 - **AND** the server does not reject the milestone
+- **AND** completing it awards a new `false-friend-detective:edition-8` badge, separate from the milestone-40 badge
 
 #### Scenario: Milestone not reached
 

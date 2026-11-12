@@ -104,4 +104,11 @@ describe('Detective case editions', () => {
       expect(packs[serverIndex(milestone)]).toEqual(getSideQuestForProgress('montenegrin-en', milestone).cases);
     }
   });
+
+  it('awards a new badge for every repeated case pack after milestone 190', () => {
+    const badges = new Set();
+    for (let milestone = 10; milestone <= 400; milestone += 30) badges.add(getSideQuestForProgress('montenegrin-en', milestone).badgeId);
+    expect(badges.size).toBe(14);
+    expect(getSideQuestForProgress('montenegrin-en', 220).badgeId).toBe('false-friend-detective:edition-8');
+  });
 });

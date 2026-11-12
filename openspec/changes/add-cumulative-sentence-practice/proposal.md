@@ -14,7 +14,7 @@ From voyage day 27 the focused pilot teaches a subject's words across several da
 - Learners build and complete sentences, then say them and act out a short dialogue together in Family Play.
 - A sentence a learner gets wrong comes back later on that device for a calm retry, and leaves once it has been answered correctly twice.
 - Any signed-in learner can open **Listening practice**: hear a sentence (normal or slow), then pick its meaning or put its words in order. If no voice is available, a written path is offered.
-- Each later Detective milestone (40, 70, … 190 completed family lessons) brings a new case pack (after 190 the packs repeat in order) with clue-word glosses, and a running game cannot change underneath a family.
+- Each later Detective milestone (40, 70, … 190 completed family lessons) brings a new case pack (after 190 the packs repeat in order, and each repeat still earns its own badge — decided 2026-11-11) with clue-word glosses, and a running game cannot change underneath a family.
 
 ## What changes
 
@@ -47,4 +47,3 @@ From voyage day 27 the focused pilot teaches a subject's words across several da
 - Should the frames and noun list move into the Montenegrin language pack before release, or be accepted as a pilot exception?
 - Should sentence review sync across a learner's devices (server-side) or stay device-local?
 - Should listening-practice results count toward any progress, or stay unrecorded practice?
-- Should a repeated Detective case pack after milestone 190 award a new badge (current behavior) or count as already solved?

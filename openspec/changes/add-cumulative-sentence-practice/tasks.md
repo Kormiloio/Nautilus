@@ -33,7 +33,7 @@
 
 ## Verification
 
-- [x] Unit tests: `sentence-practice`, `sentence-review`, `listening-practice`, `curriculum-progression`, plus Family Play, review regression, and vocabulary rollout additions. Full suite: 25 files, 160 tests passing.
+- [x] Unit tests: `sentence-practice`, `sentence-review`, `listening-practice`, `curriculum-progression`, plus Family Play, review regression, and vocabulary rollout additions. Full suite: 25 files, 161 tests passing.
 - [ ] Run `tests/sentence-browser.mjs`, `tests/sentence-review-browser.mjs`, `tests/listening-browser.mjs`, `tests/progression-browser.mjs`.
 - [ ] Run `scripts/test-detective-editions.mjs` and `scripts/test-cumulative-catalog.mjs` against a local Supabase container; run `npm run test:db` including `supabase/tests/detective-editions.sql`.
 - [ ] Production build from a clean tree.
