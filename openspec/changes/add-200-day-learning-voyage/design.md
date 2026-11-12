@@ -19,7 +19,7 @@ Keeping these concepts separate prevents missed calendar dates from corrupting c
 - `src/content/topics.json` owns all learning content and the explicit 30-core-topic/three-extra curriculum partition.
 - `src/content/schema.json` and `scripts/validate-content.js` provide Ajv structural and cross-reference validation.
 - Vitest verifies voyage shape, unique topic coverage, integration weeks, weekday mapping, session generation, and streak calculations.
-- `web/prototype.html` preserves the original artifact; it is not production source.
+- `web/prototype.html` preserved the original artifact; it was not production source. It was later removed from the published site by `remove-published-prototype` and remains in git history.
 
 ## Goals
 

@@ -16,7 +16,7 @@ The initial review below describes the preserved Claude prototype and explains w
 - the dashboard includes `Voyage day N of 200`, active-day summaries, a responsive calendar, nautical states, and an accessible list representation;
 - free topic browsing, mixed review, guided sessions, profile progress, flashcards, matching, quizzes, listening, recording, and role-play are implemented as modular components;
 - Vitest currently passes 11 engine/progress tests, Ajv validation passes, and Vite builds directly into `web/`;
-- the original prototype is preserved at `web/prototype.html`.
+- the original prototype is no longer published; it remains in git history at `2918c96:web/prototype.html`.
 
 Remaining high-priority risks are content depth, fluent language/audio review, configured holidays and breaks, storage recovery/versioning, broader automated interaction coverage, full accessibility/device verification, and the four-week family pilot.
 
@@ -24,7 +24,7 @@ Remaining high-priority risks are content depth, fluent language/audio review, c
 
 The product idea is coherent and well suited to a responsive web app: a ten-month, practical Montenegrin learning experience for teenagers preparing to visit Montenegro. The supplied decisions give the app a useful shape—free topic choice, varied short activities, audio, role-play, and restrained gamification.
 
-At the time of the initial audit, the Claude-generated prototype was the application at `web/index.html`; it is now preserved at `web/prototype.html`. It rendered and its principal navigation was usable in a browser, including at a 390 × 844 phone viewport. The 243 KB export bundle used a loader to unpack an 81 KB generated template, embedded application logic/data, and compressed runtime assets. It had no editable source tree, package manifest, build command, test suite, or content file. The original 224-line teaching text remains missing as a separate source.
+At the time of the initial audit, the Claude-generated prototype was the application at `web/index.html`; it was later preserved at `web/prototype.html` and has since been removed from the published site (it remains in git history at `2918c96:web/prototype.html`). It rendered and its principal navigation was usable in a browser, including at a 390 × 844 phone viewport. The 243 KB export bundle used a loader to unpack an 81 KB generated template, embedded application logic/data, and compressed runtime assets. It had no editable source tree, package manifest, build command, test suite, or content file. The original 224-line teaching text remains missing as a separate source.
 
 The actual app is substantially larger and more prescriptive than the prior summary. It contains 33 scheduled topics plus one alphabet bonus, a 12-month August–July journey, one-week date-based unlocks, named profiles for Lena, Sam, Mario, and Kristina, family sessions, mixed review, seven badges, stars, streaks, browser text-to-speech, temporary microphone recording, and seven role-play topics.
 

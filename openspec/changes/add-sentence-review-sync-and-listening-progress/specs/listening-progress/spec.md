@@ -8,7 +8,8 @@ When a signed-in learner with a linked profile opens listening practice for a vo
 
 #### Scenario: First completion
 
-- **GIVEN** a learner completes `practice:voyage-40:listening` for the first time with 5 correct answers
+- **GIVEN** a signed-in learner who has never completed `practice:voyage-40:listening`
+- **WHEN** they finish the set with 5 correct answers
 - **THEN** they receive 5 stars and an active day for today
 
 #### Scenario: Replay
@@ -38,7 +39,8 @@ A verified listening exercise SHALL offer normal and slow playback with a compat
 
 #### Scenario: No voice
 
-- **GIVEN** no compatible voice
+- **GIVEN** no compatible target-language voice is available
+- **WHEN** a verified listening exercise opens
 - **THEN** play buttons are disabled and Written practice is offered
 
 ### Requirement: Unsaved fallback is labelled

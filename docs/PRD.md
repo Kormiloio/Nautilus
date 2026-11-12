@@ -313,7 +313,7 @@ The production foundation is a modular, static Vite web application:
 - `src/content/schema.json` and the Ajv validator currently reject structural errors and invalid curriculum references; publication filtering, stable item identifiers, detailed review metadata, and five-day readiness validation remain to be implemented;
 - Vitest covers voyage size, month/week structure, topic coverage, weekday scheduling, session generation, and streak behavior;
 - Vite writes the static production build to `web/` for the existing Netlify deployment;
-- `web/prototype.html` preserves the original generated prototype as a historical reference.
+- The original generated prototype was removed from the published site and remains in git history (last present at commit `2918c96`); it is no longer served as `web/prototype.html`.
 
 The implemented curriculum assigns 30 unique core topics to ten months, three per month. Past Tense, Future Tense, and Arriving in Montenegro remain freely browsable advanced/capstone topics outside the core sequence. The architecture is selected and no longer an open foundation decision.
 

@@ -8,7 +8,7 @@ export default defineConfig({
   base: 'https://kormilo-nautilus.netlify.app/',
   build: {
     outDir: '../web',
-    emptyOutDir: false, // Prevent deleting prototype.html in web/
+    emptyOutDir: false, // Leave web/ in place between builds; Vite overwrites the files it emits
   },
   server: {
     port: 3000,
