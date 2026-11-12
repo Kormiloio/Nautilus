@@ -27,6 +27,20 @@ export function renderProfilePill(profile, selectedName) {
   return `<button class="profile-pill-btn ${selectedName === profile.name ? 'active' : ''}" data-profile="${name}" aria-label="Switch to profile ${name}">${name}</button>`;
 }
 
+// Learner names sync from learner_profiles across family devices, so treat them as untrusted.
+export function renderGuideProgressCard(kid) {
+  return `
+              <div class="kid-progress-card">
+                <div class="kid-progress-header">${escapeHtml(kid.name)}</div>
+                <div class="kid-progress-stats">
+                  <div>⭐ ${escapeHtml(kid.stars)} stars</div>
+                  <div>🔥 ${escapeHtml(kid.streak)}d streak</div>
+                  <div>📚 ${escapeHtml(kid.completed)} topics done</div>
+                </div>
+              </div>
+            `;
+}
+
 export function renderDashboard(container, state, actions) {
   const visibleProfiles = state.sessionUser
     ? getProfiles().filter(profile => !String(profile.id).startsWith('local-'))
@@ -196,16 +210,7 @@ export function renderDashboard(container, state, actions) {
         <section aria-label="Learner Progress Summary">
           <h3 class="section-title">Kids' Progress</h3>
           <div class="kids-progress-grid">
-            ${getGuidesProgress().map(k => `
-              <div class="kid-progress-card">
-                <div class="kid-progress-header">${k.name}</div>
-                <div class="kid-progress-stats">
-                  <div>⭐ ${k.stars} stars</div>
-                  <div>🔥 ${k.streak}d streak</div>
-                  <div>📚 ${k.completed} topics done</div>
-                </div>
-              </div>
-            `).join('')}
+            ${getGuidesProgress().map(renderGuideProgressCard).join('')}
           </div>
         </section>
       ` : ''}
