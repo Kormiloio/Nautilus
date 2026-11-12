@@ -1,4 +1,4 @@
-import { DAILY_PLANS, PILOT_DAILY_PLANS, DAILY_SENTENCE_REVISION, DAILY_CUMULATIVE_REVISION, getFocusedPilotMetadata, getFocusedPilotWordIds } from '../content/daily-plans.js';
+import { DAILY_PLANS, PILOT_DAILY_PLANS, PILOT_SENTENCE_FRAMES, DAILY_SENTENCE_REVISION, DAILY_CUMULATIVE_REVISION, getFocusedPilotMetadata, getFocusedPilotWordIds } from '../content/daily-plans.js';
 import { buildCumulativeSentencePack } from './cumulative-sentences.js';
 import { getSentencePractice } from './sentence-practice.js';
 import { validateDailyPlan, dailyVocabularySteps } from './daily-vocabulary.js';
@@ -334,7 +334,7 @@ export function getDailyVocabularyAllocation(lesson, { focused = true, cumulativ
     },
   };
   if (cumulative) {
-    result.sentencePractice = buildCumulativeSentencePack(result, pilot.vocabulary);
+    result.sentencePractice = buildCumulativeSentencePack(result, pilot.vocabulary, PILOT_SENTENCE_FRAMES[LANGUAGE_PACK.id]);
     result.focusDescription = 'Reuse familiar words in a short sentence pattern. Read and hear the pattern before practicing.';
   }
   return result;

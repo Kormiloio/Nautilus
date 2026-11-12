@@ -11,8 +11,9 @@
 
 - [x] Author draft sentence frames, noun allow-list, nine topic sentence packs, and six Detective editions.
 - [x] `npm run validate` passes for all language packs (content still marked draft).
-- [ ] Fluent human review of every new Montenegrin sentence, frame note, gloss, dialogue, and Detective case.
-- [ ] Move cumulative frames and nouns from `src/engine/cumulative-sentences.js` into versioned language-pack content, or record an approved pilot exception.
+- [x] Prepare the fluent-review checklist of all 150 new lines: `docs/reviews/montenegrin-cumulative-content-review.md`.
+- [ ] Fluent human review of every new Montenegrin sentence, frame note, gloss, dialogue, and Detective case (post-release; needs a fluent speaker).
+- [x] Move cumulative frames and nouns from `src/engine/cumulative-sentences.js` into versioned language-pack content (`montenegrin-sentence-frames.json`); output verified byte-identical for days 27–200.
 
 ## Activity logic
 
@@ -29,19 +30,21 @@
 
 - [x] Dashboard banners for listening practice and sentence review, and focused recap labels.
 - [x] Pattern lesson, sentence review, and listening practice views; Detective clue words.
-- [ ] Keyboard, touch, screen-reader, reduced-motion, and narrow-phone checks for the new views (`tests/*-browser.mjs` exist but have not been run for this record).
+- [x] Automated accessibility scan (axe-core 4) of every revision-9 Family Play step, listening practice, and sentence review at 1440 px and 390 px: zero violations after fixing the exit-button name, progress-bar label, recap heading level, and sentence-review page heading.
+- [x] Touch and narrow-phone (390 × 844) behavior covered by the four browser tests.
+- [ ] Manual screen-reader and reduced-motion pass on a real device.
 
 ## Verification
 
-- [x] Unit tests: `sentence-practice`, `sentence-review`, `listening-practice`, `curriculum-progression`, plus Family Play, review regression, and vocabulary rollout additions. Full suite: 25 files, 161 tests passing.
-- [ ] Run `tests/sentence-browser.mjs`, `tests/sentence-review-browser.mjs`, `tests/listening-browser.mjs`, `tests/progression-browser.mjs`.
-- [ ] Run `scripts/test-detective-editions.mjs` and `scripts/test-cumulative-catalog.mjs` against a local Supabase container; run `npm run test:db` including `supabase/tests/detective-editions.sql`.
-- [ ] Production build from a clean tree.
+- [x] Unit tests: `sentence-practice`, `sentence-review`, `listening-practice`, `curriculum-progression`, plus Family Play, review regression, and vocabulary rollout additions. Full suite: 25 files, 164 tests passing.
+- [x] Run `tests/sentence-browser.mjs`, `tests/sentence-review-browser.mjs`, `tests/listening-browser.mjs`, `tests/progression-browser.mjs` (all pass, desktop and mobile; 2026-11-12).
+- [x] Run `npm run test:db` (5 files, 117 tests, now including `detective-editions.sql`), `npm run lint:db`, and `scripts/test-cumulative-catalog.mjs` (all 354 revision-9 definitions) against local Supabase.
+- [x] Production build from a clean tree (Netlify production deploy of `108f696`).
 
 ## Release (shipped before content review, by owner decision 2026-11-12)
 
 - [x] Publish catalog revision 9 to production (done outside this repo's tooling between 2026-10-28 and 2026-11-11; publisher not recorded).
-- [ ] Merge `wip/sentences-listening-detective` into `main` and confirm the Netlify production deploy passes `verify:release` at revision 9.
+- [x] Merge `wip/sentences-listening-detective` into `main` (PR #14, `108f696`) and confirm the Netlify production deploy passes `verify:release` at revision 9.
 - [x] Apply `20261026010000_cumulative_detective_editions.sql` to production (found already applied on 2026-11-12; applier not recorded).
 - [x] Apply `20261112010000_detective_cases_past_190.sql` to production (applied 2026-11-12 via `supabase db push`).
-- [ ] Confirm in-flight attempts pinned to earlier revisions still replay unchanged.
+- [x] Confirm attempts pinned to earlier revisions replay unchanged (unit tests build revisions 7 and 8 without the newer steps).

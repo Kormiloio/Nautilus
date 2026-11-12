@@ -70,7 +70,7 @@ export function renderLessonRecap(recap) {
     : "";
   const newWords = recap.focused && !recap.newItems?.length ? "" : column("New today", recap.newItems || [], "Mixed voyage review", "Several familiar topics together");
   const recalledWords = recap.focused && !recap.recalledItems?.length ? "" : column(recap.focused ? "Practiced again" : "Remembered", recap.recalledItems || [], "Your first words", "More recall appears as your voyage grows");
-  return "<section class=\"lesson-recap lesson-recap--family\" aria-label=\"What we brought back today\"><div class=\"lesson-recap__heading\"><span>⚓</span><div><small>Today’s voyage recap</small><h4>What we brought back</h4></div></div><div class=\"lesson-recap__grid\">" + newWords + recalledWords + connection + "</div></section>";
+  return "<section class=\"lesson-recap lesson-recap--family\" aria-label=\"What we brought back today\"><div class=\"lesson-recap__heading\"><span>⚓</span><div><small>Today’s voyage recap</small><h2>What we brought back</h2></div></div><div class=\"lesson-recap__grid\">" + newWords + recalledWords + connection + "</div></section>";
 }
 
 export function renderSharedContent(step, turnPerson, quizState = null, participants = [], familyPeople = [], matchState = null) {
@@ -294,7 +294,7 @@ export function renderFamilyPlayView(container, state, actions) {
 
   container.innerHTML = `
     <header class="navbar family-play-nav">
-      <button class="logo" id="family-play-exit" aria-label="Leave Family Play">
+      <button class="logo" id="family-play-exit"><span class="sr-only">Leave </span>
         <div class="logo-icon">${LANGUAGE_PACK.targetLanguage.code.toUpperCase()}</div>
         <div><div class="logo-title">Family Play</div><small>Voyage day ${cloudSession.voyageDay}</small></div>
       </button>
@@ -320,7 +320,7 @@ export function renderFamilyPlayView(container, state, actions) {
           <span>${escapeHtml((cloudSession.catalogRevision ?? 5) < 6 ? (lesson.legacyTitle || lesson.title) : (cloudSession.catalogRevision ?? 5) < 7 ? (lesson.pilotTitle || lesson.title) : lesson.title)}</span>
           <span>Part ${stepIndex + 1} of ${steps.length}</span>
         </div>
-        <div class="session-steps-bar" role="progressbar" aria-valuenow="${stepIndex + 1}" aria-valuemin="1" aria-valuemax="${steps.length}">
+        <div class="session-steps-bar" role="progressbar" aria-label="Lesson progress" aria-valuenow="${stepIndex + 1}" aria-valuemin="1" aria-valuemax="${steps.length}">
           ${steps.map((_, index) => `<div class="session-step-segment ${index <= stepIndex ? 'active' : ''}"></div>`).join('')}
         </div>
         <p class="hero-tag">${isController ? 'You are leading' : `Following ${escapeHtml(cloudSession.controllerName || 'the family guide')}`}</p>

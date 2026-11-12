@@ -116,3 +116,21 @@ describe('Detective case editions', () => {
     expect(getSideQuestForProgress('montenegrin-en', 220).badgeId).toBe('false-friend-detective:edition-8');
   });
 });
+
+describe('Cumulative sentence content boundary', () => {
+  it('keeps frames and nouns in pack content, not engine code', async () => {
+    const engine = readFileSync(new URL('../cumulative-sentences.js', import.meta.url), 'utf8');
+    expect(engine).not.toMatch(/Ovo je|Gdje je|'cnr'|voyageDay - 27/);
+    const { PILOT_SENTENCE_FRAMES } = await import('../../content/daily-plans.js');
+    const frames = PILOT_SENTENCE_FRAMES['montenegrin-en'];
+    expect(frames.reviewStatus).toBe('draft');
+    expect(frames.frames.length).toBeGreaterThan(0);
+    for (const noun of frames.nouns) expect(noun.targetText && noun.supportText).toBeTruthy();
+  });
+
+  it('builds no cumulative sentences for a pack without frame content', async () => {
+    const { buildCumulativeSentencePack } = await import('../cumulative-sentences.js');
+    const allocation = getDailyVocabularyAllocation(VOYAGE_LESSONS[40], { cumulative: true });
+    expect(buildCumulativeSentencePack(allocation, [], undefined)).toBeNull();
+  });
+});
