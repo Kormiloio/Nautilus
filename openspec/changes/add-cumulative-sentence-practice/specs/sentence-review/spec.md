@@ -4,6 +4,8 @@
 
 ### Requirement: Missed sentences are remembered on the device
 
+> **Superseded 2026-11-12** by OpenSpec change `add-sentence-review-sync-and-listening-progress`.
+
 When a signed-in learner answers a multi-word sentence builder, sentence completion, or sentence quiz incorrectly, in a verified lesson or in Family Play, Nautilus SHALL store that sentence in a device-local review queue scoped to the learner and language pack, and SHALL NOT send it to the server.
 
 #### Scenario: Wrong sentence builder

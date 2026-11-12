@@ -44,6 +44,8 @@ Playback SHALL use a compatible target-language voice (for Montenegrin: `cnr-ME`
 
 ### Requirement: Listening practice is unrecorded
 
+> **Superseded 2026-11-12** by OpenSpec change `add-sentence-review-sync-and-listening-progress`.
+
 Listening practice SHALL NOT store results, create attempts, or change progress or rewards, and SHALL end when the signed-in user or language pack changes.
 
 #### Scenario: User switches account
