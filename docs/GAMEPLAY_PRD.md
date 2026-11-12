@@ -101,6 +101,17 @@ This is an example only. The curriculum engine selects reviewed connections from
 - **Released:** Family owners and adult guides can open a no-credit activity preview of the current language pack. Preview interactions create no attempt, progress, reward, receipt, or Family Play state.
 - **Specified, not yet released:** reviewed single-blank sentence completion is tracked in OpenSpec change `add-reviewed-sentence-completion`.
 
+### 6.2.2 Cumulative sentences, sentence review, and listening practice (implemented, not released)
+
+Tracked in OpenSpec change `add-cumulative-sentence-practice`. The code is on branch `wip/sentences-listening-detective`. All new Montenegrin language is **draft and has not had fluent review**, so it must not be published until it does (§11.5).
+
+- **Cumulative sentences (catalog revision 9):** from voyage day 27, focused lessons reuse nouns the learner has already met inside one explained frame ("Ovo je …", "Gdje je …", "Tu je …", "To nije …"). Each lesson has a familiar-words warm-up, a pattern lesson, two sentence builders, two single-blank completions, and a dialogue (individual) or role-play (Family Play). With fewer than two familiar nouns, sentence practice is skipped. Revision 8 uses nine authored topic sentence packs instead.
+- **Accurate recap:** focused recaps separate "New today" from "Practiced again", based on the real focused schedule.
+- **Sentence review:** missed multi-word sentences are kept on the learner's device per language pack (max 100) and come back for review after 10 minutes, then after 24 hours once answered correctly. They leave the queue after two correct reviews in a row. Review grants no progress and is never sent to the server.
+- **Listening practice:** up to six sentences from the current or next lesson. The learner hears each one (normal or slow) and then picks its meaning or puts its words in order. A written path is offered when no compatible target-language voice is available. Results are not stored.
+- **Detective case packs:** each Detective milestone (10, 40, … 190 family lessons) has its own three-case pack with clue-word glosses and its own badge. The server pins the cases when a game starts.
+- **Known deviation:** the cumulative frames and noun list currently live in engine code rather than in versioned language-pack content (§11.1). Before release they must either be moved into the pack or approved as a pilot exception.
+
 ### 6.3 Cumulative recall
 
 Every voyage lesson should declare:
@@ -262,3 +273,6 @@ The first gameplay release is ready when:
 3. What is the minimum participant rule when a family learner is unavailable: wait, remove them for the session, or provide an adult-approved temporary absence flow?
 4. Which port names, story chapters, and poster concepts should be reviewed with heritage speakers for each language pack?
 5. What milestone cadence makes Sailor Talk feel surprising without interrupting the voyage?
+6. Who performs fluent review of the cumulative sentence frames, topic sentence packs, and Detective case packs, and does release wait on it?
+7. Should sentence review stay device-local or sync across a learner's devices?
+8. What happens to the Detective side quest after milestone 190? The client currently cycles case packs, but the server rejects milestones above 190.
