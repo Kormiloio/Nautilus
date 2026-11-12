@@ -77,3 +77,22 @@ export function createListeningAudio(languageCode, synthesis, UtteranceClass, on
     },
   };
 }
+
+// Deterministic, server-gradable listening set for one voyage lesson (catalog revision 10+).
+// Order exercises hold exactly the sentence's words: the verified builder forbids distractors.
+export function buildVerifiedListeningSteps(lesson) {
+  const exercises = buildListeningExercises(getListeningItems(lesson), `listening:${lesson.id}`);
+  if (!exercises.length) return [];
+  // Pre-teach exactly the sentences this set uses (ungraded self-report step), as in the unsaved version.
+  const study = [...new Map(exercises.map(exercise => [exercise.item.targetText, exercise.item])).values()];
+  return [{ type: 'discover', title: 'Read and hear first', subtitle: 'Read and hear first', note: 'Read each sentence and hear it before the listening questions.', items: study },
+    ...exercises.map((exercise, index) => {
+    if (exercise.kind === 'meaning') {
+      return { type: 'listening-meaning', title: 'Listen and choose the meaning', item: exercise.item, choices: exercise.choices };
+    }
+    const answer = listeningWords(exercise.item.targetText);
+    let tokens = shuffle(answer, createSeededRandom(`listening:${lesson.id}:order:${index}`));
+    if (tokens.join(' ') === answer.join(' ')) tokens = [...tokens.slice(1), tokens[0]];
+    return { type: 'listening-order', title: 'Listen and build the sentence', item: exercise.item, tokens, answer };
+  }).filter(step => step.type === 'listening-meaning' || step.answer.length >= 2)];
+}

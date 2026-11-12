@@ -1,5 +1,6 @@
 import { renderLanguageRun } from '../engine/language-runs.js';
 import { LANGUAGE_PACK } from '../engine/learning-engine.js';
+import { escapeHtml } from '../engine/language-runs.js';
 import { createListeningAudio, gradeListeningExercise } from '../engine/listening-practice.js';
 
 export function renderListeningPracticeView(container, state, actions) {
@@ -8,7 +9,7 @@ export function renderListeningPracticeView(container, state, actions) {
   if (session?.exercises.length && !session.prepared) {
     const items = [...new Map(session.exercises.map(exercise => [exercise.item.targetText, exercise.item])).values()];
     const run = (text, side = 'target') => renderLanguageRun(text, side, LANGUAGE_PACK);
-    container.innerHTML = `<header class="navbar"><strong>Listening practice</strong><button class="btn btn-secondary" data-study-exit>Dashboard</button></header><main class="container listening-page"><h1>Read and hear first</h1>
+    container.innerHTML = `<header class="navbar"><strong>Listening practice</strong><button class="btn btn-secondary" data-study-exit>Dashboard</button></header><main class="container listening-page"><h1>Read and hear first</h1>${session.unsavedReason ? `<p class="listening-unsaved" role="note">${escapeHtml(session.unsavedReason)}</p>` : ''}
       <div class="listening-study">${items.map((item, index) => `<article><strong>${run(item.targetText)}</strong><span>${run(item.supportText, 'support')}</span>${item.teachingNote ? `<p>${run(item.teachingNote, 'support')}</p>` : ''}<button class="btn btn-secondary" data-study-audio="${index}" aria-label="Hear sentence ${index + 1}" title="Hear sentence ${index + 1}">►</button></article>`).join('')}</div>
       <p role="status" data-study-status></p><button class="btn btn-primary" data-study-start>Ready to practice →</button></main>`;
     const status = container.querySelector('[data-study-status]');
@@ -32,7 +33,7 @@ export function renderListeningPracticeView(container, state, actions) {
   const ui = session.ui || (session.ui = { heard: false, selected: null, tokens: [], written: false, feedback: null });
   const run = (text, side = 'target') => renderLanguageRun(text, side, LANGUAGE_PACK);
   container.innerHTML = `<header class="navbar"><strong>Listening practice</strong><button class="btn btn-secondary" data-listening-exit>Dashboard</button></header>
-    <main class="container listening-page"><p>${session.index + 1} of ${session.exercises.length}</p><h1>${exercise.kind === 'meaning' ? ui.written ? 'Choose the meaning' : 'What did you hear?' : ui.written ? 'Build the sentence' : 'Build what you hear'}</h1>
+    <main class="container listening-page">${session.unsavedReason ? `<p class="listening-unsaved" role="note">${escapeHtml(session.unsavedReason)}</p>` : ''}<p>${session.index + 1} of ${session.exercises.length}</p><h1>${exercise.kind === 'meaning' ? ui.written ? 'Choose the meaning' : 'What did you hear?' : ui.written ? 'Build the sentence' : 'Build what you hear'}</h1>
     <div class="listening-audio"><button type="button" class="btn btn-primary" data-listening-play aria-label="Play sentence" title="Play sentence">►</button><button type="button" class="btn btn-secondary" data-listening-slow aria-label="Play slowly" title="Play slowly">0.6×</button></div>
     <p role="status" data-listening-status></p><button class="btn btn-secondary" data-listening-written hidden>Written practice</button>
     ${exercise.kind === 'meaning' ? `<div class="listening-choices">${exercise.choices.map((choice, index) => `<button type="button" class="btn btn-secondary" data-listening-choice="${index}">${run(choice, 'support')}</button>`).join('')}</div>`

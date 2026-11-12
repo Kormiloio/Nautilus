@@ -1,9 +1,9 @@
 const EXPECTED = Object.freeze({
   contractVersion: 1,
-  revision: 9,
+  revision: 10,
   individual: 1400,
   family: 1400,
-  practice: 954,
+  practice: 1139, // 954 topic practice rows + 185 listening sets (revision 10)
 });
 
 export function validateCatalogStatus(actual, expected = EXPECTED) {

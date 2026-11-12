@@ -7,6 +7,7 @@ try {
   const engine=await vite.ssrLoadModule('/engine/learning-engine.js');
   const {buildFamilyPlaySteps}=await vite.ssrLoadModule('/engine/family-play-session.js');
   const {toVerifiedExercises}=await vite.ssrLoadModule('/engine/verified-curriculum.js');
+  const {buildVerifiedListeningSteps}=await vite.ssrLoadModule('/engine/listening-practice.js');
   const quote=value => value==null ? 'null' : "'"+String(value).replaceAll("'","''")+"'";
   const revision=Number(options.revision || 2);
   if (!Number.isInteger(revision) || revision < 1) throw new Error('Revision must be a positive integer');
@@ -27,7 +28,7 @@ try {
     end $catalog$;`);
   }
   // Preflight every selected core pack before producing any SQL.
-  if (options.mode !== 'practice' && options['legacy-vocabulary'] !== 'true') {
+  if (options.mode !== 'practice' && options.mode !== 'listening' && options['legacy-vocabulary'] !== 'true') {
     const { validateDailyPlan } = await vite.ssrLoadModule('/engine/daily-vocabulary.js');
     const packs = engine.getAvailableLanguagePacks().filter(pack => !options.pack || pack.id === options.pack);
     if (!packs.length) throw new Error('Unknown language pack');
@@ -47,6 +48,17 @@ try {
   for(const pack of engine.getAvailableLanguagePacks()) {
     if(options.pack && pack.id!==options.pack) continue;
     engine.setActiveLanguagePack(pack.id);
+    // Listening sets are published as practice rows: practice:<voyage-N>:listening (revision 10+).
+    if(options.mode==='listening') {
+      if(revision<10) throw new Error('Listening sets start at catalog revision 10');
+      for(const lesson of engine.VOYAGE_LESSONS) {
+        if(options.start && (lesson.number||1)<Number(options.start)) continue;
+        if(options.end && (lesson.number||1)>Number(options.end)) continue;
+        const steps=buildVerifiedListeningSteps(lesson);
+        if(steps.length) publish(pack,{id:'practice:'+lesson.id+':listening',topicId:lesson.topicId},'practice',steps);
+      }
+      continue;
+    }
     for(const lesson of engine.VOYAGE_LESSONS) for(const mode of ['individual','family']) {
       if(options.mode && options.mode!==mode) continue;
       if(options.start && (lesson.number||1)<Number(options.start)) continue;

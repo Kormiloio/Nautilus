@@ -14,10 +14,10 @@
 
 ## Listening progress
 
-- [ ] `buildVerifiedListeningSteps` and the `toVerifiedExercises` mapping.
-- [ ] Exporter listening rows; `prepare-listening-release.mjs` for revision 10; release gate update.
-- [ ] Audio controls and written fallback in `verified-lesson-view.js`; route `openListeningPractice` to the verified set; "not saved" label on the fallback.
-- [ ] Unit tests for determinism and mapping; pgTAP for listening credit (stars once, activity day, no voyage change); browser and accessibility checks.
+- [x] `buildVerifiedListeningSteps` and the `toVerifiedExercises` mapping.
+- [x] Exporter listening rows (185 sets); `prepare-listening-release.mjs` for revision 10 (64 files); `test-listening-catalog.mjs`; release gate expects revision 10, practice 1139.
+- [x] Audio controls and written fallback in `verified-lesson-view.js`; route `openListeningPractice` to the verified set; "not saved" label on the fallback.
+- [x] Unit tests for determinism and mapping; pgTAP `listening-progress.sql` (9 checks: stars once, activity day, no voyage change, answers hidden); `tests/listening-verified-browser.mjs`; axe-core shows no violations (also added the missing page heading to every verified lesson).
 
 ## Release
 

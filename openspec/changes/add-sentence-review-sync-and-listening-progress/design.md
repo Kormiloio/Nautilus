@@ -34,7 +34,7 @@ Sync runs after the learner signs in and cloud data is pulled, when sentence rev
 
 ### Content
 
-`buildVerifiedListeningSteps(lesson)` in `src/engine/listening-practice.js` is deterministic: it seeds with `listening:<lesson.id>` and uses the same item selection as `getListeningItems`. It produces at most six exercises, alternating:
+`buildVerifiedListeningSteps(lesson)` in `src/engine/listening-practice.js` is deterministic: it seeds with `listening:<lesson.id>` and uses the same item selection as `getListeningItems`. It starts with an ungraded "Read and hear first" step (`self_report`) that pre-teaches the set's sentences, matching the unsaved version. It then produces at most six exercises, alternating:
 
 - `listening-meaning`: the target sentence as `audioText`, its meaning among up to four distinct meanings, and the meaning as the answer.
 - `listening-order`: the sentence's own words, shuffled so they never start in answer order, with the ordered words as the answer. `writtenPrompt` holds the meaning for the written fallback.
